@@ -1,0 +1,128 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# React Native + NativeWind + GlueStack v2 Cursor Rules
+
+## Core Principles
+- Use functional and declarative programming patterns; avoid classes
+- Prefer iteration and modularization over code duplication
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+- Follow React Native's threading model for smooth UI performance
+- Write clean, readable, and maintainable code
+
+## GlueStack v2 Available Components
+Use these components from your local /components/ui/ directory:
+
+### Layout & Structure
+- Box: Container component
+- Center: Center alignment wrapper
+- HStack: Horizontal stack layout
+- VStack: Vertical stack layout
+- Divider: Visual separator
+
+### Form & Input
+- Input: Text input field
+- TextArea: Multi-line text input
+- FormControl: Form wrapper with validation
+- Checkbox: Checkbox input
+- Radio: Radio button input
+- Select: Dropdown selection
+- Slider: Range slider input
+- Switch: Toggle switch
+
+### Navigation & Interaction
+- Button: Clickable button
+- Pressable: Custom pressable area
+- Link: Navigation link
+- Fab: Floating action button
+
+### Feedback & Display
+- Alert: Alert messages
+- AlertDialog: Modal alert dialog
+- Toast: Temporary notifications
+- Modal: Overlay modal
+- ActionSheet: Bottom action sheet
+- Progress: Progress indicator
+- Spinner: Loading spinner
+- Tooltip: Hover information
+- Badge: Status indicator
+
+### Content & Media
+- Text: Text display
+- Heading: Section headings
+- Image: Image display
+- Avatar: Profile pictures
+- Icon: Icon display
+- Accordion: Collapsible content
+
+## Required Libraries
+Always use these libraries for better development experience:
+
+### State Management
+- **Zustand**: For global state management
+```typescript
+import { create } from 'zustand'
+```
+
+### Form Management
+- **react-hook-form**: For form handling
+- **zod**: For schema validation
+- **@hookform/resolvers**: For form validation integration
+```typescript
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+```
+
+### Utility Hooks
+- **usehooks-ts**: For common utility hooks
+```typescript
+import { useLocalStorage, useDebounce, useToggle } from 'usehooks-ts'
+```
+### Date & Time 
+- **dayjs**:  for  date utilities
+###  Animations
+
+- react-native-reanimated: Smooth animations
+- react-native-gesture-handler: Gesture handling
+- lottie-react-native: Lottie animations
+### Icons & Graphics
+- **react-native-vector-icons**: Icon library collection
+
+## NativeWind Styling Rules
+- Use Tailwind classes exclusively, avoid StyleSheet
+- Follow mobile-first responsive design
+- Use semantic class names and consistent spacing
+- Leverage design tokens for colors and typography
+
+## Best Practices
+- Always use TypeScript with strict mode
+- Implement proper error boundaries
+- Use React.memo for performance optimization
+- Handle loading and error states consistently
+- Use proper accessibility props (accessibilityLabel, accessibilityRole)
+- Test on both iOS and Android
+- Use FlatList for large lists
+- Implement proper keyboard handling
+- Use SafeAreaView for screen boundaries
+
+## Code Quality Rules
+- Use descriptive variable and function names
+- Keep components small and focused (under 200 lines)
+- Extract custom hooks for complex logic
+- Use proper error handling with try-catch
+- Implement proper form validation with zod schemas
+- Write self-documenting code
+- Use consistent naming conventions (camelCase for variables, PascalCase for components)
+- Always handle async operations properly
+
+## Performance Optimization
+- Use useCallback and useMemo appropriately
+- Implement lazy loading for heavy components
+- Optimize images with proper sizing
+- Use React DevTools Profiler for debugging
+- Minimize re-renders with proper dependency arrays
+- Use proper keys in lists
