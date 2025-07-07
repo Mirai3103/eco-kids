@@ -5,8 +5,10 @@ export default ({ config }) => ({
   extra: {
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    ...config.extra,
   },
   plugins: [
     'expo-font',
+    ...config.plugins,
   ]
 });

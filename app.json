@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "kltn",
-    "slug": "kltn",
+    "name": "EcoKids",
+    "slug": "EcoKids",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "kltn",
+    "scheme": "ecokids",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.kltn"
+      "bundleIdentifier": "edu.sgu.ecokids"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.kltn"
+      "package": "edu.sgu.ecokids"
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a2d533b2-9afa-45dd-89dc-e4c0ee137959"
+      }
+    },
+    "owner": "hoagxxll"
   }
 }
