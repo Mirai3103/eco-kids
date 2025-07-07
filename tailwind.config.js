@@ -13,6 +13,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily:{
+        heading: ['Baloo2_600SemiBold', 'sans-serif'],
+        body: ['NunitoSans_400Regular', 'sans-serif'],
+        mono: ['SpaceMono', 'monospace'],
+        roboto: ['Roboto', 'sans-serif'],
+      },
       colors: {
         primary: {
           0: 'rgb(var(--color-primary-0)/<alpha-value>)',
@@ -169,12 +175,7 @@ module.exports = {
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
         },
       },
-      fontFamily: {
-        heading: undefined,
-        body: undefined,
-        mono: undefined,
-        roboto: ['Roboto', 'sans-serif'],
-      },
+
       fontWeight: {
         extrablack: '950',
       },

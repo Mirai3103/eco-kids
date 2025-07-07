@@ -1,27 +1,26 @@
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import "@/global.css";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Baloo2_600SemiBold, useFonts as useBalooFonts } from '@expo-google-fonts/baloo-2';
+import { NunitoSans_400Regular, useFonts as useNunitoFonts } from '@expo-google-fonts/nunito-sans';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+  const [balooLoaded] = useBalooFonts({
+    Baloo2_600SemiBold,
   });
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  const [nunitoLoaded] = useNunitoFonts({
+    NunitoSans_400Regular,  
+  });  
 
   return (
     <GluestackUIProvider mode="light">
