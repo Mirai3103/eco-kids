@@ -1,3 +1,4 @@
+import { Image } from "@/components/ui/image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useRef } from "react";
 import {
@@ -8,10 +9,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 // GlueStack UI Components
 import { Center } from "@/components/ui/center";
-import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
@@ -50,6 +49,7 @@ const featuredStory = {
   id: 1,
   title: "Cuộc phiêu lưu của chú ong nhỏ",
   image: "🌸",
+
   bgColor: "#CAFEC3",
 };
 
@@ -192,7 +192,7 @@ const TopicIsland = ({
             <Text style={{ fontSize: 32 }}>{topic.icon}</Text>
           </View>
           <Text
-            style={{ color: "#1B4B07", fontSize: 12, fontWeight: "600" }}
+            style={{ color: "#1B4B07", fontSize: 14, fontWeight: "600" }}
             className="text-center"
           >
             {topic.name}
@@ -207,9 +207,11 @@ const TopicIsland = ({
 const StoryCard = ({
   story,
   size = "small",
+  withButton = false,
 }: {
   story: { id: number; title: string; image: string; bgColor: string };
   size?: "small" | "large";
+  withButton?: boolean;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -245,7 +247,7 @@ const StoryCard = ({
   };
 
   const cardWidth = size === "large" ? screenWidth - 32 : 140;
-  const cardHeight = size === "large" ? 200 : 160;
+  const cardHeight = size === "large" ? 300 : 160;
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -275,28 +277,39 @@ const StoryCard = ({
           }}
         >
           <Center className="flex-1">
-            <Text style={{ fontSize: size === "large" ? 64 : 48 }}>
-              {story.image}
-            </Text>
+            <Image
+              source={require("@/assets/images/sample1.jpg")}
+              className="w-full h-full rounded-lg"
+              alt="story-image"
+            />
           </Center>
           <Text
             style={{
+              
               color: "#1B4B07",
               fontSize: size === "large" ? 18 : 14,
               fontWeight: "600",
               textAlign: "center",
-              marginTop: 8,
+              marginTop: 12,
             }}
           >
             {story.title}
           </Text>
+          {withButton && (
+            <Center className="mt-4">
+              <Button3D
+                title="Bắt đầu đọc"
+                onPress={() => console.log("Start reading")}
+                color="#399918"
+                shadowColor="#2a800d"
+              />
+            </Center>
+          )}
         </View>
       </Animated.View>
     </Pressable>
   );
 };
-
-
 
 export default function EcoKidsHomeScreen() {
   return (
@@ -315,59 +328,59 @@ export default function EcoKidsHomeScreen() {
         end={{ x: 0, y: 1 }}
       />
 
-    
       <SafeAreaView className="flex-1">
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
         >
-          {/* Header */}
           <HStack className="justify-between items-center px-4 py-4">
-            <VStack>
-              <Heading
-                size="2xl"
-                style={{ color: "#1B4B07", fontWeight: "bold" }}
-              >
-                EcoKids
-              </Heading>
-              <Text size="sm" style={{ color: "#399018" }}>
-                Học về môi trường
-              </Text>
-            </VStack>
+            <Image
+              source={require("@/assets/images/logo.png")}
+              alt="logo"
+              className="w-32 h-auto "
+              resizeMode="contain"
+            />
 
             <HStack className="items-center space-x-3">
               <HStack className="items-center bg-white rounded-full px-3 py-2 shadow-sm">
-                <Text style={{ fontSize: 16 }}>⭐</Text>
+                <Image
+                  source={require("@/assets/images/cup.png")}
+                  alt="logo"
+                  className="w-10 h-8"
+                  resizeMode="contain"
+                />
                 <Text
                   style={{ color: "#1B4B07", fontWeight: "600", marginLeft: 4 }}
                 >
                   125
                 </Text>
               </HStack>
-              <View className="w-10 h-10 bg-orange-200 rounded-full items-center justify-center">
+              {/* <View className="w-10 h-10 bg-orange-200 rounded-full items-center justify-center">
                 <Text style={{ fontSize: 20 }}>🐼</Text>
-              </View>
+              </View> */}
             </HStack>
           </HStack>
 
-          {/* Topic Selection Carousel */}
           <VStack className="mt-6">
             <Text
               style={{
                 color: "#1B4B07",
-                fontSize: 18,
+                fontSize: 24,
                 fontWeight: "600",
                 marginLeft: 16,
                 marginBottom: 12,
+                paddingTop:2,
               }}
+              className="font-heading"
             >
-              Khám phá Chủ đề
+              Chủ đề có thể bé thích
             </Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 16 }}
+              className="font-baloo-regular"
             >
               {topics.map((topic) => (
                 <TopicIsland
@@ -379,12 +392,30 @@ export default function EcoKidsHomeScreen() {
             </ScrollView>
           </VStack>
 
-          {/* Featured Story Card */}
-          <VStack className="mt-8 px-4">
-            <StoryCard story={featuredStory} size="large" />
-            <Center className="mt-4">
+          <VStack className="mt-8 px-4 font-baloo-regular" space="lg">
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 24,
+                fontWeight: "600",
+                paddingTop:2,
+                marginBottom: 12,
+              }}
+              className="font-heading"
+            >
+              Đề xuất cho bé
+            </Text>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <StoryCard
+                key={index}
+                withButton
+                story={featuredStory}
+                size="large"
+              />
+            ))}
+            <Center className="mt-8">
               <Button3D
-                title="Bắt đầu đọc"
+                title="Khám phá thêm"
                 onPress={() => console.log("Start reading")}
                 color="#399918"
                 shadowColor="#2a800d"
@@ -392,7 +423,6 @@ export default function EcoKidsHomeScreen() {
             </Center>
           </VStack>
 
-          {/* New Stories Carousel */}
           <VStack className="mt-8">
             <Text
               style={{
@@ -417,7 +447,7 @@ export default function EcoKidsHomeScreen() {
             </ScrollView>
           </VStack>
 
-          {/* Recent Stories Carousel */}
+  
           <VStack className="mt-6">
             <Text
               style={{

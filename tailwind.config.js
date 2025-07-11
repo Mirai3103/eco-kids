@@ -18,6 +18,7 @@ module.exports = {
         body: ['NunitoSans_400Regular', 'sans-serif'],
         mono: ['SpaceMono', 'monospace'],
         roboto: ['Roboto', 'sans-serif'],
+        "baloo-regular": ['Baloo2_400Regular', 'sans-serif'],
       },
       colors: {
         primary: {

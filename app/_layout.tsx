@@ -9,13 +9,14 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Baloo2_600SemiBold, useFonts as useBalooFonts } from '@expo-google-fonts/baloo-2';
+import { Baloo2_400Regular, Baloo2_600SemiBold, useFonts as useBalooFonts } from '@expo-google-fonts/baloo-2';
 import { NunitoSans_400Regular, useFonts as useNunitoFonts } from '@expo-google-fonts/nunito-sans';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [balooLoaded] = useBalooFonts({
     Baloo2_600SemiBold,
+    Baloo2_400Regular,
   });
   const [nunitoLoaded] = useNunitoFonts({
     NunitoSans_400Regular,  

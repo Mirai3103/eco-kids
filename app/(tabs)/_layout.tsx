@@ -1,51 +1,51 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import React from "react";
+import { Pressable, View } from "react-native";
 
-import { HStack } from '@/components/ui/hstack';
+import { HStack } from "@/components/ui/hstack";
 
 // Custom Bottom Navigation Component for EcoKids
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
   const tabs = [
-    { 
-      icon: 'home', 
-      label: 'Trang chủ', 
+    {
+      icon: "home",
+      label: "Trang chủ",
       IconComponent: Ionicons,
-      routeName: 'index'
+      routeName: "index",
     },
-    { 
-      icon: 'library', 
-      label: 'Thư viện', 
+    {
+      icon: "library",
+      label: "Thư viện",
       IconComponent: Ionicons,
-      routeName: 'explore'
+      routeName: "explore",
     },
-    { 
-      icon: 'heart', 
-      label: 'Yêu thích', 
+    {
+      icon: "heart",
+      label: "Yêu thích",
       IconComponent: Ionicons,
-      routeName: 'favorites'
+      routeName: "favorites",
     },
-    { 
-      icon: 'person', 
-      label: 'Cá nhân', 
+    {
+      icon: "person",
+      label: "Cá nhân",
       IconComponent: Ionicons,
-      routeName: 'profile'
+      routeName: "profile",
     },
   ];
 
   return (
-    <View 
+    <View
       style={{
-        position: 'absolute',
+        position: "absolute",
         bottom: 0,
         left: 0,
         right: 0,
         height: 80,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: -4 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -59,7 +59,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
 
           const onPress = () => {
             const event = navigation.emit({
-              type: 'tabPress',
+              type: "tabPress",
               target: route.key,
               canPreventDefault: true,
             });
@@ -76,24 +76,17 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
               className="items-center flex-1"
               style={{ opacity: index < 2 ? 1 : 0.5 }} // Disable inactive tabs for now
             >
-              <View className={`p-2 rounded-full ${isFocused ? 'bg-blue-100' : ''}`}>
+              <View
+                className={`p-2 rounded-full ${
+                  isFocused ? "bg-blue-100 " : ""
+                }`}
+                style={{ borderRadius: 1000 }}
+              >
                 <tab.IconComponent
                   name={tab.icon as any}
                   size={24}
-                  color={isFocused ? '#2857E0' : '#666'}
+                  color={isFocused ? "#D72654" : "#399918"}
                 />
-                {isFocused && (
-                  <View 
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: 3,
-                      backgroundColor: '#2857E0',
-                      marginTop: 4,
-                      alignSelf: 'center',
-                    }}
-                  />
-                )}
               </View>
             </Pressable>
           );
@@ -107,20 +100,21 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1 }}>
       <Tabs
-        tabBar={props => <CustomTabBar {...props} />}
+        tabBar={(props) => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
-        }}>
+        }}
+      >
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
+            title: "Home",
           }}
         />
         <Tabs.Screen
           name="explore"
           options={{
-            title: 'Explore',
+            title: "Explore",
           }}
         />
       </Tabs>

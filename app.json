@@ -15,7 +15,10 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ecokids-icon.png",
-        "backgroundColor": "#CAFEC3"
+        "backgroundColor": "#CAFEC3",
+        "width": 300,
+        "height": 300,
+        "resizeMode": "contain"
       },
       "edgeToEdgeEnabled": true,
       "package": "edu.sgu.ecokids"
