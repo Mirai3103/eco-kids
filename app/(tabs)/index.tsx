@@ -1,53 +1,448 @@
-import { Button, ButtonText } from '@/components/ui/button';
-import { Center } from '@/components/ui/center';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { router } from 'expo-router';
-import React from 'react';
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useRef } from "react";
+import {
+  Animated,
+  Dimensions,
+  ScrollView,
+  StatusBar,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function HomeScreen() {
-  const handleLogin = () => {
-    router.push('/login');
+// GlueStack UI Components
+import { Center } from "@/components/ui/center";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Pressable } from "@/components/ui/pressable";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+// Sample data for the app
+const topics = [
+  {
+    id: 1,
+    name: "Đại dương",
+    icon: "🐋",
+    color: "#2857E0",
+    bgColor: "#E3F2FD",
+  },
+  { id: 2, name: "Rừng cây", icon: "🌳", color: "#399018", bgColor: "#E8F5E8" },
+  {
+    id: 3,
+    name: "Côn trùng",
+    icon: "🐞",
+    color: "#D72654",
+    bgColor: "#FCE4EC",
+  },
+  { id: 4, name: "Động vật", icon: "🦊", color: "#FF9800", bgColor: "#FFF3E0" },
+  {
+    id: 5,
+    name: "Thời tiết",
+    icon: "☀️",
+    color: "#2196F3",
+    bgColor: "#E3F2FD",
+  },
+];
+
+const featuredStory = {
+  id: 1,
+  title: "Cuộc phiêu lưu của chú ong nhỏ",
+  image: "🌸",
+  bgColor: "#CAFEC3",
+};
+
+const newStories = [
+  { id: 1, title: "Rùa biển và nhựa", image: "🐢", bgColor: "#E3F2FD" },
+  { id: 2, title: "Cây xanh kỳ diệu", image: "🌱", bgColor: "#E8F5E8" },
+  { id: 3, title: "Gấu trúc và tre", image: "🐼", bgColor: "#FFF3E0" },
+];
+
+const recentStories = [
+  { id: 1, title: "Chim cánh cụt bé nhỏ", image: "🐧", bgColor: "#E3F2FD" },
+  { id: 2, title: "Vườn hoa nhiều màu", image: "🌺", bgColor: "#FCE4EC" },
+  { id: 3, title: "Ong làm mật", image: "🍯", bgColor: "#FFF8E1" },
+];
+
+// 3D Button Component
+const Button3D = ({
+  title,
+  onPress,
+  size = "large",
+  color = "#2857E0",
+  shadowColor = "#2857E0",
+}: {
+  title: string;
+  onPress: () => void;
+  size?: "small" | "large";
+  color?: string;
+  shadowColor?: string;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
   };
 
-  const handleRegister = () => {
-    router.push('/register');
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const buttonHeight = size === "large" ? 44 : 28;
+  const fontSize = size === "large" ? 18 : 14;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <View className="relative">
+          {/* Shadow/Bottom layer */}
+          <View
+            style={{
+              backgroundColor: shadowColor,
+              height: buttonHeight,
+              borderRadius: 16,
+              position: "absolute",
+              top: 5,
+              left: 0,
+              right: 0,
+            }}
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              backgroundColor: color,
+              height: buttonHeight,
+              borderRadius: 16,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: size === "large" ? 28 : 16,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize,
+              }}
+            >
+              {title}
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+};
+
+// Topic Island Component
+const TopicIsland = ({
+  topic,
+  onPress,
+}: {
+  topic: (typeof topics)[0];
+  onPress: () => void;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.9,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
-    <Center className="flex-1 bg-background-0 px-6">
-      <VStack space="lg" className="w-full max-w-sm">
-        <VStack space="md" className="items-center">
-          <Text size="3xl" className="font-bold text-typography-900 text-center">
-            Green Tales
-          </Text>
-          <Text size="lg" className="text-typography-600 text-center">
-            Chào mừng bạn đến với ứng dụng
-          </Text>
-        </VStack>
-        
-        <VStack space="md" className="mt-8">
-          <Button
-            size="lg"
-            action="primary"
-            variant="solid"
-            onPress={handleLogin}
-            className="w-full"
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <View className="items-center mx-3">
+          <View
+            style={{
+              backgroundColor: topic.bgColor,
+              borderColor: topic.color,
+              borderWidth: 3,
+            }}
+            className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-lg"
           >
-            <ButtonText>Đăng nhập</ButtonText>
-          </Button>
-          
-          <Button
-            size="lg"
-            action="secondary"
-            variant="outline"
-            onPress={handleRegister}
-            className="w-full"
+            <Text style={{ fontSize: 32 }}>{topic.icon}</Text>
+          </View>
+          <Text
+            style={{ color: "#1B4B07", fontSize: 12, fontWeight: "600" }}
+            className="text-center"
           >
-            <ButtonText>Đăng ký</ButtonText>
-          </Button>
-        </VStack>
-      </VStack>
-    </Center>
+            {topic.name}
+          </Text>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+};
+
+// Story Card Component
+const StoryCard = ({
+  story,
+  size = "small",
+}: {
+  story: { id: number; title: string; image: string; bgColor: string };
+  size?: "small" | "large";
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  const handlePressIn = () => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rotateAnim, {
+        toValue: size === "small" ? 2 : 0,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      Animated.spring(rotateAnim, {
+        toValue: 0,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const cardWidth = size === "large" ? screenWidth - 32 : 140;
+  const cardHeight = size === "large" ? 200 : 160;
+
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "2deg"],
+  });
+
+  return (
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <Animated.View
+        style={{
+          transform: [{ scale: scaleAnim }, { rotate }],
+          width: cardWidth,
+          marginRight: size === "small" ? 12 : 0,
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: story.bgColor,
+            borderRadius: 20,
+            padding: 16,
+            height: cardHeight,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
+        >
+          <Center className="flex-1">
+            <Text style={{ fontSize: size === "large" ? 64 : 48 }}>
+              {story.image}
+            </Text>
+          </Center>
+          <Text
+            style={{
+              color: "#1B4B07",
+              fontSize: size === "large" ? 18 : 14,
+              fontWeight: "600",
+              textAlign: "center",
+              marginTop: 8,
+            }}
+          >
+            {story.title}
+          </Text>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+};
+
+
+
+export default function EcoKidsHomeScreen() {
+  return (
+    <View className="flex-1">
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={["#EEF0FE", "#CAFEC3"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      />
+
+    
+      <SafeAreaView className="flex-1">
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 120 }}
+        >
+          {/* Header */}
+          <HStack className="justify-between items-center px-4 py-4">
+            <VStack>
+              <Heading
+                size="2xl"
+                style={{ color: "#1B4B07", fontWeight: "bold" }}
+              >
+                EcoKids
+              </Heading>
+              <Text size="sm" style={{ color: "#399018" }}>
+                Học về môi trường
+              </Text>
+            </VStack>
+
+            <HStack className="items-center space-x-3">
+              <HStack className="items-center bg-white rounded-full px-3 py-2 shadow-sm">
+                <Text style={{ fontSize: 16 }}>⭐</Text>
+                <Text
+                  style={{ color: "#1B4B07", fontWeight: "600", marginLeft: 4 }}
+                >
+                  125
+                </Text>
+              </HStack>
+              <View className="w-10 h-10 bg-orange-200 rounded-full items-center justify-center">
+                <Text style={{ fontSize: 20 }}>🐼</Text>
+              </View>
+            </HStack>
+          </HStack>
+
+          {/* Topic Selection Carousel */}
+          <VStack className="mt-6">
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 18,
+                fontWeight: "600",
+                marginLeft: 16,
+                marginBottom: 12,
+              }}
+            >
+              Khám phá Chủ đề
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
+            >
+              {topics.map((topic) => (
+                <TopicIsland
+                  key={topic.id}
+                  topic={topic}
+                  onPress={() => console.log("Topic pressed:", topic.name)}
+                />
+              ))}
+            </ScrollView>
+          </VStack>
+
+          {/* Featured Story Card */}
+          <VStack className="mt-8 px-4">
+            <StoryCard story={featuredStory} size="large" />
+            <Center className="mt-4">
+              <Button3D
+                title="Bắt đầu đọc"
+                onPress={() => console.log("Start reading")}
+                color="#399918"
+                shadowColor="#2a800d"
+              />
+            </Center>
+          </VStack>
+
+          {/* New Stories Carousel */}
+          <VStack className="mt-8">
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 18,
+                fontWeight: "600",
+                marginLeft: 16,
+                marginBottom: 12,
+              }}
+            >
+              Truyện mới nhất nè
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
+              className="py-2"
+            >
+              {newStories.map((story) => (
+                <StoryCard key={story.id} story={story} size="small" />
+              ))}
+            </ScrollView>
+          </VStack>
+
+          {/* Recent Stories Carousel */}
+          <VStack className="mt-6">
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 18,
+                fontWeight: "600",
+                marginLeft: 16,
+                marginBottom: 12,
+              }}
+            >
+              Đọc lại nhé!
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
+              className="py-2"
+            >
+              {recentStories.map((story) => (
+                <StoryCard key={story.id} story={story} size="small" />
+              ))}
+            </ScrollView>
+          </VStack>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
