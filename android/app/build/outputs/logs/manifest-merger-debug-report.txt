@@ -1,0 +1,828 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:1:1-32:12
+MERGED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:1:1-32:12
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+MERGED from [:react-native-vector-icons_fontawesome] /home/laffy/Desktop/workspace/green-tales/node_modules/@react-native-vector-icons/fontawesome/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:lottie-react-native] /home/laffy/Desktop/workspace/green-tales/node_modules/lottie-react-native/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-gesture-handler] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-gesture-handler/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-safe-area-context] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-screens] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-19:12
+MERGED from [:react-native-edge-to-edge] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-edge-to-edge/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-async-storage_async-storage] /home/laffy/Desktop/workspace/green-tales/node_modules/@react-native-async-storage/async-storage/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo] /home/laffy/Desktop/workspace/green-tales/node_modules/expo/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-reanimated] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-reanimated/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-svg] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-svg/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:react-native-vector-icons] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-32:12
+MERGED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-24:12
+MERGED from [:expo-dev-menu-interface] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu-interface/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-18:12
+MERGED from [host.exp.exponent:expo.modules.font:13.3.2] /home/laffy/.gradle/caches/8.13/transforms/0c036dd4e89c039bdb830b38729aba27/transformed/expo.modules.font-13.3.2/AndroidManifest.xml:2:1-7:12
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:2:1-19:12
+MERGED from [host.exp.exponent:expo.modules.splashscreen:0.30.10] /home/laffy/.gradle/caches/8.13/transforms/4706a4f10ccde4f67225980dba6215a7/transformed/expo.modules.splashscreen-0.30.10/AndroidManifest.xml:2:1-7:12
+MERGED from [host.exp.exponent:expo.modules.systemui:5.0.10] /home/laffy/.gradle/caches/8.13/transforms/3a687a07ace87b5fee359971e8351282/transformed/expo.modules.systemui-5.0.10/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:2:1-24:12
+MERGED from [com.google.android.material:material:1.12.0] /home/laffy/.gradle/caches/8.13/transforms/7a9086f53045ff51dd925c6f1785f9fd/transformed/material-1.12.0/AndroidManifest.xml:17:1-24:12
+MERGED from [com.airbnb.android:lottie:6.5.2] /home/laffy/.gradle/caches/8.13/transforms/85b856133ef4db49661284566b09ee7c/transformed/lottie-6.5.2/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.core:core-splashscreen:1.2.0-alpha02] /home/laffy/.gradle/caches/8.13/transforms/ed280626aa95171682096e5872c6af69/transformed/core-splashscreen-1.2.0-alpha02/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/laffy/.gradle/caches/8.13/transforms/cafe38d429a8d27ed8b0af5abbc941f2/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.penfeizhou.android.animation:glide-plugin:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/171d3c8c60c980d67e5dba9b3903c12f/transformed/glide-plugin-3.0.5/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/laffy/.gradle/caches/8.13/transforms/1b766223c9ad7f2daee8b81f58bc7213/transformed/constraintlayout-2.0.1/AndroidManifest.xml:2:1-11:12
+MERGED from [com.github.penfeizhou.android.animation:awebp:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/e5e086c331edf8b998f04164b0a2170a/transformed/awebp-3.0.5/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.penfeizhou.android.animation:apng:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/a498e18e820d2039082300a9cd59b4c3/transformed/apng-3.0.5/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.penfeizhou.android.animation:gif:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/ac1d1d616d79aa20e507585d1621bf46/transformed/gif-3.0.5/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.penfeizhou.android.animation:avif:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/a30433f5792386d46025b522bebb1c74/transformed/avif-3.0.5/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.penfeizhou.android.animation:frameanimation:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/13539e054fd2491c95feae4e914c7ab8/transformed/frameanimation-3.0.5/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat:1.7.0] /home/laffy/.gradle/caches/8.13/transforms/4bf03df1e227318d4ab7c4ce04613cbc/transformed/appcompat-1.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/8770a77af4f549302c0ccc4f3429b863/transformed/lifecycle-extensions-2.2.0/AndroidManifest.xml:17:1-27:12
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:2:1-33:12
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/081581c012a4283b28daac0fe17aa771/transformed/legacy-support-v4-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.github.bumptech.glide:avif-integration:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/0690b5555f83376c8ed62314b43465f0/transformed/avif-integration-4.16.0/AndroidManifest.xml:2:1-9:12
+MERGED from [jp.wasabeef:glide-transformations:4.3.0] /home/laffy/.gradle/caches/8.13/transforms/f43bffe78a7064fe0d36bc53bb357940/transformed/glide-transformations-4.3.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:2:1-16:12
+MERGED from [com.github.bumptech.glide:glide:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/c5529e502845fdf46b49c2089dbb4832/transformed/glide-4.16.0/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/6bc00ab5eaca23c3c3ebd49ed8511ff9/transformed/viewpager2-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.fragment:fragment:1.6.1] /home/laffy/.gradle/caches/8.13/transforms/27ed71059cba4dfa5c0c363f337b269f/transformed/fragment-1.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.fragment:fragment-ktx:1.6.1] /home/laffy/.gradle/caches/8.13/transforms/bd599e307399f0c0086eaf5c5077a9e1/transformed/fragment-ktx-1.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [com.facebook.fresco:fresco:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/d67b401b98683845e20d868c9079182a/transformed/fresco-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/ce52cb4064562b4b9386643be0fc7867/transformed/imagepipeline-okhttp3-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:webpsupport:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/a1e7fd93c38007b66fe1ce6dffa1cb17/transformed/webpsupport-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:animated-gif:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/04b5e14ace161c416b3792cc65073136/transformed/animated-gif-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:animated-base:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/2bf1d0ccdaf978e74a899b15f35a1ba1/transformed/animated-base-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:animated-drawable:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/2330eff14f5a13aa56b81f00e6eedfcf/transformed/animated-drawable-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:vito-options:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/ff300a4baf9f1bf29410ae898edb5295/transformed/vito-options-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:drawee:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/6fcecc4c6bb8b8753bdcf3c3459c4fbc/transformed/drawee-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:nativeimagefilters:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3148937ce24975b0c8bd8c282baed048/transformed/nativeimagefilters-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:memory-type-native:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/cd82b284ddc0eb890197a89ff6aa47b0/transformed/memory-type-native-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:memory-type-java:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/4569d0f6272c114cc561a4707d109554/transformed/memory-type-java-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:imagepipeline-native:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7c448edad99bc61105557ce32ab74a1b/transformed/imagepipeline-native-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:memory-type-ashmem:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/b5b6dc9338af08dcda60bafb8897c85b/transformed/memory-type-ashmem-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:imagepipeline:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/85dde86bea35887bac0feb7d53cce7ae/transformed/imagepipeline-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:nativeimagetranscoder:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/e6d6d9b25fc67e5dd2f7142d2fad5488/transformed/nativeimagetranscoder-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:imagepipeline-base:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7c2022e539491c06e7973071945ca586/transformed/imagepipeline-base-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:urimod:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7e93b6b7e7c43855a5d878759065fa91/transformed/urimod-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:vito-source:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3a4438f452b91905d3d5ba17982c1aa1/transformed/vito-source-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:middleware:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/8cfee973423e06e528b5d8479c9cb2e9/transformed/middleware-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:ui-common:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/9a88919693188ddbdd185f7e98648316/transformed/ui-common-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:soloader:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/59b487b2b096ccdefac5e140ae48e3f7/transformed/soloader-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:fbcore:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/979a76771b5c0b857ab3556be228bba8/transformed/fbcore-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-constants] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-constants/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-dev-client] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-client/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-manifests] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-manifests/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-json-utils] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-json-utils/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-updates-interface] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-updates-interface/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [expo.modules.asset:expo.modules.asset:11.1.7] /home/laffy/.gradle/caches/8.13/transforms/5e45f93c4e65d3e73e3912e20442b03d/transformed/expo.modules.asset-11.1.7/AndroidManifest.xml:2:1-7:12
+MERGED from [host.exp.exponent:expo.modules.blur:14.1.5] /home/laffy/.gradle/caches/8.13/transforms/de3d5618ee54399d98ce771e21eadde8/transformed/expo.modules.blur-14.1.5/AndroidManifest.xml:2:1-7:12
+MERGED from [host.exp.exponent:expo.modules.haptics:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/8a5a36a4cfe71a2a1cc359ce3bb38163/transformed/expo.modules.haptics-14.1.4/AndroidManifest.xml:2:1-9:12
+MERGED from [host.exp.exponent:expo.modules.keepawake:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/cdecb3a2f1c538aa08f216a388624fd7/transformed/expo.modules.keepawake-14.1.4/AndroidManifest.xml:2:1-7:12
+MERGED from [host.exp.exponent:expo.modules.lineargradient:14.1.5] /home/laffy/.gradle/caches/8.13/transforms/3e3d6a057b2dd5d12101306558035d08/transformed/expo.modules.lineargradient-14.1.5/AndroidManifest.xml:2:1-7:12
+MERGED from [host.exp.exponent:expo.modules.linking:7.1.7] /home/laffy/.gradle/caches/8.13/transforms/d7a52df6fa6714cffd2ec537d32cc908/transformed/expo.modules.linking-7.1.7/AndroidManifest.xml:2:1-7:12
+MERGED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:2:1-15:12
+MERGED from [androidx.activity:activity:1.8.0] /home/laffy/.gradle/caches/8.13/transforms/a4309c375f7c655b9a04946660dc90cc/transformed/activity-1.8.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-ktx:1.8.0] /home/laffy/.gradle/caches/8.13/transforms/0778a2aa5b019b2def3eb71c0ed4a154/transformed/activity-ktx-1.8.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/laffy/.gradle/caches/8.13/transforms/829cfe53c64cfc693496f8451f29e7a8/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/f9db95877b6b5303346dab89be2bb74e/transformed/legacy-support-core-ui-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/28bc247258e5cff6e6aac54078e1de43/transformed/coordinatorlayout-1.2.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/a177d82bc21b186c301bc9b6c8d7387d/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.webkit:webkit:1.4.0] /home/laffy/.gradle/caches/8.13/transforms/cdb3d5fcd258ed46abe48c31857ab54d/transformed/webkit-1.4.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.autofill:autofill:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/b52e52fc777190b4295f59d0a858517f/transformed/autofill-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.browser:browser:1.6.0] /home/laffy/.gradle/caches/8.13/transforms/dfa8d219fb756bbf0447e8d2f088c459/transformed/browser-1.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core-ktx:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/fbaea5332f0cb03d7c9e16969244d33b/transformed/core-ktx-1.13.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.transition:transition:1.5.0] /home/laffy/.gradle/caches/8.13/transforms/c2aaf2f0c5250c0e148ab60ada39c9da/transformed/transition-1.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/183e370a152c2b8981bc4a82353880f3/transformed/drawerlayout-1.1.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/a907cfc2c979bc8caf6a7799f50a94a8/transformed/dynamicanimation-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/ba621659a277237e85638838dad2dcb6/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/72ec46a88e05357e6517408e9569c65b/transformed/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/51166ce65ea68e12719e2bca48ab2cfd/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.media:media:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/e2740c2d15f5f0e1c1cc73d5e9e0b8e0/transformed/media-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/66b1db28f9866d87d063c78805394f08/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/810c6942ffe8913950057d661b122986/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/618758d8ab77f01a5d167c4fd9df1af4/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/59364def5c2f903fdc1dceeb75244942/transformed/recyclerview-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/0554aba29ce76817e6a5be45213e21ee/transformed/slidingpanelayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/714600962765d5961827fa3521ced293/transformed/customview-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/cbf6d65a0d97e898f7eca44154f963b3/transformed/asynclayoutinflater-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/850320aa2b4b52ced6f3465503644aaa/transformed/lifecycle-viewmodel-ktx-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/58726736d2c8b2cb18170698e2d2af0c/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-service:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b153c5f07cea60c340fe199e7ef9098d/transformed/lifecycle-service-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/de145cd6b45e8b1fb7e804d6c000ef76/transformed/lifecycle-runtime-ktx-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/7d4851cc4faabf79f6af50acd560b500/transformed/lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/7c99fc93f13e5345aee29eaa313ee725/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/86cd36f2af6251908c1cd91569dccf65/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/09f7c3694aac112487e9f730f6c374d4/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/0a40c827f1ab6cae60b0a38160d029dc/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/laffy/.gradle/caches/8.13/transforms/fcc1cc582935f0fa4fa7ad13b3b8686c/transformed/savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/f7ab8f7120f36931c3468a226fbeffc5/transformed/tracing-1.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.tracing:tracing-ktx:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/18cdabc45926f1dc3dff94376b7201d0/transformed/tracing-ktx-1.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.facebook.fresco:ui-core:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3d5fcfb1e81a9a7a0ab85df90f606618/transformed/ui-core-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/laffy/.gradle/caches/8.13/transforms/8f12b21da55a4e5824d164fe3a97fe6c/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.fresco:vito-renderer:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/6cd01ffc08af05631b09907077e7d319/transformed/vito-renderer-3.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.react:hermes-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/fa03d1ffcf2d88d54ed6c7d80f87d2da/transformed/hermes-android-0.79.5-debug/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.databinding:viewbinding:8.8.2] /home/laffy/.gradle/caches/8.13/transforms/733dbf0845ebde69fe3f06409df9221b/transformed/viewbinding-8.8.2/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.Dimezis:BlurView:version-2.0.6] /home/laffy/.gradle/caches/8.13/transforms/2ac29939bd47a81610899cb008878583/transformed/BlurView-version-2.0.6/AndroidManifest.xml:2:1-11:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/0bffdab30bd5a7c7e1564164c0aeaa47/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cardview:cardview:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/2ba03b814d30daf0b666892538f8bffe/transformed/cardview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/cc6eb0cec1c9f801500b232161e7a948/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/0e46f645dab24076e9faaca7bbf3eaa1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [com.github.bumptech.glide:gifdecoder:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/7d8c5de9256cbf117d683466032fda1b/transformed/gifdecoder-4.16.0/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /home/laffy/.gradle/caches/8.13/transforms/c7e49da585cc86432d913224ebcacae0/transformed/exifinterface-1.3.6/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/af3d4771b467d110290eceabbbcbdf9b/transformed/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/5cb2f9a25605a6be165659396486475a/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/a4cb90f99ef5e2ab73584d25744c9ba2/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/274a5e4c52765583c47c315e8a011727/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.facebook.fbjni:fbjni:0.7.0] /home/laffy/.gradle/caches/8.13/transforms/e80cc6deab05b24bdfe1060903f43f89/transformed/fbjni-0.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:2:1-17:12
+MERGED from [com.caverock:androidsvg-aar:1.4] /home/laffy/.gradle/caches/8.13/transforms/3f316ee5f992791852f7290c08120ef5/transformed/androidsvg-aar-1.4/AndroidManifest.xml:2:1-11:12
+MERGED from [org.aomedia.avif.android:avif:1.1.1.14d8e3c4] /home/laffy/.gradle/caches/8.13/transforms/09f3a891f1499265ba97bf4cdf7c4b86/transformed/avif-1.1.1.14d8e3c4/AndroidManifest.xml:2:1-7:12
+	package
+		INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:2:5-51
+	android:versionCode
+		INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:1:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:2:3-64
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:7:5-67
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:7:5-67
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:8:5-67
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:8:5-67
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:2:20-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:3:3-77
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:15:5-17:38
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:15:5-17:38
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:10:5-80
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:10:5-80
+	android:maxSdkVersion
+		ADDED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:17:9-35
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:3:20-75
+uses-permission#android.permission.SYSTEM_ALERT_WINDOW
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:4:3-75
+MERGED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:4:3-75
+MERGED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:4:3-75
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:16:5-78
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:16:5-78
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:4:20-73
+uses-permission#android.permission.VIBRATE
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:5:3-63
+MERGED from [host.exp.exponent:expo.modules.haptics:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/8a5a36a4cfe71a2a1cc359ce3bb38163/transformed/expo.modules.haptics-14.1.4/AndroidManifest.xml:7:5-66
+MERGED from [host.exp.exponent:expo.modules.haptics:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/8a5a36a4cfe71a2a1cc359ce3bb38163/transformed/expo.modules.haptics-14.1.4/AndroidManifest.xml:7:5-66
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:5:20-61
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:6:3-78
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:9:5-81
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:9:5-81
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:6:20-76
+queries
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:7:3-13:13
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:7:5-9:15
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:7:5-9:15
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:12:5-18:15
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:12:5-18:15
+MERGED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:7:5-13:15
+MERGED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:7:5-13:15
+intent#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+data:scheme:https
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:8:5-12:14
+action#android.intent.action.VIEW
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:7-58
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:15-56
+category#android.intent.category.BROWSABLE
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:7-67
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:17-65
+data
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:7-37
+	android:scheme
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:13-35
+application
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:3-31:17
+MERGED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:3-31:17
+MERGED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:3-31:17
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:6:5-162
+MERGED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:7:5-17:19
+MERGED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:7:5-17:19
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:5-30:19
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:5-30:19
+MERGED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:7:5-22:19
+MERGED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:7:5-22:19
+MERGED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:5-16:19
+MERGED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:5-16:19
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:18:5-22:19
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:18:5-22:19
+MERGED from [com.google.android.material:material:1.12.0] /home/laffy/.gradle/caches/8.13/transforms/7a9086f53045ff51dd925c6f1785f9fd/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.material:material:1.12.0] /home/laffy/.gradle/caches/8.13/transforms/7a9086f53045ff51dd925c6f1785f9fd/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
+MERGED from [com.airbnb.android:lottie:6.5.2] /home/laffy/.gradle/caches/8.13/transforms/85b856133ef4db49661284566b09ee7c/transformed/lottie-6.5.2/AndroidManifest.xml:7:5-20
+MERGED from [com.airbnb.android:lottie:6.5.2] /home/laffy/.gradle/caches/8.13/transforms/85b856133ef4db49661284566b09ee7c/transformed/lottie-6.5.2/AndroidManifest.xml:7:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/laffy/.gradle/caches/8.13/transforms/1b766223c9ad7f2daee8b81f58bc7213/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/laffy/.gradle/caches/8.13/transforms/1b766223c9ad7f2daee8b81f58bc7213/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/8770a77af4f549302c0ccc4f3429b863/transformed/lifecycle-extensions-2.2.0/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/8770a77af4f549302c0ccc4f3429b863/transformed/lifecycle-extensions-2.2.0/AndroidManifest.xml:24:5-25:19
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:20:5-31:19
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:20:5-31:19
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:10:5-14:19
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:10:5-14:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [com.github.Dimezis:BlurView:version-2.0.6] /home/laffy/.gradle/caches/8.13/transforms/2ac29939bd47a81610899cb008878583/transformed/BlurView-version-2.0.6/AndroidManifest.xml:9:5-20
+MERGED from [com.github.Dimezis:BlurView:version-2.0.6] /home/laffy/.gradle/caches/8.13/transforms/2ac29939bd47a81610899cb008878583/transformed/BlurView-version-2.0.6/AndroidManifest.xml:9:5-20
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/0e46f645dab24076e9faaca7bbf3eaa1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/0e46f645dab24076e9faaca7bbf3eaa1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:11:5-15:19
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:11:5-15:19
+MERGED from [org.aomedia.avif.android:avif:1.1.1.14d8e3c4] /home/laffy/.gradle/caches/8.13/transforms/09f3a891f1499265ba97bf4cdf7c4b86/transformed/avif-1.1.1.14d8e3c4/AndroidManifest.xml:5:5-6:19
+MERGED from [org.aomedia.avif.android:avif:1.1.1.14d8e3c4] /home/laffy/.gradle/caches/8.13/transforms/09f3a891f1499265ba97bf4cdf7c4b86/transformed/avif-1.1.1.14d8e3c4/AndroidManifest.xml:5:5-6:19
+	android:extractNativeLibs
+		INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:221-247
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:221-247
+	android:label
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:48-80
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:48-80
+	tools:ignore
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:6:75-114
+	android:roundIcon
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:116-161
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:116-161
+	tools:targetApi
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:6:54-74
+	android:icon
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:81-115
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:81-115
+	android:allowBackup
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:162-188
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:162-188
+	android:theme
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:189-220
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:189-220
+	tools:replace
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:6:115-159
+	android:usesCleartextTraffic
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:6:18-53
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:16-47
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:16-47
+meta-data#expo.modules.updates.ENABLED
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:15:5-83
+	android:value
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:15:60-81
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:15:16-59
+meta-data#expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:16:5-105
+	android:value
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:16:81-103
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:16:16-80
+meta-data#expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:17:5-99
+	android:value
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:17:80-97
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:17:16-79
+activity#edu.sgu.ecokids.MainActivity
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:5-30:16
+	android:screenOrientation
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:280-316
+	android:launchMode
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:135-166
+	android:windowSoftInputMode
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:167-209
+	android:exported
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:256-279
+	android:configChanges
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:44-134
+	android:theme
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:210-255
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:15-43
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:19:7-22:23
+action#android.intent.action.MAIN
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:20:9-60
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:20:17-58
+category#android.intent.category.LAUNCHER
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:21:9-68
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:21:19-66
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:ecokids+data:scheme:exp+ecokids
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:23:7-29:23
+category#android.intent.category.DEFAULT
+ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:9-67
+	android:name
+		ADDED from /home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:19-65
+uses-sdk
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+MERGED from [:react-native-vector-icons_fontawesome] /home/laffy/Desktop/workspace/green-tales/node_modules/@react-native-vector-icons/fontawesome/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-43
+MERGED from [:react-native-vector-icons_fontawesome] /home/laffy/Desktop/workspace/green-tales/node_modules/@react-native-vector-icons/fontawesome/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-43
+MERGED from [:lottie-react-native] /home/laffy/Desktop/workspace/green-tales/node_modules/lottie-react-native/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:lottie-react-native] /home/laffy/Desktop/workspace/green-tales/node_modules/lottie-react-native/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-gesture-handler] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-gesture-handler/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-gesture-handler] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-gesture-handler/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-safe-area-context] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-safe-area-context] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-safe-area-context/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-screens] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-screens] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-screens/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-edge-to-edge] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-edge-to-edge/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-edge-to-edge] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-edge-to-edge/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-async-storage_async-storage] /home/laffy/Desktop/workspace/green-tales/node_modules/@react-native-async-storage/async-storage/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-async-storage_async-storage] /home/laffy/Desktop/workspace/green-tales/node_modules/@react-native-async-storage/async-storage/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo] /home/laffy/Desktop/workspace/green-tales/node_modules/expo/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo] /home/laffy/Desktop/workspace/green-tales/node_modules/expo/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-reanimated] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-reanimated/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-reanimated] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-reanimated/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-svg] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-svg/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-svg] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-svg/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-vector-icons] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:react-native-vector-icons] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-vector-icons/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-menu-interface] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu-interface/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-menu-interface] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu-interface/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:6:5-44
+MERGED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:6:5-44
+MERGED from [host.exp.exponent:expo.modules.font:13.3.2] /home/laffy/.gradle/caches/8.13/transforms/0c036dd4e89c039bdb830b38729aba27/transformed/expo.modules.font-13.3.2/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.font:13.3.2] /home/laffy/.gradle/caches/8.13/transforms/0c036dd4e89c039bdb830b38729aba27/transformed/expo.modules.font-13.3.2/AndroidManifest.xml:5:5-44
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:4:5-44
+MERGED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:4:5-44
+MERGED from [host.exp.exponent:expo.modules.splashscreen:0.30.10] /home/laffy/.gradle/caches/8.13/transforms/4706a4f10ccde4f67225980dba6215a7/transformed/expo.modules.splashscreen-0.30.10/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.splashscreen:0.30.10] /home/laffy/.gradle/caches/8.13/transforms/4706a4f10ccde4f67225980dba6215a7/transformed/expo.modules.splashscreen-0.30.10/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.systemui:5.0.10] /home/laffy/.gradle/caches/8.13/transforms/3a687a07ace87b5fee359971e8351282/transformed/expo.modules.systemui-5.0.10/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.systemui:5.0.10] /home/laffy/.gradle/caches/8.13/transforms/3a687a07ace87b5fee359971e8351282/transformed/expo.modules.systemui-5.0.10/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:10:5-44
+MERGED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:10:5-44
+MERGED from [com.google.android.material:material:1.12.0] /home/laffy/.gradle/caches/8.13/transforms/7a9086f53045ff51dd925c6f1785f9fd/transformed/material-1.12.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.material:material:1.12.0] /home/laffy/.gradle/caches/8.13/transforms/7a9086f53045ff51dd925c6f1785f9fd/transformed/material-1.12.0/AndroidManifest.xml:20:5-44
+MERGED from [com.airbnb.android:lottie:6.5.2] /home/laffy/.gradle/caches/8.13/transforms/85b856133ef4db49661284566b09ee7c/transformed/lottie-6.5.2/AndroidManifest.xml:5:5-44
+MERGED from [com.airbnb.android:lottie:6.5.2] /home/laffy/.gradle/caches/8.13/transforms/85b856133ef4db49661284566b09ee7c/transformed/lottie-6.5.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-splashscreen:1.2.0-alpha02] /home/laffy/.gradle/caches/8.13/transforms/ed280626aa95171682096e5872c6af69/transformed/core-splashscreen-1.2.0-alpha02/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-splashscreen:1.2.0-alpha02] /home/laffy/.gradle/caches/8.13/transforms/ed280626aa95171682096e5872c6af69/transformed/core-splashscreen-1.2.0-alpha02/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/laffy/.gradle/caches/8.13/transforms/cafe38d429a8d27ed8b0af5abbc941f2/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/laffy/.gradle/caches/8.13/transforms/cafe38d429a8d27ed8b0af5abbc941f2/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:glide-plugin:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/171d3c8c60c980d67e5dba9b3903c12f/transformed/glide-plugin-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:glide-plugin:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/171d3c8c60c980d67e5dba9b3903c12f/transformed/glide-plugin-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/laffy/.gradle/caches/8.13/transforms/1b766223c9ad7f2daee8b81f58bc7213/transformed/constraintlayout-2.0.1/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/laffy/.gradle/caches/8.13/transforms/1b766223c9ad7f2daee8b81f58bc7213/transformed/constraintlayout-2.0.1/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.penfeizhou.android.animation:awebp:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/e5e086c331edf8b998f04164b0a2170a/transformed/awebp-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:awebp:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/e5e086c331edf8b998f04164b0a2170a/transformed/awebp-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:apng:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/a498e18e820d2039082300a9cd59b4c3/transformed/apng-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:apng:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/a498e18e820d2039082300a9cd59b4c3/transformed/apng-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:gif:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/ac1d1d616d79aa20e507585d1621bf46/transformed/gif-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:gif:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/ac1d1d616d79aa20e507585d1621bf46/transformed/gif-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:avif:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/a30433f5792386d46025b522bebb1c74/transformed/avif-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:avif:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/a30433f5792386d46025b522bebb1c74/transformed/avif-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:frameanimation:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/13539e054fd2491c95feae4e914c7ab8/transformed/frameanimation-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [com.github.penfeizhou.android.animation:frameanimation:3.0.5] /home/laffy/.gradle/caches/8.13/transforms/13539e054fd2491c95feae4e914c7ab8/transformed/frameanimation-3.0.5/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.0] /home/laffy/.gradle/caches/8.13/transforms/4bf03df1e227318d4ab7c4ce04613cbc/transformed/appcompat-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.0] /home/laffy/.gradle/caches/8.13/transforms/4bf03df1e227318d4ab7c4ce04613cbc/transformed/appcompat-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/8770a77af4f549302c0ccc4f3429b863/transformed/lifecycle-extensions-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/8770a77af4f549302c0ccc4f3429b863/transformed/lifecycle-extensions-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:6:5-44
+MERGED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:6:5-44
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/081581c012a4283b28daac0fe17aa771/transformed/legacy-support-v4-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/081581c012a4283b28daac0fe17aa771/transformed/legacy-support-v4-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.github.bumptech.glide:avif-integration:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/0690b5555f83376c8ed62314b43465f0/transformed/avif-integration-4.16.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.bumptech.glide:avif-integration:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/0690b5555f83376c8ed62314b43465f0/transformed/avif-integration-4.16.0/AndroidManifest.xml:5:5-7:41
+MERGED from [jp.wasabeef:glide-transformations:4.3.0] /home/laffy/.gradle/caches/8.13/transforms/f43bffe78a7064fe0d36bc53bb357940/transformed/glide-transformations-4.3.0/AndroidManifest.xml:5:5-7:41
+MERGED from [jp.wasabeef:glide-transformations:4.3.0] /home/laffy/.gradle/caches/8.13/transforms/f43bffe78a7064fe0d36bc53bb357940/transformed/glide-transformations-4.3.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.bumptech.glide:glide:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/c5529e502845fdf46b49c2089dbb4832/transformed/glide-4.16.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.bumptech.glide:glide:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/c5529e502845fdf46b49c2089dbb4832/transformed/glide-4.16.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/6bc00ab5eaca23c3c3ebd49ed8511ff9/transformed/viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/6bc00ab5eaca23c3c3ebd49ed8511ff9/transformed/viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.6.1] /home/laffy/.gradle/caches/8.13/transforms/27ed71059cba4dfa5c0c363f337b269f/transformed/fragment-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.6.1] /home/laffy/.gradle/caches/8.13/transforms/27ed71059cba4dfa5c0c363f337b269f/transformed/fragment-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment-ktx:1.6.1] /home/laffy/.gradle/caches/8.13/transforms/bd599e307399f0c0086eaf5c5077a9e1/transformed/fragment-ktx-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment-ktx:1.6.1] /home/laffy/.gradle/caches/8.13/transforms/bd599e307399f0c0086eaf5c5077a9e1/transformed/fragment-ktx-1.6.1/AndroidManifest.xml:20:5-44
+MERGED from [com.facebook.fresco:fresco:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/d67b401b98683845e20d868c9079182a/transformed/fresco-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:fresco:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/d67b401b98683845e20d868c9079182a/transformed/fresco-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/ce52cb4064562b4b9386643be0fc7867/transformed/imagepipeline-okhttp3-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/ce52cb4064562b4b9386643be0fc7867/transformed/imagepipeline-okhttp3-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:webpsupport:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/a1e7fd93c38007b66fe1ce6dffa1cb17/transformed/webpsupport-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:webpsupport:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/a1e7fd93c38007b66fe1ce6dffa1cb17/transformed/webpsupport-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:animated-gif:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/04b5e14ace161c416b3792cc65073136/transformed/animated-gif-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:animated-gif:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/04b5e14ace161c416b3792cc65073136/transformed/animated-gif-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:animated-base:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/2bf1d0ccdaf978e74a899b15f35a1ba1/transformed/animated-base-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:animated-base:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/2bf1d0ccdaf978e74a899b15f35a1ba1/transformed/animated-base-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:animated-drawable:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/2330eff14f5a13aa56b81f00e6eedfcf/transformed/animated-drawable-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:animated-drawable:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/2330eff14f5a13aa56b81f00e6eedfcf/transformed/animated-drawable-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:vito-options:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/ff300a4baf9f1bf29410ae898edb5295/transformed/vito-options-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:vito-options:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/ff300a4baf9f1bf29410ae898edb5295/transformed/vito-options-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:drawee:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/6fcecc4c6bb8b8753bdcf3c3459c4fbc/transformed/drawee-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:drawee:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/6fcecc4c6bb8b8753bdcf3c3459c4fbc/transformed/drawee-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:nativeimagefilters:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3148937ce24975b0c8bd8c282baed048/transformed/nativeimagefilters-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:nativeimagefilters:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3148937ce24975b0c8bd8c282baed048/transformed/nativeimagefilters-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:memory-type-native:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/cd82b284ddc0eb890197a89ff6aa47b0/transformed/memory-type-native-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:memory-type-native:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/cd82b284ddc0eb890197a89ff6aa47b0/transformed/memory-type-native-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:memory-type-java:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/4569d0f6272c114cc561a4707d109554/transformed/memory-type-java-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:memory-type-java:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/4569d0f6272c114cc561a4707d109554/transformed/memory-type-java-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline-native:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7c448edad99bc61105557ce32ab74a1b/transformed/imagepipeline-native-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline-native:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7c448edad99bc61105557ce32ab74a1b/transformed/imagepipeline-native-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:memory-type-ashmem:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/b5b6dc9338af08dcda60bafb8897c85b/transformed/memory-type-ashmem-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:memory-type-ashmem:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/b5b6dc9338af08dcda60bafb8897c85b/transformed/memory-type-ashmem-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/85dde86bea35887bac0feb7d53cce7ae/transformed/imagepipeline-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/85dde86bea35887bac0feb7d53cce7ae/transformed/imagepipeline-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:nativeimagetranscoder:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/e6d6d9b25fc67e5dd2f7142d2fad5488/transformed/nativeimagetranscoder-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:nativeimagetranscoder:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/e6d6d9b25fc67e5dd2f7142d2fad5488/transformed/nativeimagetranscoder-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline-base:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7c2022e539491c06e7973071945ca586/transformed/imagepipeline-base-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:imagepipeline-base:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7c2022e539491c06e7973071945ca586/transformed/imagepipeline-base-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:urimod:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7e93b6b7e7c43855a5d878759065fa91/transformed/urimod-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:urimod:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/7e93b6b7e7c43855a5d878759065fa91/transformed/urimod-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:vito-source:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3a4438f452b91905d3d5ba17982c1aa1/transformed/vito-source-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:vito-source:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3a4438f452b91905d3d5ba17982c1aa1/transformed/vito-source-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:middleware:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/8cfee973423e06e528b5d8479c9cb2e9/transformed/middleware-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:middleware:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/8cfee973423e06e528b5d8479c9cb2e9/transformed/middleware-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:ui-common:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/9a88919693188ddbdd185f7e98648316/transformed/ui-common-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:ui-common:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/9a88919693188ddbdd185f7e98648316/transformed/ui-common-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:soloader:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/59b487b2b096ccdefac5e140ae48e3f7/transformed/soloader-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:soloader:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/59b487b2b096ccdefac5e140ae48e3f7/transformed/soloader-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:fbcore:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/979a76771b5c0b857ab3556be228bba8/transformed/fbcore-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:fbcore:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/979a76771b5c0b857ab3556be228bba8/transformed/fbcore-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [:expo-constants] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-constants/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-constants] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-constants/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-client] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-client/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-dev-client] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-client/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-manifests] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-manifests/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-manifests] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-manifests/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-json-utils] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-json-utils/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-json-utils] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-json-utils/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-updates-interface] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-updates-interface/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:expo-updates-interface] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-updates-interface/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [expo.modules.asset:expo.modules.asset:11.1.7] /home/laffy/.gradle/caches/8.13/transforms/5e45f93c4e65d3e73e3912e20442b03d/transformed/expo.modules.asset-11.1.7/AndroidManifest.xml:5:5-44
+MERGED from [expo.modules.asset:expo.modules.asset:11.1.7] /home/laffy/.gradle/caches/8.13/transforms/5e45f93c4e65d3e73e3912e20442b03d/transformed/expo.modules.asset-11.1.7/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.blur:14.1.5] /home/laffy/.gradle/caches/8.13/transforms/de3d5618ee54399d98ce771e21eadde8/transformed/expo.modules.blur-14.1.5/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.blur:14.1.5] /home/laffy/.gradle/caches/8.13/transforms/de3d5618ee54399d98ce771e21eadde8/transformed/expo.modules.blur-14.1.5/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.haptics:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/8a5a36a4cfe71a2a1cc359ce3bb38163/transformed/expo.modules.haptics-14.1.4/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.haptics:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/8a5a36a4cfe71a2a1cc359ce3bb38163/transformed/expo.modules.haptics-14.1.4/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.keepawake:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/cdecb3a2f1c538aa08f216a388624fd7/transformed/expo.modules.keepawake-14.1.4/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.keepawake:14.1.4] /home/laffy/.gradle/caches/8.13/transforms/cdecb3a2f1c538aa08f216a388624fd7/transformed/expo.modules.keepawake-14.1.4/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.lineargradient:14.1.5] /home/laffy/.gradle/caches/8.13/transforms/3e3d6a057b2dd5d12101306558035d08/transformed/expo.modules.lineargradient-14.1.5/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.lineargradient:14.1.5] /home/laffy/.gradle/caches/8.13/transforms/3e3d6a057b2dd5d12101306558035d08/transformed/expo.modules.lineargradient-14.1.5/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.linking:7.1.7] /home/laffy/.gradle/caches/8.13/transforms/d7a52df6fa6714cffd2ec537d32cc908/transformed/expo.modules.linking-7.1.7/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.linking:7.1.7] /home/laffy/.gradle/caches/8.13/transforms/d7a52df6fa6714cffd2ec537d32cc908/transformed/expo.modules.linking-7.1.7/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:5:5-44
+MERGED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity:1.8.0] /home/laffy/.gradle/caches/8.13/transforms/a4309c375f7c655b9a04946660dc90cc/transformed/activity-1.8.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.0] /home/laffy/.gradle/caches/8.13/transforms/a4309c375f7c655b9a04946660dc90cc/transformed/activity-1.8.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.0] /home/laffy/.gradle/caches/8.13/transforms/0778a2aa5b019b2def3eb71c0ed4a154/transformed/activity-ktx-1.8.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.0] /home/laffy/.gradle/caches/8.13/transforms/0778a2aa5b019b2def3eb71c0ed4a154/transformed/activity-ktx-1.8.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/laffy/.gradle/caches/8.13/transforms/829cfe53c64cfc693496f8451f29e7a8/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/laffy/.gradle/caches/8.13/transforms/829cfe53c64cfc693496f8451f29e7a8/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/f9db95877b6b5303346dab89be2bb74e/transformed/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/f9db95877b6b5303346dab89be2bb74e/transformed/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/28bc247258e5cff6e6aac54078e1de43/transformed/coordinatorlayout-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/28bc247258e5cff6e6aac54078e1de43/transformed/coordinatorlayout-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/a177d82bc21b186c301bc9b6c8d7387d/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/a177d82bc21b186c301bc9b6c8d7387d/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.webkit:webkit:1.4.0] /home/laffy/.gradle/caches/8.13/transforms/cdb3d5fcd258ed46abe48c31857ab54d/transformed/webkit-1.4.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.webkit:webkit:1.4.0] /home/laffy/.gradle/caches/8.13/transforms/cdb3d5fcd258ed46abe48c31857ab54d/transformed/webkit-1.4.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/b52e52fc777190b4295f59d0a858517f/transformed/autofill-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/b52e52fc777190b4295f59d0a858517f/transformed/autofill-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.browser:browser:1.6.0] /home/laffy/.gradle/caches/8.13/transforms/dfa8d219fb756bbf0447e8d2f088c459/transformed/browser-1.6.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.browser:browser:1.6.0] /home/laffy/.gradle/caches/8.13/transforms/dfa8d219fb756bbf0447e8d2f088c459/transformed/browser-1.6.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/fbaea5332f0cb03d7c9e16969244d33b/transformed/core-ktx-1.13.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/fbaea5332f0cb03d7c9e16969244d33b/transformed/core-ktx-1.13.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.transition:transition:1.5.0] /home/laffy/.gradle/caches/8.13/transforms/c2aaf2f0c5250c0e148ab60ada39c9da/transformed/transition-1.5.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.transition:transition:1.5.0] /home/laffy/.gradle/caches/8.13/transforms/c2aaf2f0c5250c0e148ab60ada39c9da/transformed/transition-1.5.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/183e370a152c2b8981bc4a82353880f3/transformed/drawerlayout-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/183e370a152c2b8981bc4a82353880f3/transformed/drawerlayout-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/a907cfc2c979bc8caf6a7799f50a94a8/transformed/dynamicanimation-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/a907cfc2c979bc8caf6a7799f50a94a8/transformed/dynamicanimation-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/ba621659a277237e85638838dad2dcb6/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/ba621659a277237e85638838dad2dcb6/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/72ec46a88e05357e6517408e9569c65b/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/72ec46a88e05357e6517408e9569c65b/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/51166ce65ea68e12719e2bca48ab2cfd/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/51166ce65ea68e12719e2bca48ab2cfd/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.media:media:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/e2740c2d15f5f0e1c1cc73d5e9e0b8e0/transformed/media-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media:media:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/e2740c2d15f5f0e1c1cc73d5e9e0b8e0/transformed/media-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/66b1db28f9866d87d063c78805394f08/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/66b1db28f9866d87d063c78805394f08/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/810c6942ffe8913950057d661b122986/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/810c6942ffe8913950057d661b122986/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/618758d8ab77f01a5d167c4fd9df1af4/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/618758d8ab77f01a5d167c4fd9df1af4/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/59364def5c2f903fdc1dceeb75244942/transformed/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/59364def5c2f903fdc1dceeb75244942/transformed/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/0554aba29ce76817e6a5be45213e21ee/transformed/slidingpanelayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/0554aba29ce76817e6a5be45213e21ee/transformed/slidingpanelayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/714600962765d5961827fa3521ced293/transformed/customview-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.1.0] /home/laffy/.gradle/caches/8.13/transforms/714600962765d5961827fa3521ced293/transformed/customview-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/cbf6d65a0d97e898f7eca44154f963b3/transformed/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/cbf6d65a0d97e898f7eca44154f963b3/transformed/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/850320aa2b4b52ced6f3465503644aaa/transformed/lifecycle-viewmodel-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/850320aa2b4b52ced6f3465503644aaa/transformed/lifecycle-viewmodel-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/58726736d2c8b2cb18170698e2d2af0c/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/58726736d2c8b2cb18170698e2d2af0c/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-service:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b153c5f07cea60c340fe199e7ef9098d/transformed/lifecycle-service-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-service:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b153c5f07cea60c340fe199e7ef9098d/transformed/lifecycle-service-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/de145cd6b45e8b1fb7e804d6c000ef76/transformed/lifecycle-runtime-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/de145cd6b45e8b1fb7e804d6c000ef76/transformed/lifecycle-runtime-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/7d4851cc4faabf79f6af50acd560b500/transformed/lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/7d4851cc4faabf79f6af50acd560b500/transformed/lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/7c99fc93f13e5345aee29eaa313ee725/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/7c99fc93f13e5345aee29eaa313ee725/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/86cd36f2af6251908c1cd91569dccf65/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/86cd36f2af6251908c1cd91569dccf65/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/09f7c3694aac112487e9f730f6c374d4/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/09f7c3694aac112487e9f730f6c374d4/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/0a40c827f1ab6cae60b0a38160d029dc/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/0a40c827f1ab6cae60b0a38160d029dc/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/laffy/.gradle/caches/8.13/transforms/fcc1cc582935f0fa4fa7ad13b3b8686c/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/laffy/.gradle/caches/8.13/transforms/fcc1cc582935f0fa4fa7ad13b3b8686c/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/f7ab8f7120f36931c3468a226fbeffc5/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/f7ab8f7120f36931c3468a226fbeffc5/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing-ktx:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/18cdabc45926f1dc3dff94376b7201d0/transformed/tracing-ktx-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing-ktx:1.2.0] /home/laffy/.gradle/caches/8.13/transforms/18cdabc45926f1dc3dff94376b7201d0/transformed/tracing-ktx-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [com.facebook.fresco:ui-core:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3d5fcfb1e81a9a7a0ab85df90f606618/transformed/ui-core-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:ui-core:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/3d5fcfb1e81a9a7a0ab85df90f606618/transformed/ui-core-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/laffy/.gradle/caches/8.13/transforms/8f12b21da55a4e5824d164fe3a97fe6c/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/laffy/.gradle/caches/8.13/transforms/8f12b21da55a4e5824d164fe3a97fe6c/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:vito-renderer:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/6cd01ffc08af05631b09907077e7d319/transformed/vito-renderer-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fresco:vito-renderer:3.6.0] /home/laffy/.gradle/caches/8.13/transforms/6cd01ffc08af05631b09907077e7d319/transformed/vito-renderer-3.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.react:hermes-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/fa03d1ffcf2d88d54ed6c7d80f87d2da/transformed/hermes-android-0.79.5-debug/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.react:hermes-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/fa03d1ffcf2d88d54ed6c7d80f87d2da/transformed/hermes-android-0.79.5-debug/AndroidManifest.xml:5:5-44
+MERGED from [androidx.databinding:viewbinding:8.8.2] /home/laffy/.gradle/caches/8.13/transforms/733dbf0845ebde69fe3f06409df9221b/transformed/viewbinding-8.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.databinding:viewbinding:8.8.2] /home/laffy/.gradle/caches/8.13/transforms/733dbf0845ebde69fe3f06409df9221b/transformed/viewbinding-8.8.2/AndroidManifest.xml:5:5-44
+MERGED from [com.github.Dimezis:BlurView:version-2.0.6] /home/laffy/.gradle/caches/8.13/transforms/2ac29939bd47a81610899cb008878583/transformed/BlurView-version-2.0.6/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.Dimezis:BlurView:version-2.0.6] /home/laffy/.gradle/caches/8.13/transforms/2ac29939bd47a81610899cb008878583/transformed/BlurView-version-2.0.6/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/0bffdab30bd5a7c7e1564164c0aeaa47/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/0bffdab30bd5a7c7e1564164c0aeaa47/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/2ba03b814d30daf0b666892538f8bffe/transformed/cardview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/2ba03b814d30daf0b666892538f8bffe/transformed/cardview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/cc6eb0cec1c9f801500b232161e7a948/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/cc6eb0cec1c9f801500b232161e7a948/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/0e46f645dab24076e9faaca7bbf3eaa1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/0e46f645dab24076e9faaca7bbf3eaa1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [com.github.bumptech.glide:gifdecoder:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/7d8c5de9256cbf117d683466032fda1b/transformed/gifdecoder-4.16.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.bumptech.glide:gifdecoder:4.16.0] /home/laffy/.gradle/caches/8.13/transforms/7d8c5de9256cbf117d683466032fda1b/transformed/gifdecoder-4.16.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /home/laffy/.gradle/caches/8.13/transforms/c7e49da585cc86432d913224ebcacae0/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /home/laffy/.gradle/caches/8.13/transforms/c7e49da585cc86432d913224ebcacae0/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.documentfile:documentfile:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/af3d4771b467d110290eceabbbcbdf9b/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/af3d4771b467d110290eceabbbcbdf9b/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/5cb2f9a25605a6be165659396486475a/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/5cb2f9a25605a6be165659396486475a/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/a4cb90f99ef5e2ab73584d25744c9ba2/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] /home/laffy/.gradle/caches/8.13/transforms/a4cb90f99ef5e2ab73584d25744c9ba2/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/274a5e4c52765583c47c315e8a011727/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/laffy/.gradle/caches/8.13/transforms/274a5e4c52765583c47c315e8a011727/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [com.facebook.fbjni:fbjni:0.7.0] /home/laffy/.gradle/caches/8.13/transforms/e80cc6deab05b24bdfe1060903f43f89/transformed/fbjni-0.7.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.fbjni:fbjni:0.7.0] /home/laffy/.gradle/caches/8.13/transforms/e80cc6deab05b24bdfe1060903f43f89/transformed/fbjni-0.7.0/AndroidManifest.xml:5:5-44
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:7:5-9:41
+MERGED from [com.caverock:androidsvg-aar:1.4] /home/laffy/.gradle/caches/8.13/transforms/3f316ee5f992791852f7290c08120ef5/transformed/androidsvg-aar-1.4/AndroidManifest.xml:7:5-9:41
+MERGED from [com.caverock:androidsvg-aar:1.4] /home/laffy/.gradle/caches/8.13/transforms/3f316ee5f992791852f7290c08120ef5/transformed/androidsvg-aar-1.4/AndroidManifest.xml:7:5-9:41
+MERGED from [org.aomedia.avif.android:avif:1.1.1.14d8e3c4] /home/laffy/.gradle/caches/8.13/transforms/09f3a891f1499265ba97bf4cdf7c4b86/transformed/avif-1.1.1.14d8e3c4/AndroidManifest.xml:4:5-44
+MERGED from [org.aomedia.avif.android:avif:1.1.1.14d8e3c4] /home/laffy/.gradle/caches/8.13/transforms/09f3a891f1499265ba97bf4cdf7c4b86/transformed/avif-1.1.1.14d8e3c4/AndroidManifest.xml:4:5-44
+	android:targetSdkVersion
+		INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml
+uses-permission#android.permission.READ_PHONE_STATE
+IMPLIED from /home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:1:1-7:12 reason: com.reactnativevectoricons.fontawesome has a targetSdkVersion < 4
+provider#com.reactnativecommunity.webview.RNCWebViewFileProvider
+ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:9-16:20
+	android:grantUriPermissions
+		ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:13-47
+	android:authorities
+		ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:13-64
+	android:exported
+		ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-37
+	android:name
+		ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:13-83
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-15:63
+	android:resource
+		ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:17-60
+	android:name
+		ADDED from [:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:17-67
+package#host.exp.exponent
+ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:9-53
+	android:name
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:18-50
+activity#expo.modules.devlauncher.launcher.DevLauncherActivity
+ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:9-25:20
+	android:launchMode
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:13-44
+	android:exported
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:13-36
+	android:theme
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:16:13-70
+	android:name
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-81
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:expo-dev-launcher
+ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:17:13-24:29
+activity#expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
+ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:26:9-29:70
+	android:screenOrientation
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:28:13-49
+	android:theme
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:29:13-67
+	android:name
+		ADDED from [:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:27:13-93
+activity#expo.modules.devmenu.DevMenuActivity
+ADDED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:9-21:20
+	android:launchMode
+		ADDED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-44
+	android:exported
+		ADDED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:13-36
+	android:theme
+		ADDED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:13-75
+	android:name
+		ADDED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:13-64
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:expo-dev-menu
+ADDED from [:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-20:29
+meta-data#org.unimodules.core.AppLoader#react-native-headless
+ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:9-11:89
+	android:value
+		ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-86
+	android:name
+		ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:13-79
+meta-data#com.facebook.soloader.enabled
+ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:9-15:45
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:12:9-14:37
+MERGED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:12:9-14:37
+	tools:replace
+		ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:13-42
+	android:value
+		ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:13-33
+		REJECTED from [com.facebook.soloader:soloader:0.12.1] /home/laffy/.gradle/caches/8.13/transforms/a99a6f26d36648368ec505176d6c6ea3/transformed/soloader-0.12.1/AndroidManifest.xml:14:13-34
+	android:name
+		ADDED from [:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-57
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from [BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:12:22-76
+activity#com.facebook.react.devsupport.DevSettingsActivity
+ADDED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:19:9-21:40
+	android:exported
+		ADDED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:21:13-37
+	android:name
+		ADDED from [com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:20:13-77
+intent#action:name:android.intent.action.OPEN_DOCUMENT_TREE
+ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:15:9-17:18
+action#android.intent.action.OPEN_DOCUMENT_TREE
+ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:16:13-79
+	android:name
+		ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:16:21-76
+provider#expo.modules.filesystem.FileSystemFileProvider
+ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:21:9-30:20
+	android:grantUriPermissions
+		ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:25:13-47
+	android:authorities
+		ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:23:13-74
+	android:exported
+		ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:24:13-37
+	tools:replace
+		ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:26:13-48
+	android:name
+		ADDED from [host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:22:13-74
+meta-data#com.bumptech.glide.integration.okhttp3.OkHttpGlideModule
+ADDED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:11:9-13:43
+	android:value
+		ADDED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:13:13-40
+	android:name
+		ADDED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:12:13-84
+intent#action:name:android.support.customtabs.action.CustomTabsService
+ADDED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:8:9-12:18
+action#android.support.customtabs.action.CustomTabsService
+ADDED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:11:13-90
+	android:name
+		ADDED from [host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:11:21-87
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/laffy/.gradle/caches/8.13/transforms/1c233a1110e41e54547ee5b84513eb96/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+permission#edu.sgu.ecokids.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+uses-permission#edu.sgu.ecokids.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92

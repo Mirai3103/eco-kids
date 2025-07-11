@@ -1,0 +1,370 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="edu.sgu.ecokids"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+11-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:4:3-75
+11-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:4:20-73
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:2:3-64
+12-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:2:20-62
+13    <uses-permission
+13-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:3:3-77
+14        android:name="android.permission.READ_EXTERNAL_STORAGE"
+14-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:3:20-75
+15        android:maxSdkVersion="32" />
+15-->[BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:17:9-35
+16    <uses-permission android:name="android.permission.VIBRATE" />
+16-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:5:3-63
+16-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:5:20-61
+17    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+17-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:6:3-78
+17-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:6:20-76
+18
+19    <queries>
+19-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:7:3-13:13
+20        <intent>
+20-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:8:5-12:14
+21            <action android:name="android.intent.action.VIEW" />
+21-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:7-58
+21-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:15-56
+22
+23            <category android:name="android.intent.category.BROWSABLE" />
+23-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:7-67
+23-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:17-65
+24
+25            <data android:scheme="https" />
+25-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:7-37
+25-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:13-35
+26        </intent>
+27
+28        <package android:name="host.exp.exponent" /> <!-- Query open documents -->
+28-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:9-53
+28-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:18-50
+29        <intent>
+29-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:15:9-17:18
+30            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+30-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:16:13-79
+30-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:16:21-76
+31        </intent>
+32        <intent>
+32-->[host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:8:9-12:18
+33
+34            <!-- Required for opening tabs if targeting API 30 -->
+35            <action android:name="android.support.customtabs.action.CustomTabsService" />
+35-->[host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:11:13-90
+35-->[host.exp.exponent:expo.modules.webbrowser:14.2.0] /home/laffy/.gradle/caches/8.13/transforms/b88692d87c8bd81b3c7040f478064fc4/transformed/expo.modules.webbrowser-14.2.0/AndroidManifest.xml:11:21-87
+36        </intent>
+37    </queries>
+38
+39    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+40    <!--
+41  Allows Glide to monitor connectivity status and restart failed requests if users go from a
+42  a disconnected to a connected network state.
+43    -->
+44    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+44-->[BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:12:5-79
+44-->[BareExpo:expo.modules.image:2.3.2] /home/laffy/.gradle/caches/8.13/transforms/b14c01e241c89fff27de94927017ef8f/transformed/expo.modules.image-2.3.2/AndroidManifest.xml:12:22-76
+45
+46    <permission
+46-->[androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+47        android:name="edu.sgu.ecokids.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+47-->[androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+48        android:protectionLevel="signature" />
+48-->[androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+49
+50    <uses-permission android:name="edu.sgu.ecokids.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+50-->[androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+50-->[androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+51
+52    <application
+52-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:3-31:17
+53        android:name="edu.sgu.ecokids.MainApplication"
+53-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:16-47
+54        android:allowBackup="true"
+54-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:162-188
+55        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+55-->[androidx.core:core:1.13.1] /home/laffy/.gradle/caches/8.13/transforms/2eafbfcd37e5312020438d485ffc72b9/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+56        android:debuggable="true"
+57        android:extractNativeLibs="false"
+58        android:icon="@mipmap/ic_launcher"
+58-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:81-115
+59        android:label="@string/app_name"
+59-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:48-80
+60        android:roundIcon="@mipmap/ic_launcher_round"
+60-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:116-161
+61        android:supportsRtl="true"
+61-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:221-247
+62        android:theme="@style/AppTheme"
+62-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:14:189-220
+63        android:usesCleartextTraffic="true" >
+63-->/home/laffy/Desktop/workspace/green-tales/android/app/src/debug/AndroidManifest.xml:6:18-53
+64        <meta-data
+64-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:15:5-83
+65            android:name="expo.modules.updates.ENABLED"
+65-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:15:16-59
+66            android:value="false" />
+66-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:15:60-81
+67        <meta-data
+67-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:16:5-105
+68            android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH"
+68-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:16:16-80
+69            android:value="ALWAYS" />
+69-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:16:81-103
+70        <meta-data
+70-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:17:5-99
+71            android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS"
+71-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:17:16-79
+72            android:value="0" />
+72-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:17:80-97
+73
+74        <activity
+74-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:5-30:16
+75            android:name="edu.sgu.ecokids.MainActivity"
+75-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:15-43
+76            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+76-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:44-134
+77            android:exported="true"
+77-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:256-279
+78            android:launchMode="singleTask"
+78-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:135-166
+79            android:screenOrientation="portrait"
+79-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:280-316
+80            android:theme="@style/Theme.App.SplashScreen"
+80-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:210-255
+81            android:windowSoftInputMode="adjustResize" >
+81-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:18:167-209
+82            <intent-filter>
+82-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:19:7-22:23
+83                <action android:name="android.intent.action.MAIN" />
+83-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:20:9-60
+83-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:20:17-58
+84
+85                <category android:name="android.intent.category.LAUNCHER" />
+85-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:21:9-68
+85-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:21:19-66
+86            </intent-filter>
+87            <intent-filter>
+87-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:23:7-29:23
+88                <action android:name="android.intent.action.VIEW" />
+88-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:7-58
+88-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:15-56
+89
+90                <category android:name="android.intent.category.DEFAULT" />
+90-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:9-67
+90-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:19-65
+91                <category android:name="android.intent.category.BROWSABLE" />
+91-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:7-67
+91-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:17-65
+92
+93                <data android:scheme="ecokids" />
+93-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:7-37
+93-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:13-35
+94                <data android:scheme="exp+ecokids" />
+94-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:7-37
+94-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:13-35
+95            </intent-filter>
+96        </activity>
+97
+98        <provider
+98-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:9-16:20
+99            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
+99-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:13-83
+100            android:authorities="edu.sgu.ecokids.fileprovider"
+100-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:13-64
+101            android:exported="false"
+101-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-37
+102            android:grantUriPermissions="true" >
+102-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:13-47
+103            <meta-data
+103-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-15:63
+104                android:name="android.support.FILE_PROVIDER_PATHS"
+104-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:17-67
+105                android:resource="@xml/file_provider_paths" />
+105-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:17-60
+106        </provider>
+107
+108        <activity
+108-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:9-25:20
+109            android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
+109-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-81
+110            android:exported="true"
+110-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:13-36
+111            android:launchMode="singleTask"
+111-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:13-44
+112            android:theme="@style/Theme.DevLauncher.LauncherActivity" >
+112-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:16:13-70
+113            <intent-filter>
+113-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:17:13-24:29
+114                <action android:name="android.intent.action.VIEW" />
+114-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:7-58
+114-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:15-56
+115
+116                <category android:name="android.intent.category.DEFAULT" />
+116-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:9-67
+116-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:19-65
+117                <category android:name="android.intent.category.BROWSABLE" />
+117-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:7-67
+117-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:17-65
+118
+119                <data android:scheme="expo-dev-launcher" />
+119-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:7-37
+119-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:13-35
+120            </intent-filter>
+121        </activity>
+122        <activity
+122-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:26:9-29:70
+123            android:name="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity"
+123-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:27:13-93
+124            android:screenOrientation="portrait"
+124-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:28:13-49
+125            android:theme="@style/Theme.DevLauncher.ErrorActivity" />
+125-->[:expo-dev-launcher] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:29:13-67
+126        <activity
+126-->[:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:8:9-21:20
+127            android:name="expo.modules.devmenu.DevMenuActivity"
+127-->[:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:13-64
+128            android:exported="true"
+128-->[:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:13-36
+129            android:launchMode="singleTask"
+129-->[:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-44
+130            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" >
+130-->[:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:13-75
+131            <intent-filter>
+131-->[:expo-dev-menu] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-dev-menu/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-20:29
+132                <action android:name="android.intent.action.VIEW" />
+132-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:7-58
+132-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:9:15-56
+133
+134                <category android:name="android.intent.category.DEFAULT" />
+134-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:9-67
+134-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:25:19-65
+135                <category android:name="android.intent.category.BROWSABLE" />
+135-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:7-67
+135-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:10:17-65
+136
+137                <data android:scheme="expo-dev-menu" />
+137-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:7-37
+137-->/home/laffy/Desktop/workspace/green-tales/android/app/src/main/AndroidManifest.xml:11:13-35
+138            </intent-filter>
+139        </activity>
+140
+141        <meta-data
+141-->[:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:9-11:89
+142            android:name="org.unimodules.core.AppLoader#react-native-headless"
+142-->[:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:13-79
+143            android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
+143-->[:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-86
+144        <meta-data
+144-->[:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:9-15:45
+145            android:name="com.facebook.soloader.enabled"
+145-->[:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-57
+146            android:value="true" />
+146-->[:expo-modules-core] /home/laffy/Desktop/workspace/green-tales/node_modules/expo-modules-core/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:13-33
+147
+148        <activity
+148-->[com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:19:9-21:40
+149            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+149-->[com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:20:13-77
+150            android:exported="false" />
+150-->[com.facebook.react:react-android:0.79.5] /home/laffy/.gradle/caches/8.13/transforms/d644ee9b842757375fb9cebdd915ee04/transformed/react-android-0.79.5-debug/AndroidManifest.xml:21:13-37
+151
+152        <provider
+152-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:21:9-30:20
+153            android:name="expo.modules.filesystem.FileSystemFileProvider"
+153-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:22:13-74
+154            android:authorities="edu.sgu.ecokids.FileSystemFileProvider"
+154-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:23:13-74
+155            android:exported="false"
+155-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:24:13-37
+156            android:grantUriPermissions="true" >
+156-->[host.exp.exponent:expo.modules.filesystem:18.1.11] /home/laffy/.gradle/caches/8.13/transforms/8b4cf25cb545af971136b0f929fcdac0/transformed/expo.modules.filesystem-18.1.11/AndroidManifest.xml:25:13-47
+157            <meta-data
+157-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-15:63
+158                android:name="android.support.FILE_PROVIDER_PATHS"
+158-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:17-67
+159                android:resource="@xml/file_system_provider_paths" />
+159-->[:react-native-webview] /home/laffy/Desktop/workspace/green-tales/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:17-60
+160        </provider>
+161
+162        <meta-data
+162-->[com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:11:9-13:43
+163            android:name="com.bumptech.glide.integration.okhttp3.OkHttpGlideModule"
+163-->[com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:12:13-84
+164            android:value="GlideModule" />
+164-->[com.github.bumptech.glide:okhttp3-integration:4.11.0] /home/laffy/.gradle/caches/8.13/transforms/a1b3b9d19bcbd117df3dd62dbe0cebea/transformed/okhttp3-integration-4.11.0/AndroidManifest.xml:13:13-40
+165
+166        <provider
+166-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+167            android:name="androidx.startup.InitializationProvider"
+167-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+168            android:authorities="edu.sgu.ecokids.androidx-startup"
+168-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+169            android:exported="false" >
+169-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+170            <meta-data
+170-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+171                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+171-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+172                android:value="androidx.startup" />
+172-->[androidx.emoji2:emoji2:1.3.0] /home/laffy/.gradle/caches/8.13/transforms/6a06dd8db20fe48f1d4dcd15ee18fe12/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+173            <meta-data
+173-->[androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+174                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+174-->[androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+175                android:value="androidx.startup" />
+175-->[androidx.lifecycle:lifecycle-process:2.6.2] /home/laffy/.gradle/caches/8.13/transforms/b59c4c4f9e32b429eb79d019301b76c8/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+176            <meta-data
+176-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+177                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+177-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+178                android:value="androidx.startup" />
+178-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+179        </provider>
+180
+181        <receiver
+181-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+182            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+182-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+183            android:directBootAware="false"
+183-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+184            android:enabled="true"
+184-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+185            android:exported="true"
+185-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+186            android:permission="android.permission.DUMP" >
+186-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+187            <intent-filter>
+187-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+188                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+188-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+188-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+189            </intent-filter>
+190            <intent-filter>
+190-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+191                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+191-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+191-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+192            </intent-filter>
+193            <intent-filter>
+193-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+194                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+194-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+194-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+195            </intent-filter>
+196            <intent-filter>
+196-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+197                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+197-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+197-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/laffy/.gradle/caches/8.13/transforms/00803497dde122c5c17921be9ade43a6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+198            </intent-filter>
+199        </receiver>
+200    </application>
+201
+202</manifest>
