@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
+import { StickyHeader } from "@/components/StickyHeader";
 import { Center } from "@/components/ui/center";
-import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -285,7 +285,6 @@ const StoryCard = ({
           </Center>
           <Text
             style={{
-              
               color: "#1B4B07",
               fontSize: size === "large" ? 18 : 14,
               fontWeight: "600",
@@ -312,6 +311,7 @@ const StoryCard = ({
 };
 
 export default function EcoKidsHomeScreen() {
+  const scrollY = useRef(new Animated.Value(0)).current;
   return (
     <View className="flex-1">
       <StatusBar
@@ -329,39 +329,14 @@ export default function EcoKidsHomeScreen() {
       />
 
       <SafeAreaView className="flex-1">
+
+       <StickyHeader/>
+
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 120, paddingTop: 70 }}
         >
-          <HStack className="justify-between items-center px-4 py-4">
-            <Image
-              source={require("@/assets/images/logo.png")}
-              alt="logo"
-              className="w-32 h-auto "
-              resizeMode="contain"
-            />
-
-            <HStack className="items-center space-x-3">
-              <HStack className="items-center bg-white rounded-full px-3 py-2 shadow-sm">
-                <Image
-                  source={require("@/assets/images/cup.png")}
-                  alt="logo"
-                  className="w-10 h-8"
-                  resizeMode="contain"
-                />
-                <Text
-                  style={{ color: "#1B4B07", fontWeight: "600", marginLeft: 4 }}
-                >
-                  125
-                </Text>
-              </HStack>
-              {/* <View className="w-10 h-10 bg-orange-200 rounded-full items-center justify-center">
-                <Text style={{ fontSize: 20 }}>🐼</Text>
-              </View> */}
-            </HStack>
-          </HStack>
-
           <VStack className="mt-6">
             <Text
               style={{
@@ -370,7 +345,7 @@ export default function EcoKidsHomeScreen() {
                 fontWeight: "600",
                 marginLeft: 16,
                 marginBottom: 12,
-                paddingTop:2,
+                paddingTop: 2,
               }}
               className="font-heading"
             >
@@ -398,7 +373,7 @@ export default function EcoKidsHomeScreen() {
                 color: "#1B4B07",
                 fontSize: 24,
                 fontWeight: "600",
-                paddingTop:2,
+                paddingTop: 2,
                 marginBottom: 12,
               }}
               className="font-heading"
@@ -447,7 +422,6 @@ export default function EcoKidsHomeScreen() {
             </ScrollView>
           </VStack>
 
-  
           <VStack className="mt-6">
             <Text
               style={{
