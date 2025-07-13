@@ -15,6 +15,7 @@ import { Center } from "@/components/ui/center";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useRouter } from "expo-router";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -311,7 +312,7 @@ const StoryCard = ({
 };
 
 export default function EcoKidsHomeScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const router = useRouter();
   return (
     <View className="flex-1">
       <StatusBar
@@ -361,7 +362,11 @@ export default function EcoKidsHomeScreen() {
                 <TopicIsland
                   key={topic.id}
                   topic={topic}
-                  onPress={() => console.log("Topic pressed:", topic.name)}
+                  onPress={() => {
+      
+                      router.push("/topic");
+                 
+                  }}
                 />
               ))}
             </ScrollView>

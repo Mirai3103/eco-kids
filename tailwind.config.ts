@@ -1,5 +1,5 @@
 import gluestackPlugin from '@gluestack-ui/nativewind-utils/tailwind-plugin';
-
+import theme from "./lib/theme";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "media",
@@ -175,6 +175,7 @@ module.exports = {
           info: 'rgb(var(--color-indicator-info)/<alpha-value>)',
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
         },
+        ...(theme.palette as any),
       },
 
       fontWeight: {
