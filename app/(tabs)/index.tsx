@@ -12,39 +12,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
 import { StickyHeader } from "@/components/StickyHeader";
 import { Center } from "@/components/ui/center";
+import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { supabase } from "@/lib/supabase";
+import { Topic } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-// Sample data for the app
-const topics = [
-  {
-    id: 1,
-    name: "Đại dương",
-    icon: "🐋",
-    color: "#2857E0",
-    bgColor: "#E3F2FD",
-  },
-  { id: 2, name: "Rừng cây", icon: "🌳", color: "#399018", bgColor: "#E8F5E8" },
-  {
-    id: 3,
-    name: "Côn trùng",
-    icon: "🐞",
-    color: "#D72654",
-    bgColor: "#FCE4EC",
-  },
-  { id: 4, name: "Động vật", icon: "🦊", color: "#FF9800", bgColor: "#FFF3E0" },
-  {
-    id: 5,
-    name: "Thời tiết",
-    icon: "☀️",
-    color: "#2196F3",
-    bgColor: "#E3F2FD",
-  },
-];
 
 const featuredStory = {
   id: 1,
@@ -153,7 +131,7 @@ const TopicIsland = ({
   topic,
   onPress,
 }: {
-  topic: (typeof topics)[0];
+  topic: Topic;
   onPress: () => void;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -182,16 +160,16 @@ const TopicIsland = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <View className="items-center mx-3">
-          <View
+          <HStack
             style={{
-              backgroundColor: topic.bgColor,
-              borderColor: topic.color,
+              backgroundColor: topic.meta_data.bgColor,
+              borderColor: topic.meta_data.color,
               borderWidth: 3,
             }}
             className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-lg"
           >
-            <Text style={{ fontSize: 32 }}>{topic.icon}</Text>
-          </View>
+            <Text style={{ fontSize: 32 }} className="leading-loose">{topic.meta_data.icon}</Text>
+          </HStack>
           <Text
             style={{ color: "#1B4B07", fontSize: 14, fontWeight: "600" }}
             className="text-center"
@@ -313,6 +291,11 @@ const StoryCard = ({
 
 export default function EcoKidsHomeScreen() {
   const router = useRouter();
+  const { data: topics=[],isLoading,error } = useQuery({
+    queryKey: ["topics"],
+    queryFn: async () => await supabase.from("topics").select("*").then((res) => res.data),
+  });
+  
   return (
     <View className="flex-1">
       <StatusBar
@@ -358,14 +341,12 @@ export default function EcoKidsHomeScreen() {
               contentContainerStyle={{ paddingHorizontal: 16 }}
               className="font-baloo-regular"
             >
-              {topics.map((topic) => (
+              {topics?.map((topic) => (
                 <TopicIsland
                   key={topic.id}
-                  topic={topic}
+                  topic={topic as Topic}
                   onPress={() => {
-      
-                      router.push("/topic");
-                 
+                      router.push(`/topics/${topic.id}`);
                   }}
                 />
               ))}
@@ -396,14 +377,15 @@ export default function EcoKidsHomeScreen() {
             <Center className="mt-8">
               <Button3D
                 title="Khám phá thêm"
-                onPress={() => console.log("Start reading")}
+                onPress={() => router.push("/all-topics")}
                 color="#399918"
                 shadowColor="#2a800d"
+                
               />
             </Center>
           </VStack>
 
-          <VStack className="mt-8">
+          {/* <VStack className="mt-8">
             <Text
               style={{
                 color: "#1B4B07",
@@ -449,7 +431,7 @@ export default function EcoKidsHomeScreen() {
                 <StoryCard key={story.id} story={story} size="small" />
               ))}
             </ScrollView>
-          </VStack>
+          </VStack> */}
         </ScrollView>
       </SafeAreaView>
     </View>

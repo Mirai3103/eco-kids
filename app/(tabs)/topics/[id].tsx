@@ -1,14 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Dimensions,
-  Pressable,
-  ScrollView,
-  StatusBar,
-  View,
+    Animated,
+    Dimensions,
+    Pressable,
+    ScrollView,
+    StatusBar,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,18 +19,14 @@ import { HStack } from "@/components/ui/hstack";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { supabase } from "@/lib/supabase";
+import { Topic } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const cardWidth = (screenWidth - 48) / 2; // 2 columns with padding
 
 // Sample topic data - this would come from route params or API
-const topicData = {
-  id: "forest",
-  name: "Rừng Cây",
-  emoji: "🌳",
-  color: "#399018",
-  bgColor: "#E8F5E8",
-};
 
 // Sample stories for the topic
 const stories = [
@@ -342,6 +338,17 @@ export default function TopicStoryScreen() {
     console.log("Story pressed:", story.title);
     // Navigate to story detail screen
   };
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { data: topic } = useQuery({
+    queryKey: ["topic", id],
+    queryFn: async () => await supabase.from("topics").select("*").eq("id", id).single().then((res) => res.data),
+    select: (data) => data as Topic | undefined,
+  
+  });
+  const decorationEmojis = topic?.meta_data.decorationEmojis||[]
+  const randomDecorationEmoji = useCallback(()=>{
+    return decorationEmojis[Math.floor(Math.random() * decorationEmojis.length)]
+  },[decorationEmojis])
 
   return (
     <View className="flex-1">
@@ -353,7 +360,7 @@ export default function TopicStoryScreen() {
 
       {/* Background Gradient */}
       <LinearGradient
-        colors={["#EEF0FE", "#CAFEC3"]}
+        colors={[topic?.meta_data.bgColor||"#EEF0FE", topic?.meta_data.color||"#CAFEC3"]}
         style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -377,7 +384,7 @@ export default function TopicStoryScreen() {
             marginTop: 100,
           }}
         >
-          🌿
+          {randomDecorationEmoji()}
         </Text>
         <Text
           style={{
@@ -386,7 +393,7 @@ export default function TopicStoryScreen() {
             marginTop: 80,
           }}
         >
-          🌱
+          {randomDecorationEmoji()}
         </Text>
         <Text
           style={{
@@ -395,7 +402,7 @@ export default function TopicStoryScreen() {
             marginTop: 100,
           }}
         >
-          🌿
+          {randomDecorationEmoji()}
         </Text>
       </View>
 
@@ -416,7 +423,7 @@ export default function TopicStoryScreen() {
             marginTop: 120,
           }}
         >
-          🌿
+          {randomDecorationEmoji()}
         </Text>
         <Text
           style={{
@@ -425,7 +432,7 @@ export default function TopicStoryScreen() {
             marginTop: 90,
           }}
         >
-          🌱
+          {randomDecorationEmoji()}
         </Text>
         <Text
           style={{
@@ -434,16 +441,16 @@ export default function TopicStoryScreen() {
             marginTop: 110,
           }}
         >
-          🌿
+          {randomDecorationEmoji()}
         </Text>
       </View>
 
       {/* Bottom decorative elements */}
-      <View style={{ position: "absolute", bottom: 100, left: 20, zIndex: 0}}>
-        <Text style={{ fontSize: 16 }}>🌸</Text>
+      <View style={{ position: "absolute", bottom: 100, left: 20, zIndex: 0 }}>
+        <Text style={{ fontSize: 16 }}>{randomDecorationEmoji()}</Text>
       </View>
-      <View style={{ position: "absolute", bottom: 110, right: 40, zIndex: 0}}>
-        <Text style={{ fontSize: 14 }}>🍄</Text>
+      <View style={{ position: "absolute", bottom: 110, right: 40, zIndex: 0 }}>
+        <Text style={{ fontSize: 14 }}>{randomDecorationEmoji()}</Text>
       </View>
 
       <SafeAreaView className="flex-1">
@@ -478,18 +485,21 @@ export default function TopicStoryScreen() {
               </Pressable>
 
               <HStack className="items-center">
-                <Text style={{ fontSize: 32, marginRight: 8 }}>
-                  {topicData.emoji}
+                <Text
+                  style={{ fontSize: 32, marginRight: 8 }}
+                  className="leading-loose"
+                >
+                  {topic?.meta_data?.icon}
                 </Text>
                 <Heading
                   size="xl"
                   style={{ color: "#1B4B07", fontWeight: "bold" }}
                 >
-                  {topicData.name}
+                  {topic?.name}
                 </Heading>
               </HStack>
 
-              <HStack style={{width:50}}></HStack>
+              <HStack style={{ width: 50 }}></HStack>
             </HStack>
             <MasonryGrid data={stories} onStoryPress={handleStoryPress} />
           </VStack>

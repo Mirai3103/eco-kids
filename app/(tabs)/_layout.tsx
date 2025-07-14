@@ -18,7 +18,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
       icon: "library",
       label: "Thư viện",
       IconComponent: Ionicons,
-      routeName: "topic",
+      routeName: "all-topics",
     },
     {
       icon: "heart",
@@ -111,12 +111,15 @@ export default function TabLayout() {
             title: "Home",
           }}
         />
+        <Tabs.Screen name="all-topics" options={{ headerShown: false }} />
+
         <Tabs.Screen
           name="topic"
           options={{
             title: "Topic",
           }}
         />
+        <Tabs.Screen name="topics/[id]" options={{ headerShown: false }} />
       </Tabs>
     </View>
   );
