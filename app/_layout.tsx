@@ -1,6 +1,7 @@
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import ReactQueryProvider from "@/lib/react-query";
 import {
   Baloo2_600SemiBold,
   useFonts as useBalooFonts,
@@ -9,18 +10,11 @@ import {
   NunitoSans_400Regular,
   useFonts as useNunitoFonts,
 } from "@expo-google-fonts/nunito-sans";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { QueryClient } from "@tanstack/react-query";
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-const queryClient = new QueryClient();
-const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
-})
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -36,7 +30,7 @@ export default function RootLayout() {
   }
 
   return (
-    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: asyncStoragePersister }}>
+    <ReactQueryProvider>
       <GluestackUIProvider mode="light">
         <ThemeProvider value={DefaultTheme}>
           <Stack>
@@ -48,6 +42,6 @@ export default function RootLayout() {
           <StatusBar style="dark" backgroundColor="transparent" translucent />
         </ThemeProvider>
       </GluestackUIProvider>
-    </PersistQueryClientProvider>
+    </ReactQueryProvider>
   );
 }

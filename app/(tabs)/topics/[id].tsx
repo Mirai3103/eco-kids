@@ -3,12 +3,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    Pressable,
-    ScrollView,
-    StatusBar,
-    View,
+  Animated,
+  Dimensions,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -341,14 +341,21 @@ export default function TopicStoryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: topic } = useQuery({
     queryKey: ["topic", id],
-    queryFn: async () => await supabase.from("topics").select("*").eq("id", id).single().then((res) => res.data),
+    queryFn: async () =>
+      await supabase
+        .from("topics")
+        .select("*")
+        .eq("id", id)
+        .single()
+        .then((res) => res.data),
     select: (data) => data as Topic | undefined,
-  
   });
-  const decorationEmojis = topic?.meta_data.decorationEmojis||[]
-  const randomDecorationEmoji = useCallback(()=>{
-    return decorationEmojis[Math.floor(Math.random() * decorationEmojis.length)]
-  },[decorationEmojis])
+  const decorationEmojis = topic?.meta_data.decorationEmojis || [];
+  const randomDecorationEmoji = useCallback(() => {
+    return decorationEmojis[
+      Math.floor(Math.random() * decorationEmojis.length)
+    ];
+  }, [decorationEmojis]);
 
   return (
     <View className="flex-1">
@@ -360,7 +367,10 @@ export default function TopicStoryScreen() {
 
       {/* Background Gradient */}
       <LinearGradient
-        colors={[topic?.meta_data.bgColor||"#EEF0FE", topic?.meta_data.color||"#CAFEC3"]}
+        colors={[
+          topic?.meta_data.bgColor || "#EEF0FE",
+          topic?.meta_data.color || "#CAFEC3",
+        ]}
         style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -464,7 +474,7 @@ export default function TopicStoryScreen() {
           contentContainerStyle={{ paddingBottom: 120, paddingTop: 30 }}
         >
           <VStack>
-            <HStack className="justify-between rounded-full items-center mb-4 px-4 py-2 bg-white/80 backdrop-blur-lg">
+            <HStack className="justify-between rounded-full items-center mb-4 px-2 mt-6 py-0 bg-white/80 backdrop-blur-lg">
               <Pressable
                 onPress={handleBack}
                 style={{

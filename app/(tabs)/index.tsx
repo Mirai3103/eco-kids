@@ -20,9 +20,9 @@ import { supabase } from "@/lib/supabase";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
 
 const featuredStory = {
   id: 1,
@@ -168,7 +168,9 @@ const TopicIsland = ({
             }}
             className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-lg"
           >
-            <Text style={{ fontSize: 32 }} className="leading-loose">{topic.meta_data.icon}</Text>
+            <Text style={{ fontSize: 32 }} className="leading-loose">
+              {topic.meta_data.icon}
+            </Text>
           </HStack>
           <Text
             style={{ color: "#1B4B07", fontSize: 14, fontWeight: "600" }}
@@ -291,11 +293,12 @@ const StoryCard = ({
 
 export default function EcoKidsHomeScreen() {
   const router = useRouter();
-  const { data: topics=[],isLoading,error } = useQuery({
-    queryKey: ["topics"],
-    queryFn: async () => await supabase.from("topics").select("*").then((res) => res.data),
-  });
-  
+  const {
+    data: topics = [],
+    isLoading,
+    error,
+  } = useQuery(getAllTopicsQueryOptions());
+
   return (
     <View className="flex-1">
       <StatusBar
@@ -313,8 +316,7 @@ export default function EcoKidsHomeScreen() {
       />
 
       <SafeAreaView className="flex-1">
-
-       <StickyHeader/>
+        <StickyHeader />
 
         <ScrollView
           className="flex-1"
@@ -346,7 +348,7 @@ export default function EcoKidsHomeScreen() {
                   key={topic.id}
                   topic={topic as Topic}
                   onPress={() => {
-                      router.push(`/topics/${topic.id}`);
+                    router.push(`/topics/${topic.id}`);
                   }}
                 />
               ))}
@@ -380,7 +382,6 @@ export default function EcoKidsHomeScreen() {
                 onPress={() => router.push("/all-topics")}
                 color="#399918"
                 shadowColor="#2a800d"
-                
               />
             </Center>
           </VStack>

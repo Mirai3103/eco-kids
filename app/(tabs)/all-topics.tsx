@@ -20,6 +20,7 @@ import { supabase } from "@/lib/supabase";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
+import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -56,18 +57,18 @@ const ActionButton = ({
     color === "#2196F3"
       ? "#1976D2"
       : color === "#4CAF50"
-      ? "#388E3C"
-      : color === "#FF9800"
-      ? "#F57C00"
-      : color === "#E91E63"
-      ? "#C2185B"
-      : color === "#FFC107"
-      ? "#F57F17"
-      : color === "#9C27B0"
-      ? "#7B1FA2"
-      : color === "#009688"
-      ? "#00796B"
-      : "#303F9F"; // default for energy
+        ? "#388E3C"
+        : color === "#FF9800"
+          ? "#F57C00"
+          : color === "#E91E63"
+            ? "#C2185B"
+            : color === "#FFC107"
+              ? "#F57F17"
+              : color === "#9C27B0"
+                ? "#7B1FA2"
+                : color === "#009688"
+                  ? "#00796B"
+                  : "#303F9F"; // default for energy
 
   return (
     <Pressable
@@ -237,7 +238,6 @@ const TopicCard = ({
                       color: "#666",
                       fontSize: 14,
                       fontWeight: "500",
-                      
                     }}
                     className="pr-4"
                   >
@@ -271,15 +271,7 @@ export default function AllTopicsScreen() {
     data: topics = [],
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["topics"],
-    queryFn: async () =>
-      await supabase
-        .from("topics")
-        .select("*")
-        .then((res) => res.data),
-    select: (data) => data as Topic[] | undefined,
-  });
+  } = useQuery(getAllTopicsQueryOptions());
   const router = useRouter();
   const handleTopicPress = (topic: Topic) => {
     console.log("Topic pressed:", topic.name);
@@ -287,7 +279,7 @@ export default function AllTopicsScreen() {
   };
 
   return (
-    <View style={{ flex: 1 }} >
+    <View style={{ flex: 1 }}>
       <LinearGradient
         colors={["#EEF0FE", "#CAFEC3"]}
         style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
