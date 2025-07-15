@@ -30,8 +30,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/ecokids-splash.png",
-          "resizeMode": "contain",
+          "image": "./assets/images/ecokids-icon.png",
+          "resizeMode": "cover",
           "backgroundColor": "#CAFEC3"
         }
       ]

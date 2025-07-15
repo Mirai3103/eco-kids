@@ -1,6 +1,7 @@
+import { Topic } from "@/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient, onlineManager } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Network from "expo-network";
 import * as SplashScreen from "expo-splash-screen";
@@ -9,7 +10,6 @@ import {
   getAllTopicsQueryOptions,
   getTopicByIdQueryOptions,
 } from "./queries/topic.query";
-import { Topic } from "@/types";
 SplashScreen.preventAutoHideAsync();
 onlineManager.setEventListener((setOnline) => {
   const eventSubscription = Network.addNetworkStateListener((state) => {
@@ -41,7 +41,7 @@ export default function ReactQueryProvider({
         getAllTopicsQueryOptions(),
       )) as Topic[];
       topics.forEach((topic) => {
-        queryClient.prefetchQuery({
+        queryClient.ensureQueryData({
           ...getTopicByIdQueryOptions(topic.id),
           queryFn: async () => topic,
         });
