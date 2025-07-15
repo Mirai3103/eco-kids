@@ -2,7 +2,7 @@
   "expo": {
     "name": "EcoKids",
     "slug": "EcoKids",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/ecokids-icon.png",
     "scheme": "ecokids",
@@ -15,10 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ecokids-icon.png",
-        "backgroundColor": "#CAFEC3",
-        "width": 300,
-        "height": 300,
-        "resizeMode": "contain"
+        "backgroundColor": "#CAFEC3"
       },
       "edgeToEdgeEnabled": true,
       "package": "edu.sgu.ecokids"
@@ -35,7 +32,7 @@
         {
           "image": "./assets/images/ecokids-icon.png",
           "resizeMode": "contain",
-         "backgroundColor": "#CAFEC3"
+          "backgroundColor": "#CAFEC3"
         }
       ]
     ],
