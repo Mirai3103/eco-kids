@@ -112,14 +112,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen name="all-topics" options={{ headerShown: false }} />
-
-        <Tabs.Screen
-          name="topic"
-          options={{
-            title: "Topic",
-          }}
-        />
-        <Tabs.Screen name="topics/[id]" options={{ headerShown: false }} />
+        <Tabs.Screen name="login" options={{ headerShown: false }} />
         <Tabs.Screen name="user" options={{ headerShown: false }} />
       </Tabs>
     </View>

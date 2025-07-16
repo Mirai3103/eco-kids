@@ -1,28 +1,23 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Pressable,
-  StatusBar,
-  View
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef } from "react";
+import { Animated, Dimensions, Pressable, StatusBar, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
-import { Center } from '@/components/ui/center';
-import { Heading } from '@/components/ui/heading';
-import { Image } from '@/components/ui/image';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+import { Center } from "@/components/ui/center";
+import { Heading } from "@/components/ui/heading";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { useUserStore } from "@/stores/user.store";
+import Icon from "react-native-vector-icons/FontAwesome";
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 // Floating Element Component
-const FloatingElement = ({ 
-  emoji, 
-  initialPosition, 
-  animationDuration = 4000 
+const FloatingElement = ({
+  emoji,
+  initialPosition,
+  animationDuration = 4000,
 }: {
   emoji: string;
   initialPosition: { x: number; y: number };
@@ -74,7 +69,7 @@ const FloatingElement = ({
   return (
     <Animated.View
       style={{
-        position: 'absolute',
+        position: "absolute",
         left: initialPosition.x,
         top: initialPosition.y,
         transform: [{ translateY }],
@@ -114,54 +109,47 @@ const GoogleButton = ({ onPress }: { onPress: () => void }) => {
       onPressOut={handlePressOut}
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <View style={{ position: 'relative' }}>
+        <View style={{ position: "relative" }}>
           {/* Shadow/Bottom layer */}
           <View
             style={{
               height: 56,
               borderRadius: 16,
-              position: 'absolute',
+              position: "absolute",
               top: 6,
               left: 0,
               right: 0,
             }}
-            className='bg-red-600'
+            className="bg-red-600"
           />
           {/* Top layer */}
           <View
             style={{
               height: 56,
               borderRadius: 16,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               paddingHorizontal: 32,
-              flexDirection: 'row',
+              flexDirection: "row",
             }}
-            className='bg-red-400'
+            className="bg-red-400"
           >
             {/* Google G Logo */}
             <View
               style={{
-                backgroundColor: 'white',
-                width: 24,
-                height: 24,
-                borderRadius: 12,
-                justifyContent: 'center',
-                alignItems: 'center',
+                justifyContent: "center",
+                alignItems: "center",
                 marginRight: 12,
               }}
             >
-              <Text style={{ color: '#4285f4', fontSize: 16, fontWeight: 'bold' }}>
-                G
-              </Text>
+              <Icon name="google" size={24} color="white" />
             </View>
-            
+
             <Text
               style={{
-                color: 'white',
-                fontWeight: 'bold',
+                color: "white",
+                fontWeight: "bold",
                 fontSize: 16,
-                textTransform: 'uppercase',
               }}
             >
               Tiếp tục với Google
@@ -200,17 +188,42 @@ const SkipButton = ({ onPress }: { onPress: () => void }) => {
       onPressOut={handlePressOut}
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <Text
-          style={{
-            color: '#1B4B07',
-            fontSize: 16,
-            fontWeight: '500',
-            textDecorationLine: 'underline',
-            textAlign: 'center',
-          }}
-        >
-          Tiếp tục không cần đăng nhập
-        </Text>
+        <View style={{ position: "relative" }}>
+          {/* Shadow/Bottom layer */}
+          <View
+            style={{
+              height: 56,
+              borderRadius: 16,
+              position: "absolute",
+              top: 6,
+              left: 0,
+              right: 0,
+            }}
+            className="bg-green-600"
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              height: 56,
+              borderRadius: 16,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: 32,
+              flexDirection: "row",
+            }}
+            className="bg-green-400"
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 16,
+              }}
+            >
+              Tiếp tục mà không cần đăng nhập
+            </Text>
+          </View>
+        </View>
       </Animated.View>
     </Pressable>
   );
@@ -220,7 +233,8 @@ const SkipButton = ({ onPress }: { onPress: () => void }) => {
 const LoginContent = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
-
+  const router = useRouter();
+  const { loginAsGuest } = useUserStore();
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -243,17 +257,18 @@ const LoginContent = () => {
         transform: [{ translateY: slideAnim }],
       }}
     >
-      <VStack space="xl" className="items-center px-8">
+      <VStack space="lg" className="items-center px-8">
         {/* Welcome Headline */}
-        <VStack space="md" className="items-center">
+        <VStack space="md" className="items-center -mt-16">
           <Heading
             size="3xl"
             style={{
-              color: '#1B4B07',
-              fontWeight: 'bold',
-              textAlign: 'center',
+              color: "#1B4B07",
+              fontWeight: "bold",
+              textAlign: "center",
               lineHeight: 42,
             }}
+            className="font-heading"
           >
             Chào mừng đến với EcoKids!
           </Heading>
@@ -262,10 +277,10 @@ const LoginContent = () => {
         {/* Central Logo */}
         <View className="items-center my-2">
           <Image
-            source={require('@/assets/images/EcoKidsLogo2.png')}
+            source={require("@/assets/images/EcoKidsLogo2.png")}
             alt="EcoKids Logo"
             resizeMode="center"
-            className='h-80 w-80'
+            className="h-80 w-80"
           />
         </View>
 
@@ -273,10 +288,10 @@ const LoginContent = () => {
         <Text
           size="lg"
           style={{
-            color: '#399018',
-            textAlign: 'center',
-            fontWeight: '500',
-            marginBottom:24,
+            color: "#399018",
+            textAlign: "center",
+            fontWeight: "500",
+            marginBottom: 24,
             lineHeight: 24,
           }}
         >
@@ -285,21 +300,14 @@ const LoginContent = () => {
 
         {/* Action Buttons */}
         <VStack space="lg" className="w-full">
-          <GoogleButton 
+          <SkipButton
             onPress={() => {
-              console.log('Google login pressed');
-              // Handle Google authentication
-              router.push('/(tabs)');
+              loginAsGuest();
             }}
           />
-          
-          <SkipButton 
-            onPress={() => {
-              console.log('Skip login pressed');
-              // Continue without login
-              router.push('/(tabs)');
-            }}
-          />
+          <View>
+            <GoogleButton onPress={() => {}} />
+          </View>
         </VStack>
       </VStack>
     </Animated.View>
@@ -309,24 +317,36 @@ const LoginContent = () => {
 export default function LoginScreen() {
   // Floating elements positions
   const floatingElements = [
-    { emoji: '☁️', position: { x: 50, y: 100 }, duration: 5000 },
-    { emoji: '🍃', position: { x: screenWidth - 80, y: 150 }, duration: 4000 },
-    { emoji: '☁️', position: { x: 30, y: 250 }, duration: 6000 },
-    { emoji: '🌱', position: { x: screenWidth - 60, y: 320 }, duration: 4500 },
-    { emoji: '☁️', position: { x: screenWidth - 100, y: 450 }, duration: 5500 },
-    { emoji: '🍃', position: { x: 70, y: 500 }, duration: 4200 },
-    { emoji: '✨', position: { x: screenWidth - 50, y: 600 }, duration: 3800 },
-    { emoji: '🌸', position: { x: 40, y: 650 }, duration: 4800 },
+    { emoji: "☁️", position: { x: 50, y: 100 }, duration: 5000 },
+    { emoji: "🍃", position: { x: screenWidth - 80, y: 150 }, duration: 4000 },
+    { emoji: "☁️", position: { x: 30, y: 250 }, duration: 6000 },
+    { emoji: "🌱", position: { x: screenWidth - 60, y: 320 }, duration: 4500 },
+    { emoji: "☁️", position: { x: screenWidth - 100, y: 450 }, duration: 5500 },
+    { emoji: "🍃", position: { x: 70, y: 500 }, duration: 4200 },
+    { emoji: "✨", position: { x: screenWidth - 50, y: 600 }, duration: 3800 },
+    { emoji: "🌸", position: { x: 40, y: 650 }, duration: 4800 },
   ];
+  console.log("LoginScreen");
+  const { user } = useUserStore();
+  const router = useRouter();
+  React.useEffect(() => {
+    if (user) {
+      router.replace("/(tabs)");
+    }
+  }, [user]);
 
   return (
     <View className="flex-1">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
       {/* Background Gradient */}
       <LinearGradient
-        colors={['#EEF0FE', '#CAFEC3']}
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+        colors={["#EEF0FE", "#CAFEC3"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
       />

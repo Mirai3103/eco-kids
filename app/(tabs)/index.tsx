@@ -10,17 +10,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
-import { StickyHeader } from "@/components/StickyHeader";
+import { Header } from "@/components/Header";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { supabase } from "@/lib/supabase";
+import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -316,12 +315,12 @@ export default function EcoKidsHomeScreen() {
       />
 
       <SafeAreaView className="flex-1">
-        <StickyHeader />
+        <Header />
 
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 120, paddingTop: 70 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         >
           <VStack className="mt-6">
             <Text

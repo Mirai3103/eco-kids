@@ -2,35 +2,11 @@
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import React from "react";
-import { SafeAreaView, View } from "react-native";
 import { Image } from "./ui/image";
 
-// --- Helper Function: Lấy lời chào theo thời gian ---
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Chào buổi sáng";
-  if (hour < 18) return "Chào buổi chiều";
-  return "Chào buổi tối";
-};
-
-// --- Props của component ---
-type StickyHeaderProps = {};
-
-export const StickyHeader = () => {
+export const Header = () => {
   return (
-    <View
-      style={{
-        position: "absolute",
-        top: 13,
-        left: 0,
-        right: 0,
-        zIndex: 10,
-        backgroundColor: "rgba(238, 240, 254, 0.8)",
-        backdropFilter: "blur(20px)",
-      }}
-      className="rounded-b-3xl"
-    >
-      <SafeAreaView>
+   
         <HStack className="justify-between items-center px-4 py-0">
           <Image
             source={require("@/assets/images/logo.png")}
@@ -59,7 +35,5 @@ export const StickyHeader = () => {
             </HStack>
           </HStack>
         </HStack>
-      </SafeAreaView>
-    </View>
   );
 };

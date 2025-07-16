@@ -13,14 +13,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
-import { StickyHeader } from "@/components/StickyHeader";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { supabase } from "@/lib/supabase";
-import { Topic } from "@/types";
+import { getTopicByIdQueryOptions } from "@/lib/queries/topic.query";
 import { useQuery } from "@tanstack/react-query";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -328,7 +326,6 @@ const MasonryGrid = ({
     </HStack>
   );
 };
-
 export default function TopicStoryScreen() {
   const handleBack = () => {
     router.back();
@@ -338,18 +335,10 @@ export default function TopicStoryScreen() {
     console.log("Story pressed:", story.title);
     // Navigate to story detail screen
   };
+  
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: topic } = useQuery({
-    queryKey: ["topic", id],
-    queryFn: async () =>
-      await supabase
-        .from("topics")
-        .select("*")
-        .eq("id", id)
-        .single()
-        .then((res) => res.data),
-    select: (data) => data as Topic | undefined,
-  });
+  const { data: topic } = useQuery(getTopicByIdQueryOptions(id));
+  
   const decorationEmojis = topic?.meta_data.decorationEmojis || [];
   const randomDecorationEmoji = useCallback(() => {
     return decorationEmojis[
@@ -376,7 +365,7 @@ export default function TopicStoryScreen() {
         end={{ x: 0, y: 1 }}
       />
 
-      {/* Decorative Vines and Elements */}
+      {/* Decorative elements - giữ nguyên */}
       <View
         style={{
           position: "absolute",
@@ -464,53 +453,60 @@ export default function TopicStoryScreen() {
       </View>
 
       <SafeAreaView className="flex-1">
-        {/* Header */}
-        <StickyHeader />
+        {/* Sticky Title - Cố định ở top */}
+        <VStack 
+          style={{ 
+            zIndex: 10, 
+            backgroundColor: 'transparent',
+            paddingHorizontal: 16 
+          }}
+        >
+          <HStack className="justify-between rounded-full items-center mb-4 px-2 mt-6 py-0 bg-white/80 backdrop-blur-lg">
+            <Pressable
+              onPress={handleBack}
+              style={{
+                backgroundColor: "white",
+                borderRadius: 25,
+                width: 50,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <Ionicons name="arrow-back" size={24} color="#1B4B07" />
+            </Pressable>
 
-        {/* Story Grid */}
+            <HStack className="items-center">
+              <Text
+                style={{ fontSize: 32, marginRight: 8 }}
+                className="leading-loose"
+              >
+                {topic?.meta_data?.icon}
+              </Text>
+              <Heading
+                size="xl"
+                style={{ color: "#1B4B07", fontWeight: "bold" }}
+              >
+                {topic?.name}
+              </Heading>
+            </HStack>
+
+            <HStack style={{ width: 50 }}></HStack>
+          </HStack>
+        </VStack>
+
+        {/* ScrollView với Header và MasonryGrid */}
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 120, paddingTop: 30 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         >
           <VStack>
-            <HStack className="justify-between rounded-full items-center mb-4 px-2 mt-6 py-0 bg-white/80 backdrop-blur-lg">
-              <Pressable
-                onPress={handleBack}
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: 25,
-                  width: 50,
-                  height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                  elevation: 3,
-                }}
-              >
-                <Ionicons name="arrow-back" size={24} color="#1B4B07" />
-              </Pressable>
-
-              <HStack className="items-center">
-                <Text
-                  style={{ fontSize: 32, marginRight: 8 }}
-                  className="leading-loose"
-                >
-                  {topic?.meta_data?.icon}
-                </Text>
-                <Heading
-                  size="xl"
-                  style={{ color: "#1B4B07", fontWeight: "bold" }}
-                >
-                  {topic?.name}
-                </Heading>
-              </HStack>
-
-              <HStack style={{ width: 50 }}></HStack>
-            </HStack>
             <MasonryGrid data={stories} onStoryPress={handleStoryPress} />
           </VStack>
         </ScrollView>

@@ -11,16 +11,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
-import { StickyHeader } from "@/components/StickyHeader";
+import { Header } from "@/components/Header";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { supabase } from "@/lib/supabase";
+import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
-import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -289,14 +288,13 @@ export default function AllTopicsScreen() {
 
       <SafeAreaView className="flex-1 pb-16">
         {/* Header */}
-        <StickyHeader />
+        <Header />
 
         {/* Topics List */}
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingTop: 24,
             paddingBottom: 40,
             marginTop: 30,
           }}

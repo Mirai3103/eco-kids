@@ -2,12 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Pressable,
-    ScrollView,
-    StatusBar,
-    View
+  Animated,
+  Dimensions,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,6 +17,8 @@ import { HStack } from '@/components/ui/hstack';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { useUserStore } from '@/stores/user.store';
+import { useRouter } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -383,10 +385,20 @@ export default function UserProfileScreen() {
     // Navigate to settings screen
   };
 
+ 
+  const { user,logout } = useUserStore();
   const handleAvatarEdit = () => {
-    console.log('Edit avatar pressed');
+    console.log('logout');
+    logout();
     // Open avatar selection modal
   };
+  const router = useRouter();
+  console.log("UserProfileScreen",user);
+  React.useEffect(() => {
+    if (!user) {
+      router.replace("/login");
+    }
+  }, [user]);
 
   return (
     <View className="flex-1">
