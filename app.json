@@ -2,7 +2,7 @@
   "expo": {
     "name": "EcoKids",
     "slug": "EcoKids",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/ecokids-icon.png",
     "scheme": "ecokids",
@@ -33,6 +33,12 @@
           "image": "./assets/images/ecokids-icon.png",
           "resizeMode": "cover",
           "backgroundColor": "#CAFEC3"
+        }
+      ],
+        [
+        "expo-asset",
+        {
+          "assets": ["assets", "assets/images"]
         }
       ]
     ],

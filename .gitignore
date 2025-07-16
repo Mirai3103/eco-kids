@@ -39,7 +39,7 @@ ios/
 *.tsbuildinfo
 
 app-example
-
+data/
 # Expo
 .expo
 dist/

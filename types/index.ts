@@ -10,3 +10,5 @@ export type TopicMetaData = {
 export type Topic = Database["public"]["Tables"]["topics"]["Row"] & {
   meta_data: TopicMetaData;
 };
+
+export type Story = Database["public"]["Tables"]["stories"]["Row"]

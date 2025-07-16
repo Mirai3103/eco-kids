@@ -20,7 +20,6 @@ import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const featuredStory = {

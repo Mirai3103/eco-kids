@@ -15,11 +15,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { getAllStoriesQueryByTopicIdOptions } from "@/lib/queries/story.query";
 import { getTopicByIdQueryOptions } from "@/lib/queries/topic.query";
+import { Story } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { Image } from "expo-image";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const cardWidth = (screenWidth - 48) / 2; // 2 columns with padding
@@ -27,72 +29,6 @@ const cardWidth = (screenWidth - 48) / 2; // 2 columns with padding
 // Sample topic data - this would come from route params or API
 
 // Sample stories for the topic
-const stories = [
-  {
-    id: 1,
-    title: "Chú gấu trong rừng",
-    image: "🐻",
-    bgColor: "#E8F5E8",
-    height: 200,
-    liked: false,
-  },
-  {
-    id: 2,
-    title: "Cây sồi cổ thụ",
-    image: "🌲",
-    bgColor: "#E3F2FD",
-    height: 240,
-    liked: true,
-  },
-  {
-    id: 3,
-    title: "Những chú chim nhỏ",
-    image: "🐦",
-    bgColor: "#FCE4EC",
-    height: 180,
-    liked: false,
-  },
-  {
-    id: 4,
-    title: "Khu rừng ma thuật",
-    image: "🍄",
-    bgColor: "#FFF3E0",
-    height: 220,
-    liked: false,
-  },
-  {
-    id: 5,
-    title: "Thỏ con và rừng",
-    image: "🐰",
-    bgColor: "#F3E5F5",
-    height: 190,
-    liked: true,
-  },
-  {
-    id: 6,
-    title: "Búp bê lá xanh",
-    image: "🍃",
-    bgColor: "#E8F5E8",
-    height: 210,
-    liked: false,
-  },
-  {
-    id: 7,
-    title: "Tổ chim trên cây",
-    image: "🪺",
-    bgColor: "#FFF8E1",
-    height: 230,
-    liked: false,
-  },
-  {
-    id: 8,
-    title: "Rừng bốn mùa",
-    image: "🍂",
-    bgColor: "#FFE8D6",
-    height: 200,
-    liked: true,
-  },
-];
 
 // Generate random tilt angles for Polaroid effect
 const getRandomTilt = () => {
@@ -106,13 +42,13 @@ const StoryCard = ({
   index,
   onPress,
 }: {
-  story: (typeof stories)[0];
+  story: Story
   index: number;
   onPress: () => void;
 }) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
-  const [liked, setLiked] = useState(story.liked);
+  const [liked, setLiked] = useState(false);
   const [tiltAngle] = useState(getRandomTilt());
 
   useEffect(() => {
@@ -156,6 +92,7 @@ const StoryCard = ({
       }),
     ]).start();
   };
+  console.log(story.cover_image_url);
 
   return (
     <Animated.View
@@ -191,8 +128,8 @@ const StoryCard = ({
           <View style={{ position: "relative" }}>
             <View
               style={{
-                backgroundColor: story.bgColor,
-                height: story.height,
+                backgroundColor: "red",
+                height: 200,
                 borderRadius: 12,
                 justifyContent: "center",
                 alignItems: "center",
@@ -200,13 +137,19 @@ const StoryCard = ({
               }}
             >
               <Image
-                source={require("@/assets/images/sample1.jpg")}
+                source={{uri: story.cover_image_url || "https://picsum.photos/200/300"}}
+                className="w-full h-full rounded-lg"
+                contentFit="cover"
+                alt="story-image"
                 style={{
                   width: "100%",
                   height: "100%",
                   borderRadius: 12,
                 }}
-                alt="story-image"
+                onError={(error) => {
+                  console.log(error);
+                }}
+                cachePolicy="memory-disk"
               />
 
               {/* Play Button Overlay */}
@@ -215,13 +158,13 @@ const StoryCard = ({
                   position: "absolute",
                   bottom: 12,
                   right: 12,
-                  backgroundColor: "rgba(0, 0, 0, 0.7)",
                   borderRadius: 25,
                   width: 50,
                   height: 50,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
+                className="bg-green-400"
               >
                 <Ionicons name="play" size={24} color="white" />
               </View>
@@ -260,6 +203,7 @@ const StoryCard = ({
               marginTop: 12,
               lineHeight: 18,
             }}
+            className="font-body"
           >
             {story.title}
           </Text>
@@ -274,26 +218,26 @@ const MasonryGrid = ({
   data,
   onStoryPress,
 }: {
-  data: typeof stories;
-  onStoryPress: (story: (typeof stories)[0]) => void;
+  data: Story[];
+  onStoryPress: (story: Story) => void;
 }) => {
-  const [leftColumn, setLeftColumn] = useState<typeof stories>([]);
-  const [rightColumn, setRightColumn] = useState<typeof stories>([]);
+  const [leftColumn, setLeftColumn] = useState<Story[]>([]);
+  const [rightColumn, setRightColumn] = useState<Story[]>([]);
 
   useEffect(() => {
     // Distribute items across columns for masonry effect
-    const left: typeof stories = [];
-    const right: typeof stories = [];
+    const left: Story[] = [];
+    const right: Story[] = [];
     let leftHeight = 0;
     let rightHeight = 0;
 
     data.forEach((story) => {
       if (leftHeight <= rightHeight) {
         left.push(story);
-        leftHeight += story.height + 32; // height + margin
+        leftHeight += 200 + 32; // height + margin
       } else {
         right.push(story);
-        rightHeight += story.height + 32;
+        rightHeight += 200 + 32;
       }
     });
 
@@ -331,14 +275,14 @@ export default function TopicStoryScreen() {
     router.back();
   };
 
-  const handleStoryPress = (story: (typeof stories)[0]) => {
+  const handleStoryPress = (story: Story) => {
     console.log("Story pressed:", story.title);
     // Navigate to story detail screen
   };
   
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: topic } = useQuery(getTopicByIdQueryOptions(id));
-  
+  const { data: stories } = useQuery(getAllStoriesQueryByTopicIdOptions(id));
   const decorationEmojis = topic?.meta_data.decorationEmojis || [];
   const randomDecorationEmoji = useCallback(() => {
     return decorationEmojis[
@@ -507,7 +451,7 @@ export default function TopicStoryScreen() {
           contentContainerStyle={{ paddingBottom: 120 }}
         >
           <VStack>
-            <MasonryGrid data={stories} onStoryPress={handleStoryPress} />
+            <MasonryGrid data={stories || []} onStoryPress={handleStoryPress} />
           </VStack>
         </ScrollView>
       </SafeAreaView>

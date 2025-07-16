@@ -13,6 +13,7 @@ export const Header = () => {
             alt="logo"
             className="w-32 h-auto "
             resizeMode="contain"
+            
           />
 
           <HStack className="items-center space-x-3">
