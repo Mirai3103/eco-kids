@@ -277,7 +277,7 @@ const LoginContent = () => {
         {/* Central Logo */}
         <View className="items-center my-2">
             <Image
-              source={require("@/assets/images/EcoKidsLogo2.png")}
+              source={require("@/assets/images/eco_kids_logo2.png")}
               alt="EcoKids Logo"
               resizeMode="cover"
               className="h-80 w-80"
