@@ -2,7 +2,7 @@
   "expo": {
     "name": "EcoKids",
     "slug": "EcoKids",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "orientation": "portrait",
     "icon": "./assets/images/ecokids-icon.png",
     "scheme": "ecokids",

@@ -1,6 +1,6 @@
 import { Topic } from "@/types";
-import { supabase } from "../supabase";
 import { UseQueryOptions } from "@tanstack/react-query";
+import { supabase } from "../supabase";
 
 export const getAllTopicsQueryOptions = (): UseQueryOptions<
   unknown,
@@ -10,10 +10,13 @@ export const getAllTopicsQueryOptions = (): UseQueryOptions<
 > => ({
   queryKey: ["topics"],
   queryFn: async () =>
-    await supabase
-      .from("topics")
-      .select("*")
-      .then((res) => res.data),
+   {
+    console.log('fetching data............')
+    return  await supabase
+    .from("topics")
+    .select("*")
+    .then((res) => res.data)
+   },
   select: (data) => data as Topic[] | undefined,
 });
 

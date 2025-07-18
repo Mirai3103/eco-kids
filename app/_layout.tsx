@@ -9,6 +9,7 @@ import {
 } from "@expo-google-fonts/baloo-2";
 import {
   NunitoSans_400Regular,
+  NunitoSans_700Bold,
   useFonts as useNunitoFonts,
 } from "@expo-google-fonts/nunito-sans";
 
@@ -25,6 +26,7 @@ export default function RootLayout() {
   });
   const [nunitoLoaded] = useNunitoFonts({
     NunitoSans_400Regular,
+    NunitoSans_700Bold
   });
 
   if (!balooLoaded || !nunitoLoaded) {

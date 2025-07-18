@@ -5,7 +5,6 @@ import { QueryClient, onlineManager } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Network from "expo-network";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
 import {
   getAllTopicsQueryOptions,
   getTopicByIdQueryOptions,
@@ -35,33 +34,6 @@ export default function ReactQueryProvider({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    async function prepare() {
-      const topics = (await queryClient.ensureQueryData(
-        getAllTopicsQueryOptions()
-      )) as Topic[];
-      await Promise.all(
-        topics.map((topic) => {
-          queryClient.prefetchQuery({
-            ...getTopicByIdQueryOptions(topic.id),
-            queryFn: async () => topic,
-          });
-        })
-      );
-    }
-    if (onlineManager.isOnline()) {
-      prepare()
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          SplashScreen.hideAsync();
-        });
-    } else {
-      SplashScreen.hideAsync();
-    }
-  }, []);
-
   return (
     <PersistQueryClientProvider
       client={queryClient}
@@ -71,7 +43,30 @@ export default function ReactQueryProvider({
         buster: "v1",
       }}
       onSuccess={() => {
-        console.log("onSuccess");
+        async function prepare() {
+          const topics = (await queryClient.ensureQueryData(
+            getAllTopicsQueryOptions()
+          )) as Topic[];
+          await Promise.all(
+            topics.map((topic) => {
+              queryClient.prefetchQuery({
+                ...getTopicByIdQueryOptions(topic.id),
+                queryFn: async () => topic,
+              });
+            })
+          );
+        }
+        if (onlineManager.isOnline()) {
+          prepare()
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              SplashScreen.hideAsync();
+            });
+        } else {
+          SplashScreen.hideAsync();
+        }
       }}
       onError={() => {
         console.log("onError");

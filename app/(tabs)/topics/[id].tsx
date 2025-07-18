@@ -92,7 +92,6 @@ const StoryCard = ({
       }),
     ]).start();
   };
-  console.log(story.cover_image_url);
 
   return (
     <Animated.View

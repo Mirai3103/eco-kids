@@ -12,3 +12,10 @@ export type Topic = Database["public"]["Tables"]["topics"]["Row"] & {
 };
 
 export type Story = Database["public"]["Tables"]["stories"]["Row"]
+export type StorySegment = Database["public"]["Tables"]["story_segments"]["Row"] & {
+  story_id: string;
+}
+
+export type StoryWithSegments = Story & {
+  story_segments: StorySegment[];
+}

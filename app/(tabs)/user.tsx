@@ -381,6 +381,7 @@ const FavoriteStoryCard = ({ story }: { story: typeof favoriteStory }) => {
 
 export default function UserProfileScreen() {
   const handleSettingsPress = () => {
+    router.push('/setting')
     console.log('Settings pressed');
     // Navigate to settings screen
   };
@@ -429,6 +430,7 @@ export default function UserProfileScreen() {
               justifyContent: 'center',
               alignItems: 'center',
             }}
+            
           >
             <Ionicons name="settings" size={20} color="#1B4B07" />
           </Pressable>
