@@ -276,8 +276,7 @@ export default function TopicStoryScreen() {
   };
 
   const handleStoryPress = (story: Story) => {
-    console.log("Story pressed:", story.title);
-    // Navigate to story detail screen
+    router.push(`/stories/${story.id}`);
   };
   
   const { id } = useLocalSearchParams<{ id: string }>();

@@ -4,6 +4,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import ReactQueryProvider from "@/lib/react-query";
 import {
   Baloo2_600SemiBold,
+  Baloo2_700Bold,
   useFonts as useBalooFonts,
 } from "@expo-google-fonts/baloo-2";
 import {
@@ -20,6 +21,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [balooLoaded] = useBalooFonts({
     Baloo2_600SemiBold,
+    Baloo2_700Bold
   });
   const [nunitoLoaded] = useNunitoFonts({
     NunitoSans_400Regular,
@@ -35,6 +37,7 @@ export default function RootLayout() {
         <ThemeProvider value={DefaultTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="stories/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="dark" backgroundColor="transparent" translucent />

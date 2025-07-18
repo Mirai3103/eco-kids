@@ -187,10 +187,12 @@ const StoryCard = ({
   story,
   size = "small",
   withButton = false,
+  onPress,
 }: {
   story: { id: number; title: string; image: string; bgColor: string };
   size?: "small" | "large";
   withButton?: boolean;
+  onPress?: () => void;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -234,7 +236,7 @@ const StoryCard = ({
   });
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+    <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
       <Animated.View
         style={{
           transform: [{ scale: scaleAnim }, { rotate }],
@@ -372,6 +374,7 @@ export default function EcoKidsHomeScreen() {
                 withButton
                 story={featuredStory}
                 size="large"
+                onPress={() => router.push(`/stories/${featuredStory.id}`)}
               />
             ))}
             <Center className="mt-8">
