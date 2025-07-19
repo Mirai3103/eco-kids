@@ -24,7 +24,7 @@ const { width: screenWidth } = Dimensions.get('window');
 
 // User data (would come from API/state management)
 const userData = {
-  name: 'Bé Minh',
+  name: 'Hoài Nam',
   avatar: require('@/assets/images/avatar.jpg'),
   stats: {
     stars: 125,
@@ -482,7 +482,7 @@ export default function UserProfileScreen() {
           {/* Stats Section */}
           <VStack space="md" className="px-6 mb-8">
             <Heading size="lg" style={{ color: '#1B4B07', fontWeight: 'bold' }}>
-              Thống kê
+              Hoạt động của bé
             </Heading>
             <HStack space="md" className="justify-between">
               <StatCard
@@ -503,7 +503,7 @@ export default function UserProfileScreen() {
           </VStack>
 
           {/* Achievements Section */}
-          <VStack space="md" className="px-6 mb-8">
+          {/* <VStack space="md" className="px-6 mb-8">
             <Heading size="lg" style={{ color: '#1B4B07', fontWeight: 'bold' }}>
               Bộ sưu tập Huy hiệu
             </Heading>
@@ -519,10 +519,10 @@ export default function UserProfileScreen() {
                 <BadgeItem key={badge.id} badge={badge} index={index} />
               ))}
             </View>
-          </VStack>
+          </VStack> */}
 
           {/* Recent Rewards Section */}
-          <VStack space="md" className="mb-8">
+          {/* <VStack space="md" className="mb-8">
             <Heading size="lg" style={{ color: '#1B4B07', fontWeight: 'bold', paddingHorizontal: 24 }}>
               Phần thưởng mới mở khóa
             </Heading>
@@ -535,15 +535,15 @@ export default function UserProfileScreen() {
                 <RewardCard key={reward.id} reward={reward} />
               ))}
             </ScrollView>
-          </VStack>
+          </VStack> */}
 
           {/* Favorite Story Section */}
-          <VStack space="md" className="mb-8">
+          {/* <VStack space="md" className="mb-8">
             <Heading size="lg" style={{ color: '#1B4B07', fontWeight: 'bold', paddingHorizontal: 24 }}>
               Câu chuyện yêu thích
             </Heading>
             <FavoriteStoryCard story={favoriteStory} />
-          </VStack>
+          </VStack> */}
         </ScrollView>
       </SafeAreaView>
     </View>

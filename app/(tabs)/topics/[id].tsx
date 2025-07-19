@@ -19,6 +19,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { getAllStoriesQueryByTopicIdOptions } from "@/lib/queries/story.query";
 import { getTopicByIdQueryOptions } from "@/lib/queries/topic.query";
+import theme from "@/lib/theme";
 import { Story } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
@@ -35,7 +36,86 @@ const getRandomTilt = () => {
   const tilts = [-3, -2, -1, 0, 1, 2, 3];
   return tilts[Math.floor(Math.random() * tilts.length)];
 };
+const Button3D = ({
+  title,
+  onPress,
+  size = "large",
+  color = "#2857E0",
+  shadowColor = "#2857E0",
+}: {
+  title: string;
+  onPress: () => void;
+  size?: "small" | "large";
+  color?: string;
+  shadowColor?: string;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const buttonHeight = size === "large" ? 44 : 28;
+  const fontSize = size === "large" ? 18 : 14;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <View className="relative">
+          {/* Shadow/Bottom layer */}
+          <View
+            style={{
+              backgroundColor: shadowColor,
+              height: buttonHeight,
+              borderRadius: 16,
+              position: "absolute",
+              top: 5,
+              left: 0,
+              right: 0,
+            }}
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              backgroundColor: color,
+              height: buttonHeight,
+              borderRadius: 16,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: size === "large" ? 28 : 16,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize,
+              }}
+            >
+              {title}
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+};
 // Story Card Component with Polaroid style
 const StoryCard = ({
   story,
@@ -114,7 +194,7 @@ const StoryCard = ({
           style={{
             backgroundColor: "white",
             borderRadius: 16,
-            padding: 12,
+            padding: 10,
             width: cardWidth,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
@@ -124,11 +204,11 @@ const StoryCard = ({
           }}
         >
           {/* Story Image with Play Button Overlay */}
-          <View style={{ position: "relative" }}>
+          <View style={{ position: "relative"}}>
             <View
               style={{
                 backgroundColor: "red",
-                height: 200,
+                height: 160,
                 borderRadius: 12,
                 justifyContent: "center",
                 alignItems: "center",
@@ -152,7 +232,7 @@ const StoryCard = ({
               />
 
               {/* Play Button Overlay */}
-              <View
+              {/* <View
                 style={{
                   position: "absolute",
                   bottom: 12,
@@ -166,7 +246,7 @@ const StoryCard = ({
                 className="bg-green-400"
               >
                 <Ionicons name="play" size={24} color="white" />
-              </View>
+              </View> */}
 
               {/* Heart Icon */}
               <Pressable
@@ -196,16 +276,18 @@ const StoryCard = ({
           <Text
             style={{
               color: "#1B4B07",
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: "600",
               textAlign: "center",
               marginTop: 12,
               lineHeight: 18,
+              marginBottom: 12,
+              fontFamily: "NunitoSans_700Bold"
             }}
-            className="font-body"
           >
             {story.title}
           </Text>
+          <Button3D title="Bắt đầu đọc" onPress={() => {}} color={theme.palette.primary[400]} shadowColor={theme.palette.primary[500]}/>
         </View>
       </Pressable>
     </Animated.View>
