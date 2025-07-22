@@ -18,6 +18,7 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { getStoryByIdQueryOptions } from "@/lib/queries/story.query";
+import theme from "@/lib/theme";
 import { useQuery } from "@tanstack/react-query";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -34,8 +35,8 @@ const storyData = {
   length: "8 phút",
   difficulty: "Dễ",
   tags: [
-    { icon: "✍️", label: "Tác giả: Huu Hoang", color: "#E3F2FD" },
-    { icon: "🌳", label: "Chủ đề: Thiên nhiên", color: "#E8F5E8" },
+    { icon: "", label: "Tác giả: Huu Hoang", color: "#E3F2FD" },
+    { icon: "", label: "Chủ đề: Thiên nhiên", color: "#E8F5E8" },
   ],
 };
 
@@ -94,15 +95,17 @@ const CircularProgress = ({ progress, size = 90 }: { progress: number; size?: nu
 const Action3DButton = ({ 
   icon, 
   label, 
-  onPress, 
-  isPrimary = false,
+  onPress,
+  color = "#22C55E",
+  darkerColor = "#16A34A",
   progress = 0,
   showProgress = false 
 }: {
   icon: React.ReactNode;
   label: string;
   onPress: () => void;
-  isPrimary?: boolean;
+  color?: string;
+  darkerColor?: string;
   progress?: number;
   showProgress?: boolean;
 }) => {
@@ -155,17 +158,17 @@ const Action3DButton = ({
     alignItems: 'center',
     position: 'relative' as const,
     // 3D Effect with gradient-like shadows
-    shadowColor: isPrimary ? '#22C55E' : '#1B4B07',
+    shadowColor: color,
     shadowOffset: { width: 0, height: shadowOffset },
     shadowOpacity,
     shadowRadius: 15,
     elevation: 12,
     // Gradient effect simulation
-    backgroundColor: isPrimary ? '#22C55E' : '#34D399',
+    backgroundColor: color,
     borderWidth: 2,
-    borderColor: isPrimary ? '#16A34A' : '#10B981',
+    borderColor: darkerColor,
     borderBottomWidth: 6,
-    borderBottomColor: isPrimary ? '#15803D' : '#059669',
+    borderBottomColor: darkerColor,
   };
 
   return (
@@ -189,7 +192,7 @@ const Action3DButton = ({
             justifyContent: 'center',
             alignItems: 'center',
             // Inner gradient effect
-            backgroundColor: isPrimary ? '#22C55E' : '#34D399',
+            backgroundColor: color,
             position: 'relative',
           }}
         >
@@ -245,7 +248,7 @@ const InfoTag = ({ tag }: { tag: (typeof storyData.tags)[0] }) => {
           style={{
             color: "#1B4B07",
             fontSize: 12,
-            fontWeight: "600",
+            fontFamily: "NunitoSans_600SemiBold"
           }}
         >
           {tag.label}
@@ -383,7 +386,8 @@ const StoryContent = () => {
               icon={<Feather name="book-open" size={36} color="white" />}
               label="Đọc"
               onPress={handleReadPress}
-              isPrimary={true}
+              color={theme.palette.primary[400]}
+              darkerColor={theme.palette.primary[500]}
               progress={readProgress}
               showProgress={true}
             />
@@ -411,7 +415,8 @@ const StoryContent = () => {
               icon={<FontAwesome6 name="brain" size={32} color="white" />}
               label="Quiz"
               onPress={handleQuizPress}
-              isPrimary={false}
+              color={theme.palette.primary[300]}
+              darkerColor={theme.palette.primary[400]}
             />
           </HStack>
           

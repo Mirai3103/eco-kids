@@ -21,7 +21,6 @@ import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
 const featuredStory = {
   id: 1,
   title: "Cuộc phiêu lưu của chú ong nhỏ",
@@ -111,8 +110,8 @@ const Button3D = ({
             <Text
               style={{
                 color: "white",
-                fontWeight: "bold",
                 fontSize,
+                fontFamily: "Baloo2_700Bold",
               }}
             >
               {title}
@@ -171,7 +170,7 @@ const TopicIsland = ({
             </Text>
           </HStack>
           <Text
-            style={{ color: "#1B4B07", fontSize: 14, fontWeight: "600" }}
+            style={{ color: "#1B4B07", fontSize: 15, fontFamily: "NunitoSans_600SemiBold" }}
             className="text-center"
           >
             {topic.name}
@@ -268,9 +267,9 @@ const StoryCard = ({
             style={{
               color: "#1B4B07",
               fontSize: size === "large" ? 18 : 14,
-              fontWeight: "600",
               textAlign: "center",
               marginTop: 12,
+              fontFamily: "NunitoSans_600SemiBold",
             }}
           >
             {story.title}

@@ -13,7 +13,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
-import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -104,8 +103,8 @@ const Button3D = ({
             <Text
               style={{
                 color: "white",
-                fontWeight: "bold",
                 fontSize,
+                fontFamily: "NunitoSans_700Bold"
               }}
             >
               {title}
@@ -277,17 +276,17 @@ const StoryCard = ({
             style={{
               color: "#1B4B07",
               fontSize: 16,
-              fontWeight: "600",
               textAlign: "center",
               marginTop: 12,
               lineHeight: 18,
               marginBottom: 12,
               fontFamily: "NunitoSans_700Bold"
             }}
+             className="line-clamp-2"
           >
             {story.title}
           </Text>
-          <Button3D title="Bắt đầu đọc" onPress={() => {}} color={theme.palette.primary[400]} shadowColor={theme.palette.primary[500]}/>
+          <Button3D title="Đọc" onPress={() => {}} color={theme.palette.primary[400]} shadowColor={theme.palette.primary[500]}/>
         </View>
       </Pressable>
     </Animated.View>
@@ -512,12 +511,11 @@ export default function TopicStoryScreen() {
               >
                 {topic?.meta_data?.icon}
               </Text>
-              <Heading
-                size="xl"
-                style={{ color: "#1B4B07", fontWeight: "bold" }}
+              <Text
+                style={{ color: "#1B4B07", fontFamily:'Baloo2_700Bold', fontSize: 24 ,paddingTop: 3 }}
               >
                 {topic?.name}
-              </Heading>
+              </Text>
             </HStack>
 
             <HStack style={{ width: 50 }}></HStack>

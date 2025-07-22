@@ -52,7 +52,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
         elevation: 10,
       }}
     >
-      <HStack className="flex-1 items-center justify-around pt-3">
+      <HStack className="flex-1 items-center justify-around pt-1">
         {tabs.map((tab, index) => {
           const isFocused = state.index === index;
           const route = state.routes[index];
@@ -74,13 +74,12 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
               key={index}
               onPress={onPress}
               className="items-center flex-1"
-              style={{ opacity: index < 2 ? 1 : 0.5 }} // Disable inactive tabs for now
             >
               <View
-                className={`p-2 rounded-full ${
-                  isFocused ? "bg-blue-100 " : ""
+                className={`p-2 relative ${
+                  isFocused ? "bg-gray-50 rounded-full " : ""
                 }`}
-                style={{ borderRadius: 1000 }}
+                style={{ borderRadius: 100 }}
               >
                 <tab.IconComponent
                   name={tab.icon as any}

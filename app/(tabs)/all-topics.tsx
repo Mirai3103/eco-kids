@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
 import { Header } from "@/components/Header";
-import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -222,23 +221,24 @@ const TopicCard = ({
                 }}
               >
                 <VStack space="xs" className="flex-1">
-                  <Heading
+                  <Text
                     size="lg"
                     style={{
                       color: "#1B4B07",
-                      fontWeight: "bold",
-                      marginBottom: 4,
+                      fontFamily: "Baloo2_700Bold",
+                      marginBottom: 2,
+                      fontSize: 22,
                     }}
                   >
                     {topic.name}
-                  </Heading>
+                  </Text>
                   <Text
                     style={{
                       color: "#666",
                       fontSize: 14,
-                      fontWeight: "500",
+                      fontFamily: "NunitoSans_600SemiBold",
                     }}
-                    className="pr-4"
+                    className="pr-2 line-clamp-3"
                   >
                     {topic.description}
                   </Text>
