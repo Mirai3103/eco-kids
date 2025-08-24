@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
@@ -9,7 +10,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 // GlueStack UI Components
 import { Header } from "@/components/Header";
 import { HStack } from "@/components/ui/hstack";
@@ -204,12 +204,18 @@ const TopicCard = ({
                 }}
                 className="items-center"
               >
-                <Text
+                {/* <Text
                   style={{ fontSize: 52 }}
                   className="pl-2 leading-loose font-heading"
                 >
-                  {topic.meta_data.icon}
-                </Text>
+                  {topic.meta_data.icon} 
+                </Text> */}
+                {/* icon is image url so must be loaded as an image */}
+                <Image
+                  cachePolicy={'memory-disk'}
+                  source={{ uri: topic.meta_data.icon }}
+                  style={{ width: 56, height: 56 ,marginLeft: 10}}
+                />
               </HStack>
               <HStack
                 style={{

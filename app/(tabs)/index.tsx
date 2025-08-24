@@ -19,6 +19,7 @@ import { VStack } from "@/components/ui/vstack";
 import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const featuredStory = {
@@ -165,9 +166,14 @@ const TopicIsland = ({
             }}
             className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-lg"
           >
-            <Text style={{ fontSize: 32 }} className="leading-loose">
-              {topic.meta_data.icon}
-            </Text>
+              {/* <Text style={{ fontSize: 32 }} className="leading-loose">
+                {topic.meta_data.icon}
+              </Text> */}
+              <ExpoImage
+              cachePolicy={'memory-disk'}
+                source={{ uri: topic.meta_data.icon }}
+                style={{ width: 56, height: 56 }}
+              />
           </HStack>
           <Text
             style={{ color: "#1B4B07", fontSize: 15, fontFamily: "NunitoSans_600SemiBold" }}

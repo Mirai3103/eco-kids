@@ -504,15 +504,29 @@ export default function TopicStoryScreen() {
               <Ionicons name="arrow-back" size={24} color="#1B4B07" />
             </Pressable>
 
-            <HStack className="items-center">
-              <Text
+            <HStack className="items-center ">
+              {/* <Text
                 style={{ fontSize: 32, marginRight: 8 }}
                 className="leading-loose"
               >
                 {topic?.meta_data?.icon}
-              </Text>
+              </Text> */}
+              <Image
+                source={{uri: topic?.meta_data?.icon || "https://picsum.photos/200/300"}}
+                contentFit="cover"
+                alt="story-image"
+                style={{
+                  width: 28,
+                  height: 28,
+                  marginRight: 8,
+                }}
+                onError={(error) => {
+                  console.log(error);
+                }}
+                cachePolicy="memory-disk"
+              />
               <Text
-                style={{ color: "#1B4B07", fontFamily:'Baloo2_700Bold', fontSize: 24 ,paddingTop: 3 }}
+                style={{ color: "#1B4B07", fontFamily:'Baloo2_700Bold', fontSize: 22 ,paddingTop: 3 }}
               >
                 {topic?.name}
               </Text>
