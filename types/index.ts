@@ -19,3 +19,12 @@ export type StorySegment = Database["public"]["Tables"]["story_segments"]["Row"]
 export type StoryWithSegments = Story & {
   story_segments: StorySegment[];
 }
+
+export interface ISegment {
+  id: string;
+  content_vi: string;
+  content_en: string;
+  audio?: string;
+  index: number;
+  image_url?: string;
+}

@@ -154,8 +154,8 @@ const Action3DButton = ({
     width: 90,
     height: 90,
     borderRadius: 45,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     position: 'relative' as const,
     // 3D Effect with gradient-like shadows
     shadowColor: color,
@@ -182,8 +182,8 @@ const Action3DButton = ({
         ]}
       >
         <Pressable
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
+          // onPressIn={handlePressIn}
+          // onPressOut={handlePressOut}
           onPress={onPress}
           style={{
             width: '100%',
@@ -287,6 +287,7 @@ const StoryContent = () => {
   const handleReadPress = () => {
     console.log('Read button pressed');
     // Navigate to reading screen
+    router.push(`/stories/${storyId}/read`);
   };
 
   const handleQuizPress = () => {

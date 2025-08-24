@@ -17,6 +17,7 @@ import {
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 export default function RootLayout() {
@@ -36,17 +37,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ReactQueryProvider>
-      <GluestackUIProvider mode="light">
-        <ThemeProvider value={DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="stories/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="dark" backgroundColor="transparent" translucent />
-        </ThemeProvider>
-      </GluestackUIProvider>
-    </ReactQueryProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ReactQueryProvider>
+        <GluestackUIProvider mode="light">
+          <ThemeProvider value={DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="stories/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="stories/[id]/read" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="dark" backgroundColor="transparent" translucent />
+          </ThemeProvider>
+        </GluestackUIProvider>
+      </ReactQueryProvider>
+    </GestureHandlerRootView>
   );
 }
