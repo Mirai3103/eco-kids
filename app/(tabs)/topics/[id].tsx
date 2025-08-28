@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
+import LoadingScreen from "@/components/LoadingScreen";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -360,14 +361,15 @@ export default function TopicStoryScreen() {
   };
   
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: topic } = useQuery(getTopicByIdQueryOptions(id));
-  const { data: stories } = useQuery(getAllStoriesQueryByTopicIdOptions(id));
+  const { data: topic,isLoading:isLoadingTopic } = useQuery(getTopicByIdQueryOptions(id));
+  const { data: stories,isLoading:isLoadingStories } = useQuery(getAllStoriesQueryByTopicIdOptions(id));
   const decorationEmojis = topic?.meta_data.decorationEmojis || [];
   const randomDecorationEmoji = useCallback(() => {
     return decorationEmojis[
       Math.floor(Math.random() * decorationEmojis.length)
     ];
   }, [decorationEmojis]);
+  if(isLoadingTopic || isLoadingStories) return <LoadingScreen isLoaded={!isLoadingTopic && !isLoadingStories}/>
 
   return (
     <View className="flex-1">

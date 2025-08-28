@@ -3,13 +3,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient, onlineManager } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { Image } from "expo-image";
 import * as Network from "expo-network";
-import * as SplashScreen from "expo-splash-screen";
 import {
   getAllTopicsQueryOptions,
   getTopicByIdQueryOptions,
 } from "./queries/topic.query";
-SplashScreen.preventAutoHideAsync();
+
 onlineManager.setEventListener((setOnline) => {
   const eventSubscription = Network.addNetworkStateListener((state) => {
     setOnline(state.isConnected ?? false);
@@ -47,6 +47,7 @@ export default function ReactQueryProvider({
           const topics = (await queryClient.ensureQueryData(
             getAllTopicsQueryOptions()
           )) as Topic[];
+          await Image.prefetch(topics.map((topic) => topic.meta_data.icon||""),'memory-disk')
           await Promise.all(
             topics.map((topic) => {
               queryClient.prefetchQuery({
@@ -56,17 +57,11 @@ export default function ReactQueryProvider({
             })
           );
         }
-        if (onlineManager.isOnline()) {
-          prepare()
-            .catch((err) => {
-              console.log(err);
-            })
-            .finally(() => {
-              SplashScreen.hideAsync();
-            });
-        } else {
-          SplashScreen.hideAsync();
-        }
+        prepare()
+          .catch((err) => {
+            console.log(err);
+          })
+          
       }}
       onError={() => {
         console.log("onError");

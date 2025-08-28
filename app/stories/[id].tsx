@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
 // GlueStack UI Components
+import LoadingScreen from "@/components/LoadingScreen";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -24,21 +25,6 @@ import { useQuery } from "@tanstack/react-query";
 const { width: screenWidth } = Dimensions.get("window");
 
 // Sample story data (would come from API based on ID)
-const storyData = {
-  id: "1",
-  title: "Cuộc phiêu lưu của chú ong nhỏ",
-  synopsis:
-    "Hãy cùng chú ong nhỏ khám phá khu vườn đầy màu sắc và học cách làm mật ngọt ngào. Một câu chuyện tuyệt vời về sự chăm chỉ và tình yêu thiên nhiên.",
-  image: require("@/assets/images/sample1.jpg"),
-  author: "Huu Hoang",
-  topic: "Thiên nhiên",
-  length: "8 phút",
-  difficulty: "Dễ",
-  tags: [
-    { icon: "", label: "Tác giả: Huu Hoang", color: "#E3F2FD" },
-    { icon: "", label: "Chủ đề: Thiên nhiên", color: "#E8F5E8" },
-  ],
-};
 
 // Circular Progress Component
 const CircularProgress = ({ progress, size = 90 }: { progress: number; size?: number }) => {
@@ -225,38 +211,38 @@ const Action3DButton = ({
 };
 
 // Tag Component
-const InfoTag = ({ tag }: { tag: (typeof storyData.tags)[0] }) => {
-  return (
-    <View
-      style={{
-        backgroundColor: tag.color,
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        marginHorizontal: 4,
-        marginVertical: 4,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 1,
-      }}
-    >
-      <HStack space="xs" className="items-center">
-        <Text style={{ fontSize: 12 }}>{tag.icon}</Text>
-        <Text
-          style={{
-            color: "#1B4B07",
-            fontSize: 12,
-            fontFamily: "NunitoSans_600SemiBold"
-          }}
-        >
-          {tag.label}
-        </Text>
-      </HStack>
-    </View>
-  );
-};
+// const InfoTag = ({ tag }: { tag: (typeof storyData.tags)[0] }) => {
+//   return (
+//     <View
+//       style={{
+//         backgroundColor: tag.color,
+//         borderRadius: 20,
+//         paddingHorizontal: 12,
+//         paddingVertical: 6,
+//         marginHorizontal: 4,
+//         marginVertical: 4,
+//         shadowColor: "#000",
+//         shadowOffset: { width: 0, height: 1 },
+//         shadowOpacity: 0.1,
+//         shadowRadius: 2,
+//         elevation: 1,
+//       }}
+//     >
+//       <HStack space="xs" className="items-center">
+//         <Text style={{ fontSize: 12 }}>{tag.icon}</Text>
+//         <Text
+//           style={{
+//             color: "#1B4B07",
+//             fontSize: 12,
+//             fontFamily: "NunitoSans_600SemiBold"
+//           }}
+//         >
+//           {tag.label}
+//         </Text>
+//       </HStack>
+//     </View>
+//   );
+// };
 
 // Main Content Component with entrance animations
 const StoryContent = () => {
@@ -265,7 +251,7 @@ const StoryContent = () => {
   const [readProgress, setReadProgress] = useState(65); // Example progress
   const params = useLocalSearchParams();
   const storyId = params.id as string;
-  const { data: story } = useQuery(getStoryByIdQueryOptions(storyId))
+  const { data: story,isLoading } = useQuery(getStoryByIdQueryOptions(storyId))
   
   useEffect(() => {
     Animated.stagger(200, [
@@ -295,6 +281,7 @@ const StoryContent = () => {
     // Navigate to quiz screen
   };
 
+  if(isLoading) return <LoadingScreen message="Đang tải thông tin truyện..." isLoaded={!isLoading} />
   return (
     <Animated.View
       style={{
@@ -319,7 +306,7 @@ const StoryContent = () => {
         >
           <ExpoImage
             source={{
-              uri: "https://sggniqcffaupphqfevrp.supabase.co/storage/v1/object/public/asset//ChatGPT%20Image%2022_10_30%2016%20thg%207,%202025.png",
+              uri: story!.cover_image_url!,
             }}
             style={{
               width: "100%",
@@ -346,7 +333,7 @@ const StoryContent = () => {
             }}
             className="font-heading"
           >
-            {storyData.title}
+            {story?.title}
           </Text>
 
           {/* Story Synopsis */}
@@ -361,11 +348,11 @@ const StoryContent = () => {
             }}
             className="font-body"
           >
-            {storyData.synopsis}
+            {story?.description}
           </Text>
 
           {/* Info Tags */}
-          <View
+          {/* <View
             style={{
               flexDirection: "row",
               flexWrap: "wrap",
@@ -374,10 +361,10 @@ const StoryContent = () => {
               maxWidth: screenWidth - 40,
             }}
           >
-            {storyData.tags.map((tag, index) => (
+            {story?.tags.map((tag, index) => (
               <InfoTag key={index} tag={tag} />
             ))}
-          </View>
+          </View> */}
         </VStack>
 
         {/* Enhanced 3D Action Buttons */}

@@ -7,14 +7,15 @@ import { Animated, Dimensions, Pressable, StatusBar, View } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
+import LoadingScreen from "@/components/LoadingScreen";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useImageLoader } from "@/hooks/useImageLoader";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { StorySegment } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 
@@ -168,15 +169,9 @@ export default function ReadStoryScreen() {
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
   const translateX = useRef(new Animated.Value(0)).current;
-  const { data } = useQuery(getAllStorySegmentsQueryByStoryIdOptions(storyId));
-  // preload all images
-  React.useEffect(() => {
-    storySegments.forEach((segment) => {
-      if (segment.image_url) {
-        ExpoImage.prefetch(segment.image_url);
-      }
-    });
-  }, [data]);
+  const { data,isLoading } = useQuery(getAllStorySegmentsQueryByStoryIdOptions(storyId));
+  const imageUrls =React.useMemo(() => data?.map((segment) => segment.image_url!) || [],[data]);
+  const { isLoading: isImageLoading } = useImageLoader(imageUrls,!isLoading);
 
   const storySegments = React.useMemo(
     () => data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0))||[],
@@ -240,6 +235,7 @@ export default function ReadStoryScreen() {
     // TODO: Implement audio playback
     console.log("Play audio for page:", currentPage);
   };
+  if(isLoading || isImageLoading) return <LoadingScreen  isLoaded={!isLoading && !isImageLoading}/>
 
   return (
     <View style={{ flex: 1 }}>
@@ -316,27 +312,27 @@ export default function ReadStoryScreen() {
         </HStack>
 
         {/* Main Content - Swipeable Pages */}
-        <VStack style={{ flex: 1,marginTop:-10 }}>
-          <PanGestureHandler
-            onGestureEvent={handleGestureEvent}
-            onHandlerStateChange={handleGestureEnd}
-          >
-            <Animated.View
-              style={{
-                flex: 1,
-                transform: [{ translateX }],
-              }}
+          <VStack style={{ flex: 1,marginTop:-10 }}>
+            <PanGestureHandler
+              onGestureEvent={handleGestureEvent}
+              onHandlerStateChange={handleGestureEnd}
             >
-              {storySegments && (
-                <StoryPage
-                  segment={storySegments[currentPage]}
-                  isVietnamese={isVietnamese}
-                  total={storySegments?.length || 0}
-                />
-              )}
-            </Animated.View>
-          </PanGestureHandler>
-        </VStack>
+              <Animated.View
+                style={{
+                  flex: 1,
+                  transform: [{ translateX }],
+                }}
+              >
+                {storySegments && (
+                  <StoryPage
+                    segment={storySegments[currentPage]}
+                    isVietnamese={isVietnamese}
+                    total={storySegments?.length || 0}
+                  />
+                )}
+              </Animated.View>
+            </PanGestureHandler>
+          </VStack>
 
         {/* Bottom Controls */}
         <VStack

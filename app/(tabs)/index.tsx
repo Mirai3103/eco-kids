@@ -20,7 +20,7 @@ import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
-import { useRouter } from "expo-router";
+import { SplashScreen, useRouter } from "expo-router";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const featuredStory = {
   id: 1,
@@ -303,6 +303,12 @@ export default function EcoKidsHomeScreen() {
     isLoading,
     error,
   } = useQuery(getAllTopicsQueryOptions());
+  React.useEffect(() => {
+    if(!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoading])
+  
 
   return (
     <View className="flex-1">

@@ -1,3 +1,7 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
+
+
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -14,11 +18,15 @@ import {
   useFonts as useNunitoFonts,
 } from "@expo-google-fonts/nunito-sans";
 
+
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+
+SplashScreen.preventAutoHideAsync();
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
