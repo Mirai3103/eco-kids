@@ -1,10 +1,11 @@
 import { Database } from "@/types/database.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
+import Constants from "expo-constants";
 import { AppState } from "react-native";
 import "react-native-url-polyfill/auto";
-const supabaseUrl = "https://sggniqcffaupphqfevrp.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnZ25pcWNmZmF1cHBocWZldnJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTE0NzEsImV4cCI6MjA2NzM2NzQ3MX0.9ZhPc2mvcrSv20tx9ssN5Vwxd9O7Z4sQr0c-wn_xjGk";
+const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl;
+const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {

@@ -16,6 +16,7 @@ import { useImageLoader } from "@/hooks/useImageLoader";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { StorySegment } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { useAudioPlayer } from "expo-audio";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 
@@ -27,6 +28,7 @@ const ControlButton = ({
   color = "#22C55E",
   size = 48,
   total = 0,
+  shadowColor = "#22C55E",
 }: {
   icon: React.ReactNode;
   onPress: () => void;
@@ -34,6 +36,7 @@ const ControlButton = ({
   color?: string;
   size?: number;
   total?: number;
+  shadowColor?: string;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -57,7 +60,7 @@ const ControlButton = ({
     }
   };
 
-  const darkerColor = disabled ? "#9CA3AF" : "#16A34A";
+  const darkerColor = disabled ? "#9CA3AF" : shadowColor;
 
   return (
     <Pressable
@@ -125,7 +128,7 @@ const StoryPage = ({
     >
       <View className="flex-1 p-6">
         {/* Image Section */}
-        {segment.image_url && (
+        {segment?.image_url && (
           <Center className="flex-1">
             <ExpoImage
               source={{ uri: segment.image_url }}
@@ -153,7 +156,7 @@ const StoryPage = ({
               marginBottom: 16,
             }}
           >
-            {isVietnamese ? segment.vi_text : segment.en_text || ""}
+            {isVietnamese ? segment?.vi_text : segment?.en_text || ""}
           </Text>
 
     
@@ -162,7 +165,8 @@ const StoryPage = ({
     </View>
   );
 };
-
+type Language = "vi" | "en";
+type Gender = "male" | "female";
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
@@ -170,9 +174,13 @@ export default function ReadStoryScreen() {
   const [isVietnamese, setIsVietnamese] = useState(true);
   const translateX = useRef(new Animated.Value(0)).current;
   const { data,isLoading } = useQuery(getAllStorySegmentsQueryByStoryIdOptions(storyId));
+  console.log("data",data);
   const imageUrls =React.useMemo(() => data?.map((segment) => segment.image_url!) || [],[data]);
   const { isLoading: isImageLoading } = useImageLoader(imageUrls,!isLoading);
-
+  const selectAudioUrl = React.useMemo(() => data?.map((segment) => segment.audio_segments.find((audio) => audio.language === "vi"&&audio.gender === "female")?.audio_url||"") || [],[data]);
+  const player = useAudioPlayer({
+    uri: selectAudioUrl[currentPage],
+  });
   const storySegments = React.useMemo(
     () => data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0))||[],
     [data]
@@ -232,8 +240,8 @@ export default function ReadStoryScreen() {
   };
 
   const handlePlayAudio = () => {
-    // TODO: Implement audio playback
-    console.log("Play audio for page:", currentPage);
+    console.log("Play audio for page:", data);
+    player.play();
   };
   if(isLoading || isImageLoading) return <LoadingScreen  isLoaded={!isLoading && !isImageLoading}/>
 
@@ -365,6 +373,7 @@ export default function ReadStoryScreen() {
                 onPress={handlePlayAudio}
                 color="#3B82F6"
                 size={40}
+                shadowColor="#2563EB"
               />
 
               {/* Page Progress */}
@@ -408,6 +417,7 @@ export default function ReadStoryScreen() {
                 onPress={() => console.log("Settings")}
                 color="#6B7280"
                 size={40}
+                shadowColor="#374151"
               />
             </HStack>
 

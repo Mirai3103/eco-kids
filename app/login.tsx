@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, Pressable, StatusBar, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, Animated, Dimensions, Pressable, StatusBar, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
 import { Center } from "@/components/ui/center";
@@ -9,10 +9,13 @@ import { Heading } from "@/components/ui/heading";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import useSession from "@/hooks/useSession";
+import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/FontAwesome";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
 // Floating Element Component
 const FloatingElement = ({
   emoji,
@@ -230,7 +233,7 @@ const SkipButton = ({ onPress }: { onPress: () => void }) => {
 };
 
 // Main Component with entrance animations
-const LoginContent = () => {
+const LoginContent = ({onLoginWithGoogle}: {onLoginWithGoogle: () => void}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const router = useRouter();
@@ -306,7 +309,7 @@ const LoginContent = () => {
             }}
           />
           <View>
-            <GoogleButton onPress={() => {}} />
+            <GoogleButton onPress={onLoginWithGoogle} />
           </View>
         </VStack>
       </VStack>
@@ -314,6 +317,7 @@ const LoginContent = () => {
   );
 };
 
+const GoogleClientId = Constants.expoConfig?.extra?.googleClientId;
 export default function LoginScreen() {
   // Floating elements positions
   const floatingElements = [
@@ -326,14 +330,90 @@ export default function LoginScreen() {
     { emoji: "✨", position: { x: screenWidth - 50, y: 600 }, duration: 3800 },
     { emoji: "🌸", position: { x: 40, y: 650 }, duration: 4800 },
   ];
-  console.log("LoginScreen");
-  const { user } = useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+  useEffect(() => {
+    // Configure Google Sign-In
+    const checkAuthStatus = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session) {
+          router.replace('/(tabs)');
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    GoogleSignin.configure({
+      webClientId: GoogleClientId,
+      offlineAccess: true,
+      scopes: ['profile', 'email'],
+    });
+
+    // Check if user is already signed in
+    checkAuthStatus();
+  }, []);
+  const signInWithGoogle = async () => {
+    try {
+      setIsLoading(true);
+
+      // Check if device supports Google Play Services
+      await GoogleSignin.hasPlayServices();
+
+      // Get user info from Google
+      const userInfo = await GoogleSignin.signIn();
+      console.log('userInfo', userInfo);
+
+      if (userInfo.data?.idToken) {
+        console.log('userInfo.data?.idToken', userInfo.data?.idToken);
+        // Sign in with Supabase using Google ID token
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: userInfo.data?.idToken,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.user) {
+          // Navigate to main app
+          router.replace('/(tabs)');
+        }
+      } else {
+        throw new Error('No ID token received from Google');
+      }
+    } catch (error: any) {
+      console.error('Google Sign-In Error:', error);
+
+      let errorMessage = 'Đã có lỗi xảy ra khi đăng nhập';
+
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        errorMessage = 'Đăng nhập đã bị hủy';
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        errorMessage = 'Đang trong quá trình đăng nhập';
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        errorMessage = 'Google Play Services không khả dụng';
+      }
+
+      Alert.alert('Lỗi đăng nhập', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+ const {session, isLoading: isLoadingSession} =useSession()
   const router = useRouter();
   React.useEffect(() => {
-    if (user) {
+    if(isLoadingSession) return;
+    if(session) {
       router.replace("/(tabs)");
     }
-  }, [user]);
+  }, [session, isLoadingSession]);
 
   return (
     <View className="flex-1">
@@ -363,7 +443,7 @@ export default function LoginScreen() {
 
       <SafeAreaView className="flex-1">
         <Center className="flex-1">
-          <LoginContent />
+          <LoginContent onLoginWithGoogle={signInWithGoogle} />
         </Center>
       </SafeAreaView>
     </View>

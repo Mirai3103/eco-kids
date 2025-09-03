@@ -7,10 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
@@ -47,23 +47,26 @@ export type Database = {
         Row: {
           audio_url: string | null
           created_at: string | null
+          gender: string | null
           id: string
+          language: string | null
           segment_id: string | null
-          voice_id: string | null
         }
         Insert: {
           audio_url?: string | null
           created_at?: string | null
+          gender?: string | null
           id: string
+          language?: string | null
           segment_id?: string | null
-          voice_id?: string | null
         }
         Update: {
           audio_url?: string | null
           created_at?: string | null
+          gender?: string | null
           id?: string
+          language?: string | null
           segment_id?: string | null
-          voice_id?: string | null
         }
         Relationships: [
           {
@@ -71,13 +74,6 @@ export type Database = {
             columns: ["segment_id"]
             isOneToOne: false
             referencedRelation: "story_segments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "audio_segments_voice_id_fkey"
-            columns: ["voice_id"]
-            isOneToOne: false
-            referencedRelation: "voices"
             referencedColumns: ["id"]
           },
         ]
@@ -481,35 +477,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_points: {
-        Row: {
-          current_points: number | null
-          total_earned: number | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          current_points?: number | null
-          total_earned?: number | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          current_points?: number | null
-          total_earned?: number | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_points_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_rewards: {
         Row: {
           claimed_at: string | null
@@ -551,46 +518,25 @@ export type Database = {
           avatar_url: string | null
           birthdday: string | null
           created_at: string | null
-          email: string
           id: string
           name: string | null
+          points: number | null
         }
         Insert: {
           avatar_url?: string | null
           birthdday?: string | null
           created_at?: string | null
-          email: string
           id?: string
           name?: string | null
+          points?: number | null
         }
         Update: {
           avatar_url?: string | null
           birthdday?: string | null
           created_at?: string | null
-          email?: string
           id?: string
           name?: string | null
-        }
-        Relationships: []
-      }
-      voices: {
-        Row: {
-          code: string
-          id: string
-          is_active: boolean | null
-          label: string | null
-        }
-        Insert: {
-          code: string
-          id: string
-          is_active?: boolean | null
-          label?: string | null
-        }
-        Update: {
-          code?: string
-          id?: string
-          is_active?: boolean | null
-          label?: string | null
+          points?: number | null
         }
         Relationships: []
       }
@@ -653,7 +599,7 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
+        Returns: unknown
       }
       sparsevec_out: {
         Args: { "": unknown }

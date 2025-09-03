@@ -34,7 +34,9 @@
           "resizeMode": "cover",
           "backgroundColor": "#CAFEC3"
         }
-      ]
+      ],
+      "@react-native-google-signin/google-signin",
+       "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true

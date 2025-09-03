@@ -7,6 +7,7 @@ interface User {
   name: string;
   avatar: string;
   isGuest: boolean;
+  points?: number;
 }
 function createGuestUser(): User {
   return {
@@ -14,6 +15,7 @@ function createGuestUser(): User {
     name: "Guest",
     avatar: "https://via.placeholder.com/150",
     isGuest: true,
+    points: 0,
   };
 }
 

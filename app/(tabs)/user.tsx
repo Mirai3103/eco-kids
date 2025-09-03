@@ -14,23 +14,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // GlueStack UI Components
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
-import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useUserStore } from '@/stores/user.store';
+import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 // User data (would come from API/state management)
-const userData = {
-  name: 'Hoài Nam',
-  avatar: require('@/assets/images/avatar.jpg'),
-  stats: {
-    stars: 125,
-    storiesRead: 23
-  }
-};
+
 
 // Achievements/Badges data
 const badges = [
@@ -417,7 +410,7 @@ export default function UserProfileScreen() {
         {/* Header with Settings */}
         <HStack className="justify-between items-center px-6 py-4">
           <View style={{ width: 40 }} />
-          <Heading size="xl" style={{ color: '#1B4B07', fontWeight: 'bold' }}>
+          <Heading size="xl" style={{ color: '#1B4B07', fontWeight: 'bold', fontFamily : 'Baloo2_700Bold' }}>
             Hồ sơ của tôi
           </Heading>
           <Pressable
@@ -444,8 +437,9 @@ export default function UserProfileScreen() {
           <VStack space="md" className="items-center mt-6 mb-8">
             <Pressable onPress={handleAvatarEdit}>
               <View style={{ position: 'relative' }}>
-                <Image
-                  source={userData.avatar}
+                <ExpoImage
+                  source={{ uri: user?.avatar }}
+                  cachePolicy={'memory-disk'}
                   style={{
                     width: 120,
                     height: 120,
@@ -475,7 +469,7 @@ export default function UserProfileScreen() {
               </View>
             </Pressable>
             <Heading size="2xl" style={{ color: '#1B4B07', fontWeight: 'bold' }}>
-              {userData.name}
+              {user?.name}
             </Heading>
           </VStack>
 
@@ -487,14 +481,14 @@ export default function UserProfileScreen() {
             <HStack space="md" className="justify-between">
               <StatCard
                 icon="⭐"
-                number={userData.stats.stars}
+                number={20}
                 label="Sao thưởng"
                 bgColor="#FFC107"
                 textColor="white"
               />
               <StatCard
                 icon="📚"
-                number={userData.stats.storiesRead}
+                number={20}
                 label="Truyện đã đọc"
                 bgColor="#2196F3"
                 textColor="white"
