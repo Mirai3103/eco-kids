@@ -116,6 +116,7 @@ export default function RootLayout() {
               />
               <Stack.Screen name="login" options={{ headerShown: false }} />
               <Stack.Screen name="topics/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="stories/[id]/quiz" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>
             <StatusBar style="dark" backgroundColor="transparent" translucent />

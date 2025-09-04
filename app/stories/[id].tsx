@@ -279,6 +279,7 @@ const StoryContent = () => {
   const handleQuizPress = () => {
     console.log('Quiz button pressed');
     // Navigate to quiz screen
+    router.push(`/stories/${storyId}/quiz`);
   };
 
   if(isLoading) return <LoadingScreen message="Đang tải thông tin truyện..." isLoaded={!isLoading} />
