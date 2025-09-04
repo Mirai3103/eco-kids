@@ -252,7 +252,7 @@ const StoryContent = () => {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const { data: story,isLoading } = useQuery(getStoryByIdQueryOptions(storyId))
-  
+    console.log(story)
   useEffect(() => {
     Animated.stagger(200, [
       Animated.parallel([

@@ -21,7 +21,7 @@ export const getAllStoriesQueryByTopicIdOptions = (topicId: string): UseQueryOpt
   },
   select: (data) => data as Story[] | undefined,
 });
-export const getStoryByIdQueryOptions = (id: string): UseQueryOptions<
+export const  getStoryByIdQueryOptions = (id: string): UseQueryOptions<
   unknown,
   Error,
   Story | undefined,
@@ -35,7 +35,20 @@ export const getStoryByIdQueryOptions = (id: string): UseQueryOptions<
       .select("*, story_segments(*)")
       .eq("id", id)
       .single()
-    
+      console.log(data,error, ":zzz")
     return data as StoryWithSegments | undefined
   }
+})
+
+export const getAllStoriesQueryOptions = (skip: number, limit: number): UseQueryOptions<
+  unknown,
+  Error,
+  Story[] | undefined,
+  ["stories"]
+> => ({
+  queryKey: ["stories"],
+  queryFn: async () => {
+    return await supabase.from("stories").select("*").range(skip, skip + limit).then((res) => res.data||[])
+  },
+  select: (data) => data as Story[] | undefined,
 })

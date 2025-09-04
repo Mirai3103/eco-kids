@@ -15,7 +15,7 @@ export const getAllStorySegmentsQueryByStoryIdOptions = (
     console.log("fetching all stories data............", storyId);
     return await supabase
       .from("story_segments")
-      .select("*, audio_segments!inner(*)")
+      .select("*, audio_segments(*)")
       .eq("story_id", storyId)
       .then((res) => {
         console.log("res", res);

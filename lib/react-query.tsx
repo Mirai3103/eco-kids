@@ -19,10 +19,10 @@ onlineManager.setEventListener((setOnline) => {
 const queryClient = new QueryClient({
   defaultOptions: {
     // for react native offline first
-    queries: {
-      staleTime: Infinity,
-      gcTime: Infinity,
-    },
+    // queries: {
+    //   staleTime: Infinity,
+    //   gcTime: Infinity,
+    // },
   },
 });
 const asyncStoragePersister = createAsyncStoragePersister({

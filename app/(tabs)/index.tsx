@@ -1,4 +1,3 @@
-import { Image } from "@/components/ui/image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useRef } from "react";
 import {
@@ -16,8 +15,9 @@ import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { getAllStoriesQueryOptions } from "@/lib/queries/story.query";
 import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
-import { Topic } from "@/types";
+import { Story, Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { SplashScreen, useRouter } from "expo-router";
@@ -194,7 +194,7 @@ const StoryCard = ({
   withButton = false,
   onPress,
 }: {
-  story: { id: number; title: string; image: string; bgColor: string };
+  story: Story
   size?: "small" | "large";
   withButton?: boolean;
   onPress?: () => void;
@@ -251,7 +251,7 @@ const StoryCard = ({
       >
         <View
           style={{
-            backgroundColor: story.bgColor,
+            backgroundColor: "#CAFEC3",
             borderRadius: 20,
             padding: 16,
             height: cardHeight,
@@ -263,10 +263,11 @@ const StoryCard = ({
           }}
         >
           <Center className="flex-1">
-            <Image
-              source={require("@/assets/images/sample1.jpg")}
-              className="w-full h-full rounded-lg"
+            <ExpoImage
+              source={{ uri: story.cover_image_url! }}
+              cachePolicy={'memory-disk'}
               alt="story-image"
+              style={{ width: '100%', height: '100%', borderRadius: 20 }}
             />
           </Center>
           <Text
@@ -303,6 +304,11 @@ export default function EcoKidsHomeScreen() {
     isLoading,
     error,
   } = useQuery(getAllTopicsQueryOptions());
+  const {
+    data: stories = [],
+    isLoading: isStoriesLoading,
+    error: storiesError,
+  } = useQuery(getAllStoriesQueryOptions(0, 4));
   React.useEffect(() => {
     if(!isLoading) {
       SplashScreen.hideAsync();
@@ -379,13 +385,13 @@ export default function EcoKidsHomeScreen() {
             >
               Đề xuất cho bé
             </Text>
-            {Array.from({ length: 4 }).map((_, index) => (
+            {stories.map((story) => (
               <StoryCard
-                key={index}
+                key={story.id}
                 withButton
-                story={featuredStory}
+                story={story}
                 size="large"
-                onPress={() => router.push(`/stories/${featuredStory.id}`)}
+                onPress={() => router.push(`/stories/${story.id}`)}
               />
             ))}
             <Center className="mt-8">
