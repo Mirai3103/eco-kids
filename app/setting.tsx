@@ -2,15 +2,17 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
+import Tts from 'react-native-tts';
+
 import {
-    Alert,
-    Animated,
-    Dimensions,
-    Pressable,
-    ScrollView,
-    StatusBar,
-    Switch,
-    View,
+  Alert,
+  Animated,
+  Dimensions,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  Switch,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -265,6 +267,7 @@ export default function SettingsScreen() {
   const [autoPlayEnabled, setAutoPlayEnabled] = React.useState(false);
 
   const handleLogout = async () => {
+    Tts.speak('Hello, world!');
     Alert.alert(
       "Đăng xuất",
       "Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng?",

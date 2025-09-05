@@ -553,6 +553,7 @@ export default function Quiz() {
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [userAnswers, setUserAnswers] = useState<number[]>([]);
+  // const { data: quizData, isLoading } = useQuery(getQuizByStoryIdQueryOptions(storyId));
 
   const { data: quizData, isLoading } = useQuery({
     queryKey: ["quiz", storyId],

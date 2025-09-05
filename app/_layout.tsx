@@ -1,10 +1,15 @@
 import "react-native-gesture-handler";
 import "react-native-reanimated";
 
+import LoadingScreen from "@/components/LoadingScreen";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import useSession from "@/hooks/useSession";
 import ReactQueryProvider from "@/lib/react-query";
+import { supabase } from "@/lib/supabase";
+import { useUserStore } from "@/stores/user.store";
+import { useSoundStore } from "@/stores/useSoundStore";
 import {
   Baloo2_600SemiBold,
   Baloo2_700Bold,
@@ -16,12 +21,6 @@ import {
   NunitoSans_700Bold,
   useFonts as useNunitoFonts,
 } from "@expo-google-fonts/nunito-sans";
-
-import LoadingScreen from "@/components/LoadingScreen";
-import useSession from "@/hooks/useSession";
-import { supabase } from "@/lib/supabase";
-import { useUserStore } from "@/stores/user.store";
-import { useSoundStore } from "@/stores/useSoundStore";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { SplashScreen, Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
