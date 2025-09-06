@@ -7,127 +7,29 @@ import {
   Animated,
   Dimensions,
   Pressable,
+  ScrollView,
   StatusBar,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Tts from 'react-native-tts';
 // GlueStack UI Components
 import LoadingScreen from "@/components/LoadingScreen";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { getQuizByStoryIdQueryOptions } from "@/lib/queries/quiz.query";
 import theme from "@/lib/theme";
+import { Answer } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { ScrollView } from "react-native";
+import { useAudioPlayer } from "expo-audio";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-interface IQuiz {
-  id: string;
-  question: string;
-  audio_url?: string;
-  image_url?: string;
-  options: {
-    text: string;
-    audio_url?: string;
-    image_url?: string;
-    is_correct: boolean;
-  }[];
-  answer: string;
-}
 
-// Mock quiz data
-async function getQuiz(storyId: string): Promise<IQuiz[]> {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  return [
-    {
-      id: "1",
-      question: "Chú ong nhỏ trong truyện làm gì để giúp bảo vệ môi trường?",
-      image_url: "https://picsum.photos/400/300?random=1",
-      audio_url: "https://essentials.pixfort.com/original/wp-content/uploads/sites/4/2020/02/skanews.wav",
-      options: [
-        {
-          text: "Thu gom rác thải",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=11",
-        },
-        {
-          text: "Trồng nhiều hoa để ong khác có thức ăn",
-          is_correct: true,
-          image_url: "https://picsum.photos/80/80?random=12",
-        },
-        {
-          text: "Dọn dẹp sông suối",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=13",
-        },
-        {
-          text: "Tiết kiệm nước",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=14",
-        },
-      ],
-      answer: "Trồng nhiều hoa để ong khác có thức ăn",
-    },
-    {
-      id: "2",
-      question: "Tại sao việc bảo vệ ong mật lại quan trọng với môi trường?",
-      image_url: "https://picsum.photos/400/300?random=2",
-      options: [
-        {
-          text: "Ong giúp thụ phấn cho cây trồng",
-          is_correct: true,
-          image_url: "https://picsum.photos/80/80?random=21",
-        },
-        {
-          text: "Ong làm mật ngon",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=22",
-        },
-        {
-          text: "Ong bay đẹp",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=23",
-        },
-        {
-          text: "Ong không cắn người",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=24",
-        },
-      ],
-      answer: "Ong giúp thụ phấn cho cây trồng",
-    },
-    {
-      id: "3",
-      question: "Bé có thể làm gì để giúp bảo vệ môi trường như chú ong?",
-      image_url: "https://picsum.photos/400/300?random=3",
-      options: [
-        {
-          text: "Vứt rác bừa bãi",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=31",
-        },
-        {
-          text: "Trồng cây xanh và chăm sóc hoa",
-          is_correct: true,
-          image_url: "https://picsum.photos/80/80?random=32",
-        },
-        {
-          text: "Dùng nhiều đồ nhựa",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=33",
-        },
-        {
-          text: "Lãng phí nước",
-          is_correct: false,
-          image_url: "https://picsum.photos/80/80?random=34",
-        },
-      ],
-      answer: "Trồng cây xanh và chăm sóc hoa",
-    },
-  ];
-}
+
+
 
 // 3D Control Button Component
 const ControlButton = ({
@@ -209,15 +111,15 @@ const ControlButton = ({
   );
 };
 
-// Quiz Option Component
-const QuizOption = ({
+// 3D Answer Button matching app design system
+const Answer3DButton = ({
   option,
   index,
   isSelected,
   isAnswered,
   onPress,
 }: {
-  option: IQuiz["options"][0];
+  option: Answer;
   index: number;
   isSelected: boolean;
   isAnswered: boolean;
@@ -266,13 +168,13 @@ const QuizOption = ({
 
   const getBackgroundColor = () => {
     if (!isAnswered) {
-      return isSelected ? "#E3F2FD" : "white";
+      return isSelected ? theme.palette.primary[200] : "white";
     }
     if (option.is_correct) {
-      return "#E8F5E8"; // Green for correct
+      return "#E8F5E8"; // Light green for correct
     }
     if (isSelected && !option.is_correct) {
-      return "#FCDCE0"; // Red for incorrect selection
+      return "#FCDCE0"; // Light red for incorrect selection
     }
     return "white";
   };
@@ -282,7 +184,7 @@ const QuizOption = ({
       return isSelected ? theme.palette.primary[400] : "#E5E7EB";
     }
     if (option.is_correct) {
-      return theme.palette.success[400];
+      return theme.palette.primary[400];
     }
     if (isSelected && !option.is_correct) {
       return theme.palette.error[400];
@@ -290,10 +192,23 @@ const QuizOption = ({
     return "#E5E7EB";
   };
 
+  const getShadowColor = () => {
+    if (!isAnswered) {
+      return isSelected ? theme.palette.primary[400] : "#000";
+    }
+    if (option.is_correct) {
+      return theme.palette.primary[400];
+    }
+    if (isSelected && !option.is_correct) {
+      return theme.palette.error[400];
+    }
+    return "#000";
+  };
+
   const getIcon = () => {
     if (!isAnswered) return null;
     if (option.is_correct) {
-      return <Feather name="check-circle" size={24} color={theme.palette.success[500]} />;
+      return <Feather name="check-circle" size={24} color={theme.palette.primary[500]} />;
     }
     if (isSelected && !option.is_correct) {
       return <Feather name="x-circle" size={24} color={theme.palette.error[500]} />;
@@ -306,7 +221,7 @@ const QuizOption = ({
       style={{
         opacity: opacityAnim,
         transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
-        marginBottom: 6,
+        marginBottom: 12,
       }}
     >
       <Pressable
@@ -315,59 +230,107 @@ const QuizOption = ({
         onPressOut={handlePressOut}
         disabled={isAnswered}
       >
-        <View
-          style={{
-            backgroundColor: getBackgroundColor(),
-            borderRadius: 16,
-            borderWidth: 2,
-            borderColor: getBorderColor(),
-            padding: 16,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 2,
-          }}
-        >
-          <HStack space="md" className="items-center">
-            {/* Option Image */}
-            {option.image_url && (
-              <ExpoImage
-                source={{ uri: option.image_url }}
+        <View style={{ position: "relative" }}>
+          {/* Shadow/Bottom layer - 3D effect */}
+          <View
+            style={{
+              backgroundColor: getBorderColor(),
+              borderRadius: 20,
+              position: "absolute",
+              top: 6,
+              left: 0,
+              right: 0,
+              height: "100%",
+            }}
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              backgroundColor: getBackgroundColor(),
+              borderRadius: 20,
+              borderWidth: 2,
+              borderColor: getBorderColor(),
+              padding: 20,
+              minHeight: 80,
+              shadowColor: getShadowColor(),
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 6,
+            }}
+          >
+            <HStack space="md" className="items-center">
+              {/* Letter Badge */}
+              <View
                 style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 12,
+                  backgroundColor: isSelected ? theme.palette.primary[400] : theme.palette.primary[100],
+                  borderRadius: 20,
+                  width: 40,
+                  height: 40,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderWidth: 2,
+                  borderColor: theme.palette.primary[400],
                 }}
-                alt={`Option ${index + 1}`}
-                contentFit="cover"
-                cachePolicy="memory-disk"
-              />
-            )}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontFamily: "Baloo2_700Bold",
+                    color: isSelected ? "white" : theme.palette.primary[600],
+                  }}
+                >
+                  {String.fromCharCode(65 + index)}
+                </Text>
+              </View>
 
-            {/* Option Text */}
-            <Text
-              style={{
-                flex: 1,
-                color: "#1B4B07",
-                fontSize: 16,
-                fontFamily: "NunitoSans_600SemiBold",
-                lineHeight: 24,
-              }}
-            >
-              {option.text}
-            </Text>
+              {/* Option Image (if available) */}
+              {/* {option.image_url && (
+                <View
+                  style={{
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    borderWidth: 2,
+                    borderColor: "#E5E7EB",
+                  }}
+                >
+                  <ExpoImage
+                    source={{ uri: option.image_url }}
+                    style={{
+                      width: 60,
+                      height: 60,
+                    }}
+                    alt={`Option ${index + 1}`}
+                    contentFit="cover"
+                    cachePolicy="memory-disk"
+                  />
+                </View>
+              )} */}
 
-            {/* Result Icon */}
-            {getIcon()}
-          </HStack>
+              {/* Option Text */}
+              <Text
+                style={{
+                  flex: 1,
+                  color: "#1B4B07",
+                  fontSize: 16,
+                  fontFamily: "NunitoSans_600SemiBold",
+                  lineHeight: 24,
+                }}
+              >
+                {option.content}
+              </Text>
+
+              {/* Result Icon */}
+              {getIcon()}
+            </HStack>
+          </View>
         </View>
       </Pressable>
     </Animated.View>
   );
 };
 
-// Progress Bar Component
+// Progress Bar matching app design system
 const ProgressBar = ({ current, total }: { current: number; total: number }) => {
   const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -406,6 +369,233 @@ const ProgressBar = ({ current, total }: { current: number; total: number }) => 
   );
 };
 
+// Fun Audio Button Component
+const AudioButton = ({
+  audioUrl,
+  size = 60,
+  content,
+}: {
+  audioUrl?: string;
+  size?: number;
+  content: string;
+}) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  
+  const player = useAudioPlayer({
+    uri: audioUrl || "",
+  });
+
+  useEffect(() => {
+    if (isPlaying) {
+      Animated.loop(
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        })
+      ).start();
+    } else {
+      rotateAnim.stopAnimation();
+      rotateAnim.setValue(0);
+    }
+  }, [isPlaying]);
+
+  const handlePress = async () => {
+    if (!audioUrl){
+      Tts.speak(content);
+      return;
+    }
+    
+    try {
+      if (isPlaying) {
+        await player.pause();
+        setIsPlaying(false);
+      } else {
+        await player.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.log("Audio playback error:", error);
+    }
+  };
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.9,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  // if (!audioUrl) return null;
+
+  return (
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Pressable
+        onPress={handlePress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <View style={{ position: "relative" }}>
+          {/* Shadow layer */}
+          <View
+            style={{
+              backgroundColor: isPlaying ? theme.palette.primary[500] : theme.palette.secondary[500],
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              position: "absolute",
+              top: 3,
+              left: 0,
+            }}
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              backgroundColor: isPlaying ? theme.palette.primary[400] : theme.palette.secondary[400],
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              justifyContent: "center",
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 6,
+            }}
+          >
+            <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+              <Ionicons
+                name={isPlaying ? "pause" : "volume-high"}
+                size={size * 0.4}
+                color="white"
+              />
+            </Animated.View>
+          </View>
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+};
+
+// Question Card matching app design system
+const QuestionCard = ({
+  question,
+  imageUrl,
+  audioUrl,
+  questionNumber,
+  totalQuestions,
+}: {
+  question: string;
+  imageUrl?: string;
+  audioUrl?: string;
+  questionNumber: number;
+  totalQuestions: number;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(-20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        friction: 4,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [questionNumber]);
+
+  return (
+    <Animated.View
+      style={{
+        transform: [{ scale: scaleAnim }, { translateY: slideAnim }],
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: "white",
+          borderRadius: 20,
+          padding: 20,
+          marginBottom: 24,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.15,
+          shadowRadius: 16,
+          elevation: 10,
+        }}
+      >
+        {/* Question Header with Audio Button */}
+        <HStack className="justify-between items-center mb-4">
+          <Text
+            style={{
+              color: "#1B4B07",
+              fontSize: 16,
+              fontFamily: "Baloo2_700Bold",
+            }}
+          >
+            Câu hỏi {questionNumber}/{totalQuestions}
+          </Text>
+          
+          <AudioButton audioUrl={audioUrl} size={48} content={question} /> 
+        </HStack>
+
+        {/* Question Image (if available) */}
+        {imageUrl && (
+          <Center className="mb-4">
+            <ExpoImage
+              source={{ uri: imageUrl }}
+              style={{
+                width: screenWidth - 80,
+                height: 180,
+                borderRadius: 16,
+              }}
+              alt={`Question ${questionNumber}`}
+              contentFit="cover"
+              cachePolicy="memory-disk"
+            />
+          </Center>
+        )}
+
+        {/* Question Text */}
+        <Text
+          style={{
+            color: "#1B4B07",
+            fontSize: 20,
+            lineHeight: 28,
+            textAlign: "center",
+            fontFamily: "Baloo2_700Bold",
+          }}
+        >
+          {question}
+        </Text>
+      </View>
+    </Animated.View>
+  );
+};
+
 // Quiz Results Component
 const QuizResults = ({
   score,
@@ -419,27 +609,53 @@ const QuizResults = ({
   onBack: () => void;
 }) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 4,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
+    Animated.sequence([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      Animated.loop(
+        Animated.sequence([
+          Animated.spring(bounceAnim, {
+            toValue: 1,
+            friction: 3,
+            tension: 40,
+            useNativeDriver: true,
+          }),
+          Animated.spring(bounceAnim, {
+            toValue: 0,
+            friction: 3,
+            tension: 40,
+            useNativeDriver: true,
+          }),
+        ]),
+        { iterations: 3 }
+      ),
+    ]).start();
   }, []);
 
   const percentage = (score / total) * 100;
   const getEmoji = () => {
     if (percentage >= 80) return "🎉";
-    if (percentage >= 60) return "👍";
+    if (percentage >= 60) return "🌟";
     return "💪";
   };
 
   const getMessage = () => {
-    if (percentage >= 80) return "Xuất sắc!";
-    if (percentage >= 60) return "Tốt lắm!";
+    if (percentage >= 80) return "Tuyệt vời!";
+    if (percentage >= 60) return "Giỏi lắm!";
     return "Cố gắng thêm nhé!";
+  };
+
+  const getBackgroundColors = () => {
+    if (percentage >= 80) return ["#4ECDC4", "#44A08D"];
+    if (percentage >= 60) return ["#45B7D1", "#2980B9"];
+    return ["#FF6B9D", "#E91E63"];
   };
 
   return (
@@ -494,49 +710,83 @@ const QuizResults = ({
         </Text>
 
         <VStack space="md" className="w-full">
-          <Pressable
-            onPress={onRestart}
-            style={{
-              backgroundColor: theme.palette.primary[400],
-              borderRadius: 16,
-              padding: 16,
-              alignItems: "center",
-              shadowColor: theme.palette.primary[400],
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 18,
-                fontFamily: "Baloo2_700Bold",
-              }}
-            >
-              Làm lại Quiz
-            </Text>
+          {/* 3D Restart Button */}
+          <Pressable onPress={onRestart}>
+            <View style={{ position: "relative" }}>
+              {/* Shadow layer */}
+              <View
+                style={{
+                  backgroundColor: theme.palette.primary[500],
+                  borderRadius: 16,
+                  position: "absolute",
+                  top: 4,
+                  left: 0,
+                  right: 0,
+                  height: "100%",
+                }}
+              />
+              {/* Top layer */}
+              <View
+                style={{
+                  backgroundColor: theme.palette.primary[400],
+                  borderRadius: 16,
+                  padding: 16,
+                  alignItems: "center",
+                  shadowColor: theme.palette.primary[400],
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 18,
+                    fontFamily: "Baloo2_700Bold",
+                  }}
+                >
+                  Làm lại Quiz
+                </Text>
+              </View>
+            </View>
           </Pressable>
 
-          <Pressable
-            onPress={onBack}
-            style={{
-              backgroundColor: "#6B7280",
-              borderRadius: 16,
-              padding: 16,
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 16,
-                fontFamily: "NunitoSans_600SemiBold",
-              }}
-            >
-              Quay lại
-            </Text>
+          {/* 3D Back Button */}
+          <Pressable onPress={onBack}>
+            <View style={{ position: "relative" }}>
+              {/* Shadow layer */}
+              <View
+                style={{
+                  backgroundColor: "#4B5563",
+                  borderRadius: 16,
+                  position: "absolute",
+                  top: 4,
+                  left: 0,
+                  right: 0,
+                  height: "100%",
+                }}
+              />
+              {/* Top layer */}
+              <View
+                style={{
+                  backgroundColor: "#6B7280",
+                  borderRadius: 16,
+                  padding: 16,
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 16,
+                    fontFamily: "NunitoSans_600SemiBold",
+                  }}
+                >
+                  Quay lại
+                </Text>
+              </View>
+            </View>
           </Pressable>
         </VStack>
       </View>
@@ -553,11 +803,9 @@ export default function Quiz() {
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [userAnswers, setUserAnswers] = useState<number[]>([]);
-  // const { data: quizData, isLoading } = useQuery(getQuizByStoryIdQueryOptions(storyId));
-
-  const { data: quizData, isLoading } = useQuery({
-    queryKey: ["quiz", storyId],
-    queryFn: () => getQuiz(storyId),
+  const { data: quizData, isLoading } = useQuery(getQuizByStoryIdQueryOptions(storyId));
+  const player = useAudioPlayer({
+    uri: "",
   });
 
   const handleBack = () => {
@@ -566,14 +814,18 @@ export default function Quiz() {
 
   const handleOptionPress = (optionIndex: number) => {
     if (isAnswered) return;
+
     setSelectedOption(optionIndex);
+    Tts.engines().then(engines => console.log({engines}));
+    Tts.voices().then(voices => console.log({voices}));
+    Tts.speak(quizData![currentQuestion].answers[optionIndex].content!);
   };
 
   const handleSubmitAnswer = () => {
     if (selectedOption === null) return;
     
     setIsAnswered(true);
-    const isCorrect = quizData![currentQuestion].options[selectedOption].is_correct;
+    const isCorrect = quizData![currentQuestion].answers[selectedOption].is_correct;
     
     if (isCorrect) {
       setScore(score + 1);
@@ -674,61 +926,25 @@ export default function Quiz() {
             </HStack>
 
             {/* Progress Bar */}
-            <View style={{ paddingHorizontal: 24, marginBottom: 8 }}>
+            <View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
               <ProgressBar current={currentQuestion + 1} total={quizData.length} />
             </View>
 
             {/* Main Content */}
             <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, padding: 16 }}>
               {/* Question Card */}
-              <View
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: 20,
-                  padding: 20,
-                  marginBottom: 24,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 16,
-                  elevation: 10,
-                }}
-              >
-                {/* Question Image */}
-                {currentQuiz.image_url && (
-                  <Center className="mb-8">
-                    <ExpoImage
-                      source={{ uri: currentQuiz.image_url }}
-                      style={{
-                        width: screenWidth - 80,
-                        height: 180,
-                        borderRadius: 16,
-                      }}
-                      alt={`Question ${currentQuestion + 1}`}
-                      contentFit="cover"
-                      cachePolicy="memory-disk"
-                    />
-                  </Center>
-                )}
-
-                {/* Question Text */}
-                <Text
-                  style={{
-                    color: "#1B4B07",
-                    fontSize: 20,
-                    lineHeight: 28,
-                    textAlign: "center",
-                    fontFamily: "Baloo2_700Bold",
-                  }}
-                >
-                  {currentQuiz.question}
-                </Text>
-              </View>
+              <QuestionCard
+                question={currentQuiz.content!}
+                imageUrl={""}
+                audioUrl={""}
+                questionNumber={currentQuestion + 1}
+                totalQuestions={quizData.length}
+              />
 
               {/* Options */}
-              <VStack space="sm" style={{ flex: 1 }} className="mb-10">
-                {currentQuiz.options.map((option, index) => (
-                  <QuizOption
+              <VStack space="sm" className="mb-6">
+                {currentQuiz?.answers?.map((option, index) => (
+                  <Answer3DButton
                     key={index}
                     option={option}
                     index={index}
@@ -739,65 +955,73 @@ export default function Quiz() {
                 ))}
               </VStack>
 
-
-              {/* Bottom Controls */}
-              {/* <View
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  borderTopLeftRadius: 24,
-                  borderTopRightRadius: 24,
-                  paddingHorizontal: 24,
-                  paddingVertical: 16,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: -4 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 8,
-                  elevation: 8,
-                }}
-              >
-                <HStack className="justify-center items-center">
-                  {!isAnswered ? (
-                    <ControlButton
-                      icon={<Feather name="check" size={24} color="white" />}
-                      onPress={handleSubmitAnswer}
-                      disabled={selectedOption === null}
-                      color={selectedOption !== null ? theme.palette.primary[400] : "#9CA3AF"}
-                      size={56}
-                      shadowColor={selectedOption !== null ? theme.palette.primary[500] : "#6B7280"}
-                    />
-                  ) : (
-                    <ControlButton
-                      icon={
-                        currentQuestion < quizData.length - 1 ? (
-                          <Feather name="chevron-right" size={24} color="white" />
-                        ) : (
-                          <FontAwesome6 name="flag-checkered" size={20} color="white" />
-                        )
-                      }
-                      onPress={handleNextQuestion}
-                      color={theme.palette.primary[400]}
-                      size={56}
-                      shadowColor={theme.palette.primary[500]}
-                    />
-                  )}
-                </HStack>
-
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 8,
-                    color: "#6B7280",
-                    fontSize: 14,
-                    fontFamily: "NunitoSans_600SemiBold",
-                  }}
+              {/* 3D Action Button */}
+              <Center className="mb-8">
+                <Pressable
+                  onPress={!isAnswered ? handleSubmitAnswer : handleNextQuestion}
+                  disabled={!isAnswered && selectedOption === null}
                 >
-                  {!isAnswered
-                    ? "Chọn đáp án và nhấn để xác nhận"
-                    : currentQuestion < quizData.length - 1
-                      ? "Nhấn để tiếp tục"
-                      : "Nhấn để xem kết quả"}
-                </Text>
-              </View> */}
+                  <View style={{ position: "relative" }}>
+                    {/* Shadow layer */}
+                    <View
+                      style={{
+                        backgroundColor: (!isAnswered && selectedOption === null) 
+                          ? "#9CA3AF" 
+                          : !isAnswered 
+                            ? theme.palette.primary[500] 
+                            : theme.palette.primary[600],
+                        borderRadius: 20,
+                        position: "absolute",
+                        top: 6,
+                        left: 0,
+                        right: 0,
+                        height: "100%",
+                      }}
+                    />
+                    {/* Top layer */}
+                    <View
+                      style={{
+                        backgroundColor: (!isAnswered && selectedOption === null) 
+                          ? "#D1D5DB" 
+                          : !isAnswered 
+                            ? theme.palette.primary[400] 
+                            : theme.palette.primary[500],
+                        borderRadius: 20,
+                        paddingHorizontal: 40,
+                        paddingVertical: 20,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 8,
+                        elevation: 6,
+                        minWidth: 200,
+                        alignItems: "center",
+                      }}
+                    >
+                      <HStack space="sm" className="items-center justify-center">
+                        <Feather 
+                          name={!isAnswered ? "check" : (currentQuestion < quizData.length - 1 ? "chevron-right" : "flag")} 
+                          size={20} 
+                          color="white" 
+                        />
+                        <Text
+                          style={{
+                            color: "white",
+                            fontSize: 18,
+                            fontFamily: "Baloo2_700Bold",
+                          }}
+                        >
+                          {!isAnswered
+                            ? "Xác nhận"
+                            : currentQuestion < quizData.length - 1
+                              ? "Tiếp theo"
+                              : "Kết quả"}
+                        </Text>
+                      </HStack>
+                    </View>
+                  </View>
+                </Pressable>
+              </Center>
             </ScrollView>
           </>
         )}
