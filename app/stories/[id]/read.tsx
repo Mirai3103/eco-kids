@@ -13,12 +13,11 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useImageLoader } from "@/hooks/useImageLoader";
+import useTTS from "@/hooks/useTTS";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { StorySegment } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { useAudioPlayer } from "expo-audio";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
 
 // 3D Control Button Component
 const ControlButton = ({
@@ -158,8 +157,6 @@ const StoryPage = ({
           >
             {isVietnamese ? segment?.vi_text : segment?.en_text || ""}
           </Text>
-
-    
         </View>
       </View>
     </View>
@@ -173,17 +170,33 @@ export default function ReadStoryScreen() {
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
   const translateX = useRef(new Animated.Value(0)).current;
-  const { data,isLoading } = useQuery(getAllStorySegmentsQueryByStoryIdOptions(storyId));
-  console.log("data",data);
-  const imageUrls =React.useMemo(() => data?.map((segment) => segment.image_url!) || [],[data]);
-  const { isLoading: isImageLoading } = useImageLoader(imageUrls,!isLoading);
-  const selectAudioUrl = React.useMemo(() => data?.map((segment) => segment.audio_segments.find((audio) => audio.language === "vi"&&audio.gender === "female")?.audio_url||"") || [],[data]);
-  const player = useAudioPlayer({
-    uri: selectAudioUrl[currentPage],
-  });
-  const storySegments = React.useMemo(
-    () => data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0))||[],
+  const { data, isLoading } = useQuery(
+    getAllStorySegmentsQueryByStoryIdOptions(storyId)
+  );
+  const imageUrls = React.useMemo(
+    () => data?.map((segment) => segment.image_url!) || [],
     [data]
+  );
+  const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
+  const selectAudioUrl = React.useMemo(
+    () =>
+      data
+        ?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0))
+        .map(
+          (segment) =>
+            segment.audio_segments.find(
+              (audio) => audio.language === "vi" && audio.gender === "female"
+            )?.audio_url || ""
+        ) || [],
+    [data?.length]
+  );
+  const {playAudio,playTTSOffline} = useTTS()
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const storySegments = React.useMemo(
+    () =>
+      data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0)) ||
+      [],
+    [data?.length]
   );
 
   const handleBack = () => {
@@ -201,8 +214,8 @@ export default function ReadStoryScreen() {
     }
   };
 
-    const handleNextPage = () => {
-        if (currentPage < storySegments.length - 1) {
+  const handleNextPage = () => {
+    if (currentPage < storySegments.length - 1) {
       setCurrentPage(currentPage + 1);
       Animated.timing(translateX, {
         toValue: 0,
@@ -239,11 +252,28 @@ export default function ReadStoryScreen() {
     setIsVietnamese(!isVietnamese);
   };
 
-  const handlePlayAudio = () => {
-    console.log("Play audio for page:", data);
-    player.play();
-  };
-  if(isLoading || isImageLoading) return <LoadingScreen  isLoaded={!isLoading && !isImageLoading}/>
+  const handlePlayAudio = React.useCallback(() => {
+    const handleFinish = () => {
+      if(currentPage  < storySegments.length - 1){
+        setCurrentPage(currentPage + 1)
+      }
+    }
+    if(selectAudioUrl[currentPage]){
+      playAudio(selectAudioUrl[currentPage],handleFinish)
+      
+    }else{
+      playTTSOffline( (isVietnamese ? storySegments[currentPage].vi_text : storySegments[currentPage].en_text )|| "" ,isVietnamese ? "vi-VN" : "en-US",handleFinish)
+    }
+  }, [currentPage, storySegments, isVietnamese, playAudio, playTTSOffline]);
+  React.useEffect(() => {
+    if(isAutoPlay){
+      setTimeout(() => {
+      handlePlayAudio()
+      }, 1000)
+    }
+  }, [handlePlayAudio,isAutoPlay,currentPage, storySegments, isVietnamese, playAudio, playTTSOffline]);
+  if (isLoading || isImageLoading)
+    return <LoadingScreen isLoaded={!isLoading && !isImageLoading} />;
 
   return (
     <View style={{ flex: 1 }}>
@@ -320,27 +350,27 @@ export default function ReadStoryScreen() {
         </HStack>
 
         {/* Main Content - Swipeable Pages */}
-          <VStack style={{ flex: 1,marginTop:-10 }}>
-            <PanGestureHandler
-              onGestureEvent={handleGestureEvent}
-              onHandlerStateChange={handleGestureEnd}
+        <VStack style={{ flex: 1, marginTop: -10 }}>
+          <PanGestureHandler
+            onGestureEvent={handleGestureEvent}
+            onHandlerStateChange={handleGestureEnd}
+          >
+            <Animated.View
+              style={{
+                flex: 1,
+                transform: [{ translateX }],
+              }}
             >
-              <Animated.View
-                style={{
-                  flex: 1,
-                  transform: [{ translateX }],
-                }}
-              >
-                {storySegments && (
-                  <StoryPage
-                    segment={storySegments[currentPage]}
-                    isVietnamese={isVietnamese}
-                    total={storySegments?.length || 0}
-                  />
-                )}
-              </Animated.View>
-            </PanGestureHandler>
-          </VStack>
+              {storySegments && (
+                <StoryPage
+                  segment={storySegments[currentPage]}
+                  isVietnamese={isVietnamese}
+                  total={storySegments?.length || 0}
+                />
+              )}
+            </Animated.View>
+          </PanGestureHandler>
+        </VStack>
 
         {/* Bottom Controls */}
         <VStack
