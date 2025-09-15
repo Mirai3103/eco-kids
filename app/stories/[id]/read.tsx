@@ -234,7 +234,7 @@ export default function ReadStoryScreen() {
   
   // Hooks
   const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
-  const { playAudio, playTTSOffline,stopAll } = useTTS();
+  const { playAudio, playTTSOffline,stopAll,playTTSOnline } = useTTS();
 
   // Navigation handlers
   const handleBack = useCallback(() => {
@@ -314,8 +314,8 @@ export default function ReadStoryScreen() {
       playAudio(audioUrl, handleFinish);
     } else {
       const text = isVietnamese ? currentSegment.vi_text : currentSegment.en_text;
-      const language = isVietnamese ? "vi-VN" : "en-US";
-      playTTSOffline(text || "", language, handleFinish);
+      const language = isVietnamese ? "vi" : "en";
+      playTTSOnline(text || "", "female", language, handleFinish);
     }
   }, [
     currentPage, 
