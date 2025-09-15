@@ -1,54 +1,89 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useRef, useState } from "react";
-import { Animated, Dimensions, Pressable, StatusBar, View } from "react-native";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ImageStyle, TextStyle } from "react-native";
+import {
+  Animated,
+  Dimensions,
+  Pressable,
+  StatusBar,
+  View,
+  ViewStyle
+} from "react-native";
+import {
+  PanGestureHandler
+} from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-// GlueStack UI Components
+
+// Components
 import LoadingScreen from "@/components/LoadingScreen";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+
+// Hooks
 import { useImageLoader } from "@/hooks/useImageLoader";
 import useTTS from "@/hooks/useTTS";
+
+// Queries and Types
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { StorySegment } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-// 3D Control Button Component
-const ControlButton = ({
-  icon,
-  onPress,
-  disabled = false,
-  color = "#22C55E",
-  size = 48,
-  total = 0,
-  shadowColor = "#22C55E",
-}: {
+// Constants
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const SWIPE_THRESHOLD = 50;
+const SWIPE_VELOCITY_THRESHOLD = 500;
+const ANIMATION_DURATION = 300;
+const AUTO_PLAY_DELAY = 1000;
+
+// Types
+type Language = "vi" | "en";
+type Gender = "male" | "female";
+
+interface ControlButtonProps {
   icon: React.ReactNode;
   onPress: () => void;
   disabled?: boolean;
   color?: string;
   size?: number;
-  total?: number;
   shadowColor?: string;
+}
+
+interface StoryPageProps {
+  segment: StorySegment;
+  isVietnamese?: boolean;
+}
+
+interface GestureEventData {
+  translationX: number;
+  velocityX: number;
+}
+
+// 3D Control Button Component
+const ControlButton = React.memo<ControlButtonProps>(({
+  icon,
+  onPress,
+  disabled = false,
+  color = "#22C55E",
+  size = 48,
+  shadowColor = "#22C55E",
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const handlePressIn = () => {
+  const handlePressIn = useCallback(() => {
     if (!disabled) {
       Animated.spring(scaleAnim, {
         toValue: 0.9,
         useNativeDriver: true,
       }).start();
     }
-  };
+  }, [disabled, scaleAnim]);
 
-  const handlePressOut = () => {
+  const handlePressOut = useCallback(() => {
     if (!disabled) {
       Animated.spring(scaleAnim, {
         toValue: 1,
@@ -57,9 +92,26 @@ const ControlButton = ({
         useNativeDriver: true,
       }).start();
     }
-  };
+  }, [disabled, scaleAnim]);
 
-  const darkerColor = disabled ? "#9CA3AF" : shadowColor;
+  const shadowStyle: ViewStyle = useMemo(() => ({
+    backgroundColor: disabled ? "#9CA3AF" : shadowColor,
+    width: size,
+    height: size,
+    borderRadius: size / 2,
+    position: "absolute",
+    top: 3,
+    left: 0,
+  }), [disabled, shadowColor, size]);
+
+  const topLayerStyle: ViewStyle = useMemo(() => ({
+    backgroundColor: disabled ? "#D1D5DB" : color,
+    width: size,
+    height: size,
+    borderRadius: size / 2,
+    justifyContent: "center",
+    alignItems: "center",
+  }), [disabled, color, size]);
 
   return (
     <Pressable
@@ -70,72 +122,63 @@ const ControlButton = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <View style={{ position: "relative" }}>
-          {/* Shadow/Bottom layer */}
-          <View
-            style={{
-              backgroundColor: darkerColor,
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              position: "absolute",
-              top: 3,
-              left: 0,
-            }}
-          />
-          {/* Top layer */}
-          <View
-            style={{
-              backgroundColor: disabled ? "#D1D5DB" : color,
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <View style={shadowStyle} />
+          <View style={topLayerStyle}>
             {icon}
           </View>
         </View>
       </Animated.View>
     </Pressable>
   );
-};
+});
 
 // Story Page Component
-const StoryPage = ({
+const StoryPage = React.memo<StoryPageProps>(({
   segment,
   isVietnamese = true,
-  total = 0,
-}: {
-  segment: StorySegment;
-  isVietnamese?: boolean;
-  total?: number;
 }) => {
+  const containerStyle: ViewStyle = useMemo(() => ({
+    flex: 1,
+    backgroundColor: "white",
+    borderRadius: 20,
+    margin: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
+  }), []);
+
+  const imageStyle: ImageStyle = useMemo(() => ({
+    width: screenWidth - 80,
+    height: (screenHeight - 200) * 0.5,
+    borderRadius: 16,
+  }), []);
+
+  const textStyle: TextStyle = useMemo(() => ({
+    color: "#1B4B07",
+    fontSize: 18,
+    lineHeight: 28,
+    textAlign: "center" as const,
+    fontFamily: "NunitoSans_600SemiBold",
+    marginBottom: 16,
+  }), []);
+
+  const displayText = useMemo(() => {
+    return isVietnamese ? segment?.vi_text : segment?.en_text || "";
+  }, [isVietnamese, segment?.vi_text, segment?.en_text]);
+
+  if (!segment) return null;
+
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-        borderRadius: 20,
-        margin: 16,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 16,
-        elevation: 10,
-      }}
-    >
+    <View style={containerStyle}>
       <View className="flex-1 p-6">
         {/* Image Section */}
-        {segment?.image_url && (
+        {segment.image_url && (
           <Center className="flex-1">
             <ExpoImage
               source={{ uri: segment.image_url }}
-              style={{
-                width: screenWidth - 80,
-                height: (screenHeight - 200) * 0.5,
-                borderRadius: 16,
-              }}
+              style={imageStyle}
               alt={`Story page ${(segment.segment_index || 0) + 1}`}
               contentFit="cover"
               cachePolicy="memory-disk"
@@ -145,135 +188,178 @@ const StoryPage = ({
 
         {/* Text Content Section */}
         <View style={{ flex: 1, justifyContent: "center" }}>
-          <Text
-            style={{
-              color: "#1B4B07",
-              fontSize: 18,
-              lineHeight: 28,
-              textAlign: "center",
-              fontFamily: "NunitoSans_600SemiBold",
-              marginBottom: 16,
-            }}
-          >
-            {isVietnamese ? segment?.vi_text : segment?.en_text || ""}
+          <Text style={textStyle}>
+            {displayText}
           </Text>
         </View>
       </View>
     </View>
   );
-};
-type Language = "vi" | "en";
-type Gender = "male" | "female";
+});
+
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
+  
+  // State
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  
+  // Refs
   const translateX = useRef(new Animated.Value(0)).current;
+  
+  // Data fetching
   const { data, isLoading } = useQuery(
     getAllStorySegmentsQueryByStoryIdOptions(storyId)
   );
-  const imageUrls = React.useMemo(
-    () => data?.map((segment) => segment.image_url!) || [],
-    [data]
-  );
+  
+  // Memoized computations
+  const storySegments = useMemo(() => {
+    return data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0)) || [];
+  }, [data?.length]);
+  
+  const imageUrls = useMemo(() => {
+    return storySegments.map((segment) => segment.image_url).filter(Boolean) as string[];
+  }, [storySegments]);
+  
+  const audioUrls = useMemo(() => {
+    return storySegments.map((segment) => {
+      const audioSegment = segment.audio_segments?.find(
+        (audio) => audio.language === "vi" && audio.gender === "female"
+      );
+      return audioSegment?.audio_url || "";
+    });
+  }, [storySegments]);
+  
+  // Hooks
   const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
-  const selectAudioUrl = React.useMemo(
-    () =>
-      data
-        ?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0))
-        .map(
-          (segment) =>
-            segment.audio_segments.find(
-              (audio) => audio.language === "vi" && audio.gender === "female"
-            )?.audio_url || ""
-        ) || [],
-    [data?.length]
-  );
-  const {playAudio,playTTSOffline} = useTTS()
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const storySegments = React.useMemo(
-    () =>
-      data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0)) ||
-      [],
-    [data?.length]
-  );
+  const { playAudio, playTTSOffline,stopAll } = useTTS();
 
-  const handleBack = () => {
+  // Navigation handlers
+  const handleBack = useCallback(() => {
+    stopAll()
     router.back();
-  };
+  }, [stopAll]);
 
-  const handlePreviousPage = () => {
+  const handlePreviousPage = useCallback(() => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+      setCurrentPage(prev => prev - 1);
       Animated.timing(translateX, {
         toValue: 0,
-        duration: 300,
+        duration: ANIMATION_DURATION,
         useNativeDriver: true,
       }).start();
     }
-  };
+  }, [currentPage, translateX]);
 
-  const handleNextPage = () => {
+  const handleNextPage = useCallback(() => {
     if (currentPage < storySegments.length - 1) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage(prev => prev + 1);
       Animated.timing(translateX, {
         toValue: 0,
-        duration: 300,
+        duration: ANIMATION_DURATION,
         useNativeDriver: true,
       }).start();
     }
-  };
+  }, [currentPage, storySegments.length, translateX]);
 
-  const handleGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: translateX } }],
-    { useNativeDriver: true }
+  // Gesture handlers
+  const handleGestureEvent = useMemo(
+    () => Animated.event(
+      [{ nativeEvent: { translationX: translateX } }],
+      { useNativeDriver: true }
+    ),
+    [translateX]
   );
 
-  const handleGestureEnd = (event: any) => {
+  const handleGestureEnd = useCallback((event: { nativeEvent: GestureEventData }) => {
     const { translationX, velocityX } = event.nativeEvent;
 
-    if (translationX > 50 || velocityX > 500) {
-      // Swipe right - go to previous page
+    if (translationX > SWIPE_THRESHOLD || velocityX > SWIPE_VELOCITY_THRESHOLD) {
       handlePreviousPage();
-    } else if (translationX < -50 || velocityX < -500) {
-      // Swipe left - go to next page
+    } else if (translationX < -SWIPE_THRESHOLD || velocityX < -SWIPE_VELOCITY_THRESHOLD) {
       handleNextPage();
     } else {
-      // Return to original position
       Animated.spring(translateX, {
         toValue: 0,
         useNativeDriver: true,
       }).start();
     }
-  };
+  }, [handlePreviousPage, handleNextPage, translateX]);
 
-  const toggleLanguage = () => {
-    setIsVietnamese(!isVietnamese);
-  };
+  const toggleLanguage = useCallback(() => {
+    setIsVietnamese(prev => !prev);
+  }, []);
 
-  const handlePlayAudio = React.useCallback(() => {
+  const handleSettings = useCallback(() => {
+    setIsAutoPlay(prev => !prev);
+  }, []);
+
+  // Audio handling
+  const handlePlayAudio = useCallback(() => {
+    const currentSegment = storySegments[currentPage];
+    if (!currentSegment) return;
+
+    stopAll()
     const handleFinish = () => {
-      if(currentPage  < storySegments.length - 1){
-        setCurrentPage(currentPage + 1)
+      if (isAutoPlay && currentPage < storySegments.length - 1) {
+        setCurrentPage(prev => prev + 1);
       }
+    };
+
+    const audioUrl = audioUrls[currentPage];
+    if (audioUrl) {
+
+      playAudio(audioUrl, handleFinish);
+    } else {
+      const text = isVietnamese ? currentSegment.vi_text : currentSegment.en_text;
+      const language = isVietnamese ? "vi-VN" : "en-US";
+      playTTSOffline(text || "", language, handleFinish);
     }
-    if(selectAudioUrl[currentPage]){
-      playAudio(selectAudioUrl[currentPage],handleFinish)
-      
-    }else{
-      playTTSOffline( (isVietnamese ? storySegments[currentPage].vi_text : storySegments[currentPage].en_text )|| "" ,isVietnamese ? "vi-VN" : "en-US",handleFinish)
+  }, [
+    currentPage, 
+    storySegments, 
+    audioUrls, 
+    isVietnamese, 
+    isAutoPlay, 
+    playAudio, 
+    playTTSOffline
+  ]);
+
+  // Auto-play effect
+  useEffect(() => {
+    if (isAutoPlay && storySegments.length > 0) {
+      const timer = setTimeout(() => {
+        handlePlayAudio();
+      }, AUTO_PLAY_DELAY);
+
+      return () => clearTimeout(timer);
     }
-  }, [currentPage, storySegments, isVietnamese, playAudio, playTTSOffline]);
-  React.useEffect(() => {
-    if(isAutoPlay){
-      setTimeout(() => {
-      handlePlayAudio()
-      }, 1000)
-    }
-  }, [handlePlayAudio,isAutoPlay,currentPage, storySegments, isVietnamese, playAudio, playTTSOffline]);
-  if (isLoading || isImageLoading)
+  }, [handlePlayAudio, isAutoPlay, currentPage]);
+
+  // Loading state
+  if (isLoading || isImageLoading) {
     return <LoadingScreen isLoaded={!isLoading && !isImageLoading} />;
+  }
+
+  // Error state
+  if (!storySegments.length) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No story segments found</Text>
+      </View>
+    );
+  }
+
+  const currentSegment = storySegments[currentPage];
+  if (!currentSegment) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Story segment not found</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -361,13 +447,10 @@ export default function ReadStoryScreen() {
                 transform: [{ translateX }],
               }}
             >
-              {storySegments && (
-                <StoryPage
-                  segment={storySegments[currentPage]}
-                  isVietnamese={isVietnamese}
-                  total={storySegments?.length || 0}
-                />
-              )}
+              <StoryPage
+                segment={currentSegment}
+                isVietnamese={isVietnamese}
+              />
             </Animated.View>
           </PanGestureHandler>
         </VStack>
@@ -393,6 +476,7 @@ export default function ReadStoryScreen() {
               icon={<Feather name="chevron-left" size={24} color="white" />}
               onPress={handlePreviousPage}
               disabled={currentPage === 0}
+              shadowColor="#16A34A"
             />
 
             {/* Center Controls */}
@@ -443,11 +527,11 @@ export default function ReadStoryScreen() {
 
               {/* Settings Button */}
               <ControlButton
-                icon={<Feather name="settings" size={20} color="white" />}
-                onPress={() => console.log("Settings")}
-                color="#6B7280"
+                icon={<Feather name={isAutoPlay ? "pause" : "play"} size={20} color="white" />}
+                onPress={handleSettings}
+                color={isAutoPlay ? "#EF4444" : "#22C55E"}
                 size={40}
-                shadowColor="#374151"
+                shadowColor={isAutoPlay ? "#DC2626" : "#16A34A"}
               />
             </HStack>
 
@@ -456,6 +540,7 @@ export default function ReadStoryScreen() {
               icon={<Feather name="chevron-right" size={24} color="white" />}
               onPress={handleNextPage}
               disabled={currentPage === storySegments.length - 1}
+              shadowColor="#16A34A"
             />
           </HStack>
         </VStack>

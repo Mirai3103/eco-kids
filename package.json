@@ -64,6 +64,7 @@
 		"add": "^2.0.6",
 		"babel-plugin-module-resolver": "^5.0.2",
 		"dayjs": "^1.11.13",
+		"elevenlabs": "^1.59.0",
 		"expo": "53.0.22",
 		"expo-asset": "~11.1.7",
 		"expo-audio": "~0.4.9",
