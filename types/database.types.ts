@@ -599,7 +599,11 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: unknown
+        Returns: string
+      }
+      receive_point_from_question: {
+        Args: { p_point: number; p_question_id: string; p_user_id: string }
+        Returns: boolean
       }
       sparsevec_out: {
         Args: { "": unknown }

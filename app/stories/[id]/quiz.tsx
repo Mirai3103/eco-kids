@@ -2,6 +2,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
+import LottieView from 'lottie-react-native';
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -20,7 +21,9 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { getQuizByStoryIdQueryOptions } from "@/lib/queries/quiz.query";
+import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
+import { useUserStore } from "@/stores/user.store";
 import { Answer } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useAudioPlayer } from "expo-audio";
@@ -793,7 +796,318 @@ const QuizResults = ({
     </Animated.View>
   );
 };
+const POINT_PER_QUESTION = 10;
 
+// Celebration Screen Component
+const CelebrationScreen = ({
+  onContinue,
+  points = 10,
+}: {
+  onContinue: () => void;
+  points?: number;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+  const starAppearRef = useRef<LottieView>(null);
+  const starIconRef = useRef<LottieView>(null);
+  const [showContinueButton, setShowContinueButton] = useState(false);
+
+  useEffect(() => {
+    // Start celebration animation sequence
+    const celebrationSequence = Animated.sequence([
+      // Fade in background
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      // Scale in main content
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      // Bounce animation for stars
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(bounceAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(bounceAnim, {
+            toValue: 0,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ]),
+        { iterations: 2 }
+      ),
+    ]);
+
+    celebrationSequence.start();
+
+    // Play Lottie animations
+    starAppearRef.current?.play();
+    starIconRef.current?.play();
+
+    // Show continue button after animations
+    const timer = setTimeout(() => {
+      setShowContinueButton(true);
+    }, 2000);
+
+    // Auto continue after 4 seconds
+    const autoTimer = setTimeout(() => {
+      onContinue();
+    }, 10000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(autoTimer);
+    };
+  }, []);
+
+  const bounceTransform = bounceAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.1],
+  });
+
+  return (
+    <Animated.View
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        zIndex: 1000,
+        opacity: fadeAnim,
+      }}
+    >
+      <Center style={{ flex: 1 }}>
+        <Animated.View
+          style={{
+            transform: [{ scale: scaleAnim }],
+            alignItems: 'center',
+          }}
+        >
+          {/* Background Card */}
+          <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 32,
+              padding: 32,
+              alignItems: 'center',
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 12 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 15,
+              minWidth: 300,
+              borderWidth: 4,
+              borderColor: theme.palette.primary[400],
+            }}
+          >
+            {/* Star Appear Animation */}
+            <View>
+              <LottieView
+                ref={starAppearRef}
+                source={require('@/assets/star_appear.lottie.json')}
+                style={{ width: 150, height: 150, alignSelf: 'center' }}
+                loop={false}
+                autoPlay={true}
+                speed={0.5}
+              />
+            </View>
+
+            {/* Celebration Text */}
+            <Text
+              style={{
+                color: theme.palette.primary[600],
+                fontSize: 36,
+                fontFamily: "Baloo2_700Bold",
+                textAlign: "center",
+                marginBottom: 14,
+              }}
+              className="py-4"
+            >
+              🎉 Tuyệt vời! 🎉
+            </Text>
+
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 24,
+                fontFamily: "Baloo2_700Bold",
+                textAlign: "center",
+                marginBottom: 16,
+              }}
+              className="py-4"
+            >
+              Bé trả lời đúng rồi!
+            </Text>
+
+            {/* Points Display */}
+            <Animated.View
+              style={{
+                transform: [{ scale: bounceTransform }],
+                backgroundColor: theme.palette.primary[100],
+                borderRadius: 24,
+                paddingHorizontal: 24,
+                paddingVertical: 16,
+                marginBottom: 24,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+                elevation: 6,
+                borderWidth: 2,
+                borderColor: theme.palette.primary[400],
+              }}
+            >
+              <HStack space="md" className="items-center">
+                {/* Star Icon Animation */}
+                <LottieView
+                  ref={starIconRef}
+                  source={require('@/assets/star_icon.lottie.json')}
+                  style={{ width: 40, height: 40 }}
+                  loop={true}
+                  autoPlay={false}
+                />
+                
+                <Text
+                  style={{
+                    color: theme.palette.primary[600],
+                    fontSize: 28,
+                    fontFamily: "Baloo2_700Bold",
+                  }}
+                >
+                  +{points}
+                </Text>
+                
+                <Text
+                  style={{
+                    color: theme.palette.primary[600],
+                    fontSize: 20,
+                    fontFamily: "Baloo2_700Bold",
+                  }}
+                >
+                  sao
+                </Text>
+              </HStack>
+            </Animated.View>
+
+            {/* Floating Stars Effect */}
+            <View style={{ position: 'absolute', top: 20, left: 20 }}>
+              <Animated.Text
+                style={{
+                  fontSize: 32,
+                  transform: [{ scale: bounceTransform }],
+                }}
+              >
+                ⭐
+              </Animated.Text>
+            </View>
+            <View style={{ position: 'absolute', top: 40, right: 30 }}>
+              <Animated.Text
+                style={{
+                  fontSize: 24,
+                  transform: [{ scale: bounceTransform.interpolate({
+                    inputRange: [1, 1.1],
+                    outputRange: [1.1, 1],
+                  }) }],
+                }}
+              >
+                ✨
+              </Animated.Text>
+            </View>
+            <View style={{ position: 'absolute', bottom: 30, left: 40 }}>
+              <Animated.Text
+                style={{
+                  fontSize: 28,
+                  transform: [{ scale: bounceTransform }],
+                }}
+              >
+                🌟
+              </Animated.Text>
+            </View>
+            <View style={{ position: 'absolute', bottom: 50, right: 20 }}>
+              <Animated.Text
+                style={{
+                  fontSize: 20,
+                  transform: [{ scale: bounceTransform.interpolate({
+                    inputRange: [1, 1.1],
+                    outputRange: [1.1, 1],
+                  }) }],
+                }}
+              >
+                💫
+              </Animated.Text>
+            </View>
+
+            {/* Continue Button */}
+            {showContinueButton && (
+              <Animated.View
+                style={{
+                  opacity: fadeAnim,
+                  transform: [{ scale: scaleAnim }],
+                }}
+              >
+                <Pressable onPress={onContinue}>
+                  <View style={{ position: "relative" }}>
+                    {/* Shadow layer */}
+                    <View
+                      style={{
+                        backgroundColor: "#4B5563",
+                        borderRadius: 20,
+                        position: "absolute",
+                        top: 4,
+                        left: 0,
+                        right: 0,
+                        height: "100%",
+                      }}
+                    />
+                    {/* Top layer */}
+                    <View
+                      style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        paddingHorizontal: 32,
+                        paddingVertical: 16,
+                        alignItems: "center",
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 8,
+                        elevation: 6,
+                      }}
+                    >
+                      <HStack space="sm" className="items-center">
+                        <Text style={{ fontSize: 20 }}>🚀</Text>
+                        <Text
+                          style={{
+                            color: theme.palette.primary[600],
+                            fontSize: 18,
+                            fontFamily: "Baloo2_700Bold",
+                          }}
+                        >
+                          Tiếp tục nào!
+                        </Text>
+                      </HStack>
+                    </View>
+                  </View>
+                </Pressable>
+              </Animated.View>
+            )}
+          </View>
+        </Animated.View>
+      </Center>
+    </Animated.View>
+  );
+};
 export default function Quiz() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
@@ -803,11 +1117,18 @@ export default function Quiz() {
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [userAnswers, setUserAnswers] = useState<number[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [lastCorrectAnswer, setLastCorrectAnswer] = useState(false);
   const { data: quizData, isLoading } = useQuery(getQuizByStoryIdQueryOptions(storyId));
-  const player = useAudioPlayer({
-    uri: "",
-  });
+  const { user } = useUserStore();
+  const handleAnswerCorrect =async (questionId: string) => {
+    await supabase.rpc('receive_point_from_question',{
+      p_point: POINT_PER_QUESTION,
+      p_question_id: questionId,
+      p_user_id: user!.id,
 
+    })
+  };
   const handleBack = () => {
     router.back();
   };
@@ -826,9 +1147,16 @@ export default function Quiz() {
     
     setIsAnswered(true);
     const isCorrect = quizData![currentQuestion].answers[selectedOption].is_correct;
+    setLastCorrectAnswer(!!isCorrect);
     
     if (isCorrect) {
       setScore(score + 1);
+      handleAnswerCorrect(quizData![currentQuestion].id);
+      
+      // Show celebration screen for correct answers
+      setTimeout(() => {
+        setShowCelebration(true);
+      }, 1000); // Wait 1 second to show the correct answer feedback first
     }
     
     setUserAnswers([...userAnswers, selectedOption]);
@@ -839,9 +1167,18 @@ export default function Quiz() {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedOption(null);
       setIsAnswered(false);
+      setLastCorrectAnswer(false);
     } else {
       setShowResults(true);
     }
+  };
+
+  const handleCelebrationContinue = () => {
+    setShowCelebration(false);
+    // Auto proceed to next question or results after celebration
+    setTimeout(() => {
+      handleNextQuestion();
+    }, 300);
   };
 
   const handleRestartQuiz = () => {
@@ -957,73 +1294,128 @@ export default function Quiz() {
 
               {/* 3D Action Button */}
               <Center className="mb-8">
-                <Pressable
-                  onPress={!isAnswered ? handleSubmitAnswer : handleNextQuestion}
-                  disabled={!isAnswered && selectedOption === null}
-                >
-                  <View style={{ position: "relative" }}>
-                    {/* Shadow layer */}
-                    <View
-                      style={{
-                        backgroundColor: (!isAnswered && selectedOption === null) 
-                          ? "#9CA3AF" 
-                          : !isAnswered 
-                            ? theme.palette.primary[500] 
-                            : theme.palette.primary[600],
-                        borderRadius: 20,
-                        position: "absolute",
-                        top: 6,
-                        left: 0,
-                        right: 0,
-                        height: "100%",
-                      }}
-                    />
-                    {/* Top layer */}
-                    <View
-                      style={{
-                        backgroundColor: (!isAnswered && selectedOption === null) 
-                          ? "#D1D5DB" 
-                          : !isAnswered 
-                            ? theme.palette.primary[400] 
+                {!isAnswered ? (
+                  <Pressable
+                    onPress={handleSubmitAnswer}
+                    disabled={selectedOption === null}
+                  >
+                    <View style={{ position: "relative" }}>
+                      {/* Shadow layer */}
+                      <View
+                        style={{
+                          backgroundColor: (selectedOption === null) 
+                            ? "#9CA3AF" 
                             : theme.palette.primary[500],
-                        borderRadius: 20,
-                        paddingHorizontal: 40,
-                        paddingVertical: 20,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 8,
-                        elevation: 6,
-                        minWidth: 200,
-                        alignItems: "center",
-                      }}
-                    >
-                      <HStack space="sm" className="items-center justify-center">
-                        <Feather 
-                          name={!isAnswered ? "check" : (currentQuestion < quizData.length - 1 ? "chevron-right" : "flag")} 
-                          size={20} 
-                          color="white" 
-                        />
-                        <Text
+                          borderRadius: 20,
+                          position: "absolute",
+                          top: 6,
+                          left: 0,
+                          right: 0,
+                          height: "100%",
+                        }}
+                      />
+                      {/* Top layer */}
+                      <View
+                        style={{
+                          backgroundColor: (selectedOption === null) 
+                            ? "#D1D5DB" 
+                            : theme.palette.primary[400],
+                          borderRadius: 20,
+                          paddingHorizontal: 40,
+                          paddingVertical: 20,
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.2,
+                          shadowRadius: 8,
+                          elevation: 6,
+                          minWidth: 200,
+                          alignItems: "center",
+                        }}
+                      >
+                        <HStack space="sm" className="items-center justify-center">
+                          <Feather 
+                            name="check" 
+                            size={20} 
+                            color="white" 
+                          />
+                          <Text
+                            style={{
+                              color: "white",
+                              fontSize: 18,
+                              fontFamily: "Baloo2_700Bold",
+                            }}
+                          >
+                            Xác nhận
+                          </Text>
+                        </HStack>
+                      </View>
+                    </View>
+                  </Pressable>
+                ) : (
+                  // Show next button only for incorrect answers (correct answers show celebration)
+                  !lastCorrectAnswer && (
+                    <Pressable onPress={handleNextQuestion}>
+                      <View style={{ position: "relative" }}>
+                        {/* Shadow layer */}
+                        <View
                           style={{
-                            color: "white",
-                            fontSize: 18,
-                            fontFamily: "Baloo2_700Bold",
+                            backgroundColor: theme.palette.primary[600],
+                            borderRadius: 20,
+                            position: "absolute",
+                            top: 6,
+                            left: 0,
+                            right: 0,
+                            height: "100%",
+                          }}
+                        />
+                        {/* Top layer */}
+                        <View
+                          style={{
+                            backgroundColor: theme.palette.primary[500],
+                            borderRadius: 20,
+                            paddingHorizontal: 40,
+                            paddingVertical: 20,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.2,
+                            shadowRadius: 8,
+                            elevation: 6,
+                            minWidth: 200,
+                            alignItems: "center",
                           }}
                         >
-                          {!isAnswered
-                            ? "Xác nhận"
-                            : currentQuestion < quizData.length - 1
-                              ? "Tiếp theo"
-                              : "Kết quả"}
-                        </Text>
-                      </HStack>
-                    </View>
-                  </View>
-                </Pressable>
+                          <HStack space="sm" className="items-center justify-center">
+                            <Feather 
+                              name={currentQuestion < quizData.length - 1 ? "chevron-right" : "flag"} 
+                              size={20} 
+                              color="white" 
+                            />
+                            <Text
+                              style={{
+                                color: "white",
+                                fontSize: 18,
+                                fontFamily: "Baloo2_700Bold",
+                              }}
+                            >
+                              {currentQuestion < quizData.length - 1 ? "Tiếp theo" : "Kết quả"}
+                            </Text>
+                          </HStack>
+                        </View>
+                      </View>
+                    </Pressable>
+                  )
+                )}
               </Center>
             </ScrollView>
           </>
+        )}
+        
+        {/* Celebration Screen Overlay */}
+        {showCelebration && (
+          <CelebrationScreen
+            onContinue={handleCelebrationContinue}
+            points={POINT_PER_QUESTION}
+          />
         )}
       </SafeAreaView>
     </View>
