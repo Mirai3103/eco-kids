@@ -111,6 +111,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen name="all-topics" options={{ headerShown: false }} />
+        <Tabs.Screen name="favorites" options={{ headerShown: false }} />
         <Tabs.Screen name="user" options={{ headerShown: false }} />
       </Tabs>
     </View>
