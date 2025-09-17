@@ -397,7 +397,7 @@ export default function EcoKidsHomeScreen() {
             <Center className="mt-8">
               <Button3D
                 title="Khám phá thêm"
-                onPress={() => router.push("/all-topics")}
+                onPress={() => router.push("/history")}
                 color="#399918"
                 shadowColor="#2a800d"
               />
