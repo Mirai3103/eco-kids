@@ -1,75 +1,33 @@
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef } from "react";
 import {
-    Animated,
-    Dimensions,
-    Pressable,
-    ScrollView,
-    StatusBar,
-    View
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  Animated,
+  Dimensions,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
-import { Center } from '@/components/ui/center';
-import { Heading } from '@/components/ui/heading';
-import { HStack } from '@/components/ui/hstack';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { Image as ExpoImage } from 'expo-image';
+import LoadingScreen from "@/components/LoadingScreen";
+import { Center } from "@/components/ui/center";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { supabase } from "@/lib/supabase";
+import { useUserStore } from "@/stores/user.store";
+import { FavoriteStory } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { Image as ExpoImage } from "expo-image";
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
 // Mock data for favorite stories
-const mockFavoriteStories = [
-  {
-    id: 1,
-    title: 'Cuộc phiêu lưu của chú ong nhỏ',
-    cover_image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300',
-    topic: 'Động vật',
-    readCount: 3,
-    bgColor: '#E8F5E8',
-    dateAdded: '2024-01-15'
-  },
-  {
-    id: 2,
-    title: 'Rùa biển và nhựa thải',
-    cover_image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300',
-    topic: 'Môi trường',
-    readCount: 2,
-    bgColor: '#E3F2FD',
-    dateAdded: '2024-01-12'
-  },
-  {
-    id: 3,
-    title: 'Cây xanh kỳ diệu',
-    cover_image_url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300',
-    topic: 'Rừng xanh',
-    readCount: 5,
-    bgColor: '#F1F8E9',
-    dateAdded: '2024-01-10'
-  },
-  {
-    id: 4,
-    title: 'Gấu trúc và tre xanh',
-    cover_image_url: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=400&h=300',
-    topic: 'Động vật',
-    readCount: 1,
-    bgColor: '#FFF8E1',
-    dateAdded: '2024-01-08'
-  },
-  {
-    id: 5,
-    title: 'Chim cánh cụt bé nhỏ',
-    cover_image_url: 'https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?w=400&h=300',
-    topic: 'Động vật',
-    readCount: 4,
-    bgColor: '#E1F5FE',
-    dateAdded: '2024-01-05'
-  }
-];
 
 // 3D Button Component
 const Button3D = ({
@@ -137,11 +95,16 @@ const Button3D = ({
               justifyContent: "center",
               alignItems: "center",
               paddingHorizontal: size === "large" ? 24 : 16,
-              flexDirection: 'row',
+              flexDirection: "row",
             }}
           >
             {icon && (
-              <Ionicons name={icon as any} size={fontSize} color="white" style={{ marginRight: 6 }} />
+              <Ionicons
+                name={icon as any}
+                size={fontSize}
+                color="white"
+                style={{ marginRight: 6 }}
+              />
             )}
             <Text
               style={{
@@ -160,13 +123,13 @@ const Button3D = ({
 };
 
 // Story Card Component for Favorites
-const FavoriteStoryCard = ({ 
-  story, 
-  index, 
+const FavoriteStoryCard = ({
+  story,
+  index,
   onPress,
-  onRemove 
-}: { 
-  story: typeof mockFavoriteStories[0]; 
+  onRemove,
+}: {
+  story: FavoriteStory;
   index: number;
   onPress: () => void;
   onRemove: () => void;
@@ -220,22 +183,22 @@ const FavoriteStoryCard = ({
       <Pressable onPress={handlePress}>
         <View
           style={{
-            backgroundColor: 'white',
+            backgroundColor: "white",
             borderRadius: 20,
             marginHorizontal: 16,
-            shadowColor: '#000',
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.1,
             shadowRadius: 8,
             elevation: 6,
-            overflow: 'hidden',
+            overflow: "hidden",
           }}
         >
           <HStack className="p-4" space="md">
             {/* Story Image */}
-            <View style={{ position: 'relative' }}>
+            <View style={{ position: "relative" }}>
               <ExpoImage
-                source={{ uri: story.cover_image_url }}
+                source={{ uri: story?.stories?.cover_image_url || "" }}
                 style={{
                   width: 80,
                   height: 100,
@@ -247,17 +210,17 @@ const FavoriteStoryCard = ({
               {/* Favorite badge */}
               <View
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: -6,
                   right: -6,
-                  backgroundColor: '#D72654',
+                  backgroundColor: "#D72654",
                   borderRadius: 12,
                   width: 24,
                   height: 24,
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  justifyContent: "center",
+                  alignItems: "center",
                   borderWidth: 2,
-                  borderColor: 'white',
+                  borderColor: "white",
                 }}
               >
                 <Ionicons name="heart" size={12} color="white" />
@@ -268,55 +231,23 @@ const FavoriteStoryCard = ({
             <VStack className="flex-1" space="xs">
               <Text
                 style={{
-                  color: '#1B4B07',
+                  color: "#1B4B07",
                   fontSize: 16,
-                  fontFamily: 'NunitoSans_700Bold',
+                  fontFamily: "NunitoSans_700Bold",
                   lineHeight: 20,
                 }}
                 className="line-clamp-2"
               >
-                {story.title}
+                {story?.stories?.title}
               </Text>
-              
-              <HStack className="items-center" space="xs">
-                <View
-                  style={{
-                    backgroundColor: story.bgColor,
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 8,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: '#399918',
-                      fontSize: 12,
-                      fontFamily: 'NunitoSans_600SemiBold',
-                    }}
-                  >
-                    {story.topic}
-                  </Text>
-                </View>
-                
-                <HStack className="items-center" space="xs">
-                  <Ionicons name="book-outline" size={14} color="#666" />
-                  <Text
-                    style={{
-                      color: '#666',
-                      fontSize: 12,
-                      fontFamily: 'NunitoSans_600SemiBold',
-                    }}
-                  >
-                    Đã đọc {story.readCount} lần
-                  </Text>
-                </HStack>
-              </HStack>
+
+         
 
               <HStack className="justify-between items-center mt-2">
                 <HStack space="sm">
                   <Button3D
                     title="Đọc"
-                    onPress={() => console.log('Read story')}
+                    onPress={() => console.log("Read story")}
                     icon="play"
                     color="#399918"
                     shadowColor="#2a800d"
@@ -367,40 +298,41 @@ const EmptyState = () => {
   return (
     <Center className="flex-1 px-8" style={{ marginTop: 100 }}>
       <Animated.View style={{ transform: [{ translateY }] }}>
-        <Text style={{ fontSize: 80, textAlign: 'center', marginBottom: 20 }}>
+        <Text style={{ fontSize: 80, textAlign: "center", marginBottom: 20 }}>
           📚💔
         </Text>
       </Animated.View>
-      
+
       <VStack space="md" className="items-center">
-        <Heading 
-          size="xl" 
-          style={{ 
-            color: '#1B4B07', 
-            textAlign: 'center',
-            fontFamily: 'Baloo2_700Bold' 
+        <Heading
+          size="xl"
+          style={{
+            color: "#1B4B07",
+            textAlign: "center",
+            fontFamily: "Baloo2_700Bold",
           }}
         >
           Chưa có truyện yêu thích
         </Heading>
-        
+
         <Text
           style={{
-            color: '#666',
+            color: "#666",
             fontSize: 16,
-            textAlign: 'center',
+            textAlign: "center",
             lineHeight: 22,
-            fontFamily: 'NunitoSans_600SemiBold',
+            fontFamily: "NunitoSans_600SemiBold",
             maxWidth: 280,
           }}
         >
-          Hãy khám phá và thêm những câu chuyện thú vị vào danh sách yêu thích nhé!
+          Hãy khám phá và thêm những câu chuyện thú vị vào danh sách yêu thích
+          nhé!
         </Text>
-        
+
         <View style={{ marginTop: 20 }}>
           <Button3D
             title="Khám phá truyện"
-            onPress={() => console.log('Explore stories')}
+            onPress={() => console.log("Explore stories")}
             size="large"
             icon="search"
             color="#399918"
@@ -414,33 +346,46 @@ const EmptyState = () => {
 
 export default function FavoritesScreen() {
   const router = useRouter();
-  const [favoriteStories, setFavoriteStories] = useState(mockFavoriteStories);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useUserStore();
+  // const [favoriteStories, setFavoriteStories] = useState();
+  const { data: favoriteStories, isLoading ,refetch} = useQuery({
+    queryKey: ["favoriteStories"],
+    queryFn: async () =>
+      supabase
+        .from("favorite_stories")
+        .select("*, stories(*, topics(*))")
+        .eq("user_id", user!.id)
+        .then((res) => res.data as FavoriteStory[]),
+    initialData: [],
+  });
 
-  useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }, []);
 
-  const handleRemoveFromFavorites = (storyId: number) => {
-    setFavoriteStories(prev => prev.filter(story => story.id !== storyId));
+  const handleRemoveFromFavorites = (storyId: string) => {
+    supabase.from("favorite_stories").delete().eq("story_id", storyId).eq("user_id", user!.id).then(() => { 
+      refetch();
+    });
+    
   };
 
-  const handleStoryPress = (story: typeof mockFavoriteStories[0]) => {
-    console.log('Open story:', story.title);
-    // router.push(`/stories/${story.id}`);
+  const handleStoryPress = (story: FavoriteStory) => {
+    console.log("Open story:", story.stories.title);
+    router.push(`/stories/${story.story_id}`);
   };
-
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
   return (
     <View className="flex-1">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
       {/* Background Gradient */}
       <LinearGradient
-        colors={['#EEF0FE', '#CAFEC3']}
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+        colors={["#EEF0FE", "#CAFEC3"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
       />
@@ -451,25 +396,25 @@ export default function FavoritesScreen() {
           <View style={{ width: 40 }} />
           <HStack className="items-center" space="sm">
             <Text style={{ fontSize: 28 }}>💖</Text>
-            <Heading 
-              size="xl" 
-              style={{ 
-                color: '#1B4B07', 
-                fontFamily: 'Baloo2_700Bold' 
+            <Heading
+              size="xl"
+              style={{
+                color: "#1B4B07",
+                fontFamily: "Baloo2_700Bold",
               }}
             >
               Truyện yêu thích
             </Heading>
           </HStack>
           <Pressable
-            onPress={() => console.log('Search favorites')}
+            onPress={() => console.log("Search favorites")}
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
               borderRadius: 20,
               width: 40,
               height: 40,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <Ionicons name="search" size={20} color="#1B4B07" />
@@ -480,12 +425,12 @@ export default function FavoritesScreen() {
         {favoriteStories.length > 0 && (
           <View
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
               marginHorizontal: 16,
               borderRadius: 16,
               padding: 16,
               marginBottom: 20,
-              shadowColor: '#000',
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.1,
               shadowRadius: 4,
@@ -496,12 +441,12 @@ export default function FavoritesScreen() {
               <HStack className="items-center" space="sm">
                 <View
                   style={{
-                    backgroundColor: '#FFC107',
+                    backgroundColor: "#FFC107",
                     borderRadius: 12,
                     width: 40,
                     height: 40,
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <Text style={{ fontSize: 20 }}>📖</Text>
@@ -509,58 +454,39 @@ export default function FavoritesScreen() {
                 <VStack>
                   <Text
                     style={{
-                      color: '#1B4B07',
+                      color: "#1B4B07",
                       fontSize: 18,
-                      fontFamily: 'NunitoSans_700Bold',
+                      fontFamily: "NunitoSans_700Bold",
                     }}
                   >
                     {favoriteStories.length} truyện
                   </Text>
                   <Text
                     style={{
-                      color: '#666',
+                      color: "#666",
                       fontSize: 12,
-                      fontFamily: 'NunitoSans_600SemiBold',
+                      fontFamily: "NunitoSans_600SemiBold",
                     }}
                   >
                     Trong danh sách yêu thích
                   </Text>
                 </VStack>
               </HStack>
-              
+
               <HStack className="items-center" space="sm">
                 <View
                   style={{
-                    backgroundColor: '#4CAF50',
+                    backgroundColor: "#4CAF50",
                     borderRadius: 12,
                     width: 40,
                     height: 40,
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <Text style={{ fontSize: 20 }}>⭐</Text>
                 </View>
-                <VStack>
-                  <Text
-                    style={{
-                      color: '#1B4B07',
-                      fontSize: 18,
-                      fontFamily: 'NunitoSans_700Bold',
-                    }}
-                  >
-                    {favoriteStories.reduce((sum, story) => sum + story.readCount, 0)} lượt đọc
-                  </Text>
-                  <Text
-                    style={{
-                      color: '#666',
-                      fontSize: 12,
-                      fontFamily: 'NunitoSans_600SemiBold',
-                    }}
-                  >
-                    Tổng số lần đọc
-                  </Text>
-                </VStack>
+                
               </HStack>
             </HStack>
           </View>
@@ -576,11 +502,11 @@ export default function FavoritesScreen() {
           >
             {favoriteStories.map((story, index) => (
               <FavoriteStoryCard
-                key={story.id}
+                key={story.story_id}
                 story={story}
                 index={index}
                 onPress={() => handleStoryPress(story)}
-                onRemove={() => handleRemoveFromFavorites(story.id)}
+                onRemove={() => handleRemoveFromFavorites(story.story_id)}
               />
             ))}
           </ScrollView>

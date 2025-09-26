@@ -18,6 +18,12 @@ export type Answer = Database["public"]["Tables"]["answers"]["Row"]
 export type Quiz = Question & {
   answers: Answer[];
 }
+type DBFavoriteStory = Database["public"]["Tables"]["favorite_stories"]["Row"]
+export type FavoriteStory = DBFavoriteStory & {
+  stories: Story &{
+    topics: Topic;
+  }
+}
 export type StorySegment = Database["public"]["Tables"]["story_segments"]["Row"] & {
   story_id: string;
   audio_segments: AudioSegment[];

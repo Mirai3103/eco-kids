@@ -19,7 +19,9 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { getStoryByIdQueryOptions } from "@/lib/queries/story.query";
+import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
+import { useUserStore } from "@/stores/user.store";
 import { useQuery } from "@tanstack/react-query";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -252,7 +254,6 @@ const StoryContent = () => {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const { data: story,isLoading } = useQuery(getStoryByIdQueryOptions(storyId))
-    console.log(story)
   useEffect(() => {
     Animated.stagger(200, [
       Animated.parallel([
@@ -430,9 +431,35 @@ const StoryContent = () => {
 export default function StoryDetailsScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
+  const [isFavorite, setIsFavorite] = useState(false);
+  React.useEffect(() => {
+   async function checkFavorite() {
+      const { data, error } = await supabase.from('favorite_stories').select('*').
+      eq('story_id', storyId).eq('user_id', user!.id).single()
+      if(data) {
+        setIsFavorite(true);
+      }
+    }
+    checkFavorite();
+  }, [storyId]);
 
   const handleBack = () => {
     router.back();
+  };
+  const { user } = useUserStore();
+  const handleFavoriteToggle = async () => {
+    setIsFavorite(!isFavorite);
+    const { data, error } = await supabase.from('favorite_stories').select('*').
+    eq('story_id', storyId).eq('user_id', user!.id).single()
+    if(data) {
+      console.log('Deleted favorite story');
+      await supabase.from('favorite_stories').delete().eq('story_id', storyId).eq('user_id', user!.id)
+    } else {
+      await supabase.from('favorite_stories').insert({
+        story_id: storyId,
+        user_id: user!.id,
+      })
+    }
   };
 
   // In a real app, fetch story data based on storyId
@@ -469,7 +496,28 @@ export default function StoryDetailsScreen() {
             style={{ color: "#1B4B07", fontWeight: "bold" }}
           ></Heading>
 
-          <View style={{ width: 40 }} />
+          <Pressable
+            onPress={handleFavoriteToggle}
+            style={{
+              backgroundColor: "white",
+              borderRadius: 20,
+              width: 40,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Ionicons 
+              name={isFavorite ? "heart" : "heart-outline"} 
+              size={20} 
+              color={isFavorite ? "#EF4444" : "#1B4B07"} 
+            />
+          </Pressable>
         </HStack>
 
         {/* Main Content */}
