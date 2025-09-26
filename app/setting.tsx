@@ -444,7 +444,7 @@ export default function SettingsScreen() {
             icon="information-circle-outline"
             title="Về EcoKids"
             subtitle="Phiên bản 1.0.0"
-            onPress={() => console.log("About")}
+            onPress={() => router.push("/demo")}
             color="#0891B2"
           />
 
