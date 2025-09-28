@@ -3,19 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { ImageStyle, TextStyle } from "react-native";
 import {
-  Animated,
   Dimensions,
   Pressable,
   StatusBar,
   View,
   ViewStyle
 } from "react-native";
-import {
-  PanGestureHandler
-} from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Components
@@ -35,9 +31,6 @@ import { StorySegment } from "@/types";
 
 // Constants
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-const SWIPE_THRESHOLD = 50;
-const SWIPE_VELOCITY_THRESHOLD = 500;
-const ANIMATION_DURATION = 300;
 const AUTO_PLAY_DELAY = 1000;
 
 // Types
@@ -58,10 +51,6 @@ interface StoryPageProps {
   isVietnamese?: boolean;
 }
 
-interface GestureEventData {
-  translationX: number;
-  velocityX: number;
-}
 
 // 3D Control Button Component
 const ControlButton = React.memo<ControlButtonProps>(({
@@ -72,28 +61,6 @@ const ControlButton = React.memo<ControlButtonProps>(({
   size = 48,
   shadowColor = "#22C55E",
 }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = useCallback(() => {
-    if (!disabled) {
-      Animated.spring(scaleAnim, {
-        toValue: 0.9,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [disabled, scaleAnim]);
-
-  const handlePressOut = useCallback(() => {
-    if (!disabled) {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3,
-        tension: 40,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [disabled, scaleAnim]);
-
   const shadowStyle: ViewStyle = useMemo(() => ({
     backgroundColor: disabled ? "#9CA3AF" : shadowColor,
     width: size,
@@ -116,18 +83,18 @@ const ControlButton = React.memo<ControlButtonProps>(({
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
       disabled={disabled}
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.8 : 1,
+        transform: [{ scale: pressed ? 0.95 : 1 }],
+      })}
     >
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <View style={{ position: "relative" }}>
-          <View style={shadowStyle} />
-          <View style={topLayerStyle}>
-            {icon}
-          </View>
+      <View style={{ position: "relative" }}>
+        <View style={shadowStyle} />
+        <View style={topLayerStyle}>
+          {icon}
         </View>
-      </Animated.View>
+      </View>
     </Pressable>
   );
 });
@@ -141,7 +108,8 @@ const StoryPage = React.memo<StoryPageProps>(({
     flex: 1,
     backgroundColor: "white",
     borderRadius: 20,
-    margin: 16,
+    margin: 0,
+    marginVertical :10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
@@ -150,7 +118,7 @@ const StoryPage = React.memo<StoryPageProps>(({
   }), []);
 
   const imageStyle: ImageStyle = useMemo(() => ({
-    width: screenWidth - 80,
+    width: screenWidth - 40,
     height: (screenHeight - 200) * 0.5,
     borderRadius: 16,
   }), []);
@@ -206,9 +174,6 @@ export default function ReadStoryScreen() {
   const [isVietnamese, setIsVietnamese] = useState(true);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   
-  // Refs
-  const translateX = useRef(new Animated.Value(0)).current;
-  
   // Data fetching
   const { data, isLoading } = useQuery(
     getAllStorySegmentsQueryByStoryIdOptions(storyId)
@@ -245,48 +210,15 @@ export default function ReadStoryScreen() {
   const handlePreviousPage = useCallback(() => {
     if (currentPage > 0) {
       setCurrentPage(prev => prev - 1);
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: ANIMATION_DURATION,
-        useNativeDriver: true,
-      }).start();
     }
-  }, [currentPage, translateX]);
+  }, [currentPage]);
 
   const handleNextPage = useCallback(() => {
     if (currentPage < storySegments.length - 1) {
       setCurrentPage(prev => prev + 1);
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: ANIMATION_DURATION,
-        useNativeDriver: true,
-      }).start();
     }
-  }, [currentPage, storySegments.length, translateX]);
+  }, [currentPage, storySegments.length]);
 
-  // Gesture handlers
-  const handleGestureEvent = useMemo(
-    () => Animated.event(
-      [{ nativeEvent: { translationX: translateX } }],
-      { useNativeDriver: true }
-    ),
-    [translateX]
-  );
-
-  const handleGestureEnd = useCallback((event: { nativeEvent: GestureEventData }) => {
-    const { translationX, velocityX } = event.nativeEvent;
-
-    if (translationX > SWIPE_THRESHOLD || velocityX > SWIPE_VELOCITY_THRESHOLD) {
-      handlePreviousPage();
-    } else if (translationX < -SWIPE_THRESHOLD || velocityX < -SWIPE_VELOCITY_THRESHOLD) {
-      handleNextPage();
-    } else {
-      Animated.spring(translateX, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [handlePreviousPage, handleNextPage, translateX]);
 
   const toggleLanguage = useCallback(() => {
     setIsVietnamese(prev => !prev);
@@ -435,24 +367,14 @@ export default function ReadStoryScreen() {
           </Pressable>
         </HStack>
 
-        {/* Main Content - Swipeable Pages */}
+        {/* Main Content */}
         <VStack style={{ flex: 1, marginTop: -10 }}>
-          <PanGestureHandler
-            onGestureEvent={handleGestureEvent}
-            onHandlerStateChange={handleGestureEnd}
-          >
-            <Animated.View
-              style={{
-                flex: 1,
-                transform: [{ translateX }],
-              }}
-            >
-              <StoryPage
-                segment={currentSegment}
-                isVietnamese={isVietnamese}
-              />
-            </Animated.View>
-          </PanGestureHandler>
+          <View style={{ flex: 1 }}>
+            <StoryPage
+              segment={currentSegment}
+              isVietnamese={isVietnamese}
+            />
+          </View>
         </VStack>
 
         {/* Bottom Controls */}
