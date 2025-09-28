@@ -172,6 +172,7 @@ const FavoriteStoryCard = ({
     onPress();
   };
 
+
   return (
     <Animated.View
       style={{
@@ -356,7 +357,6 @@ export default function FavoritesScreen() {
         .select("*, stories(*, topics(*))")
         .eq("user_id", user!.id)
         .then((res) => res.data as FavoriteStory[]),
-    initialData: [],
   });
 
 
@@ -422,7 +422,7 @@ export default function FavoritesScreen() {
         </HStack>
 
         {/* Stats Bar */}
-        {favoriteStories.length > 0 && (
+        {(favoriteStories?.length||0) > 0 && (
           <View
             style={{
               backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -459,7 +459,7 @@ export default function FavoritesScreen() {
                       fontFamily: "NunitoSans_700Bold",
                     }}
                   >
-                    {favoriteStories.length} truyện
+                    {favoriteStories?.length} truyện
                   </Text>
                   <Text
                     style={{
@@ -493,14 +493,14 @@ export default function FavoritesScreen() {
         )}
 
         {/* Content */}
-        {favoriteStories.length === 0 ? (
+        {favoriteStories?.length === 0 ? (
           <EmptyState />
         ) : (
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 120 }}
           >
-            {favoriteStories.map((story, index) => (
+            {favoriteStories?.map((story, index) => (
               <FavoriteStoryCard
                 key={story.story_id}
                 story={story}

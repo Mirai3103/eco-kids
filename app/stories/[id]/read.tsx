@@ -1,11 +1,12 @@
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import PageFlipper from '@laffy1309/react-native-page-flipper';
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ImageStyle, TextStyle } from "react-native";
 import {
+  Animated,
   Dimensions,
   Pressable,
   StatusBar,
@@ -17,9 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // Components
 import LoadingScreen from "@/components/LoadingScreen";
 import { Center } from "@/components/ui/center";
-import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
 
 // Hooks
 import { useImageLoader } from "@/hooks/useImageLoader";
@@ -49,6 +48,23 @@ interface ControlButtonProps {
 interface StoryPageProps {
   segment: StorySegment;
   isVietnamese?: boolean;
+}
+
+interface FloatingButtonProps {
+  icon: React.ReactNode;
+  onPress: () => void;
+  color?: string;
+  disabled?: boolean;
+  size?: number;
+}
+
+interface Menu3DButtonProps {
+  icon: React.ReactNode;
+  onPress: () => void;
+  color?: string;
+  shadowColor?: string;
+  disabled?: boolean;
+  size?: number;
 }
 
 
@@ -99,6 +115,110 @@ const ControlButton = React.memo<ControlButtonProps>(({
   );
 });
 
+// Floating Button Component
+const FloatingButton = React.memo<FloatingButtonProps>(({
+  icon,
+  onPress,
+  color = "#22C55E",
+  disabled = false,
+  size = 50,
+}) => {
+  return (
+    <Pressable
+      onPress={disabled ? undefined : onPress}
+      disabled={disabled}
+      style={({ pressed }) => ({
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: disabled ? "#9CA3AF" : color,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: color,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 8,
+        borderWidth: 2,
+        borderColor: "#FFF",
+        opacity: pressed ? 0.8 : 1,
+        transform: [{ scale: pressed ? 0.95 : 1 }],
+      })}
+    >
+      {icon}
+    </Pressable>
+  );
+});
+
+// Menu 3D Button Component
+const Menu3DButton = React.memo<Menu3DButtonProps>(({
+  icon,
+  onPress,
+  color = "#22C55E",
+  shadowColor,
+  disabled = false,
+  size = 50,
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const effectiveShadowColor = shadowColor || color;
+
+  return (
+    <Pressable
+      onPress={disabled ? undefined : onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={disabled}
+    >
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <View style={{ position: "relative" }}>
+          {/* Shadow/Bottom layer */}
+          <View
+            style={{
+              backgroundColor: disabled ? "#6B7280" : effectiveShadowColor,
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              position: "absolute",
+              top: 4,
+              left: 0,
+            }}
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              backgroundColor: disabled ? "#9CA3AF" : color,
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {icon}
+          </View>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+});
+
 // Story Page Component
 const StoryPage = React.memo<StoryPageProps>(({
   segment,
@@ -107,20 +227,19 @@ const StoryPage = React.memo<StoryPageProps>(({
   const containerStyle: ViewStyle = useMemo(() => ({
     flex: 1,
     backgroundColor: "white",
-    borderRadius: 20,
-    margin: 0,
-    marginVertical :10,
+    borderRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    margin:0
   }), []);
 
   const imageStyle: ImageStyle = useMemo(() => ({
     width: screenWidth - 40,
-    height: (screenHeight - 200) * 0.5,
-    borderRadius: 16,
+    height: screenHeight * 0.55,
+    borderRadius: 12,
   }), []);
 
   const textStyle: TextStyle = useMemo(() => ({
@@ -140,10 +259,10 @@ const StoryPage = React.memo<StoryPageProps>(({
 
   return (
     <View style={containerStyle}>
-      <View className="flex-1 p-6">
+      <View style={{ flex: 1, padding: 20, justifyContent: 'space-between' }}>
         {/* Image Section */}
         {segment.image_url && (
-          <Center className="flex-1">
+          <Center style={{ flex: 1, marginBottom: 20 }}>
             <ExpoImage
               source={{ uri: segment.image_url }}
               style={imageStyle}
@@ -155,7 +274,7 @@ const StoryPage = React.memo<StoryPageProps>(({
         )}
 
         {/* Text Content Section */}
-        <View style={{ flex: 1, justifyContent: "center" }}>
+        <View style={{ paddingBottom: 40 }}>
           <Text style={textStyle}>
             {displayText}
           </Text>
@@ -173,6 +292,15 @@ export default function ReadStoryScreen() {
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  
+  // Refs
+  const pageFlipperRef = useRef<any>(null);
+  
+  // Menu animations
+  const [menuAnimation] = useState(new Animated.Value(0));
+  const [pulseAnimation] = useState(new Animated.Value(1));
   
   // Data fetching
   const { data, isLoading } = useQuery(
@@ -201,6 +329,29 @@ export default function ReadStoryScreen() {
   const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
   const { playAudio, playTTSOffline,stopAll,playTTSOnline } = useTTS();
 
+  // Gentle pulse animation for the main button
+  useEffect(() => {
+    const pulse = () => {
+      Animated.sequence([
+        Animated.timing(pulseAnimation, {
+          toValue: 1.1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnimation, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setTimeout(pulse, 4000);
+      });
+    };
+    
+    const timer = setTimeout(pulse, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Navigation handlers
   const handleBack = useCallback(() => {
     stopAll()
@@ -208,17 +359,31 @@ export default function ReadStoryScreen() {
   }, [stopAll]);
 
   const handlePreviousPage = useCallback(() => {
-    if (currentPage > 0) {
-      setCurrentPage(prev => prev - 1);
+    if (pageFlipperRef.current && currentPage > 0) {
+      pageFlipperRef.current.previousPage();
     }
   }, [currentPage]);
 
   const handleNextPage = useCallback(() => {
-    if (currentPage < storySegments.length - 1) {
-      setCurrentPage(prev => prev + 1);
+    if (pageFlipperRef.current && currentPage < storySegments.length - 1) {
+      pageFlipperRef.current.nextPage();
     }
   }, [currentPage, storySegments.length]);
 
+  const handleFlippedEnd = useCallback((pageIndex: number) => {
+    setCurrentPage(pageIndex);
+  }, []);
+
+  // Render function for PageFlipper
+  const renderStoryPage = useCallback((segmentData: string) => {
+    const segment = JSON.parse(segmentData);
+    return (
+      <StoryPage
+        segment={segment}
+        isVietnamese={isVietnamese}
+      />
+    );
+  }, [isVietnamese]);
 
   const toggleLanguage = useCallback(() => {
     setIsVietnamese(prev => !prev);
@@ -228,21 +393,77 @@ export default function ReadStoryScreen() {
     setIsAutoPlay(prev => !prev);
   }, []);
 
+  const toggleMenu = useCallback(() => {
+    const toValue = isMenuVisible ? 0 : 1;
+    setIsMenuVisible(!isMenuVisible);
+    
+    Animated.spring(menuAnimation, {
+      toValue,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 8,
+    }).start();
+  }, [isMenuVisible, menuAnimation]);
+
+  const closeMenu = useCallback(() => {
+    setIsMenuVisible(false);
+    Animated.spring(menuAnimation, {
+      toValue: 0,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 8,
+    }).start();
+  }, [menuAnimation]);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted(prev => !prev);
+    if (!isMuted) {
+      stopAll();
+    }
+    closeMenu();
+  }, [isMuted, stopAll, closeMenu]);
+
+  const handleRestart = useCallback(() => {
+    if (pageFlipperRef.current) {
+      pageFlipperRef.current.goToPage(0);
+      setCurrentPage(0);
+    }
+    closeMenu();
+  }, [closeMenu]);
+
+  const handleMenuBack = useCallback(() => {
+    stopAll();
+    router.back();
+  }, [stopAll]);
+
+  const handleToggleLanguage = useCallback(() => {
+    setIsVietnamese(prev => !prev);
+    closeMenu();
+  }, [closeMenu]);
+
+  const handleToggleAutoPlay = useCallback(() => {
+    setIsAutoPlay(prev => !prev);
+    closeMenu();
+  }, [closeMenu]);
+
   // Audio handling
   const handlePlayAudio = useCallback(() => {
+    if (isMuted) return;
+    
     const currentSegment = storySegments[currentPage];
     if (!currentSegment) return;
 
     stopAll()
     const handleFinish = () => {
       if (isAutoPlay && currentPage < storySegments.length - 1) {
-        setCurrentPage(prev => prev + 1);
+        if (pageFlipperRef.current) {
+          pageFlipperRef.current.nextPage();
+        }
       }
     };
 
     const audioUrl = audioUrls[currentPage];
     if (audioUrl) {
-
       playAudio(audioUrl, handleFinish);
     } else {
       const text = isVietnamese ? currentSegment.vi_text : currentSegment.en_text;
@@ -256,7 +477,8 @@ export default function ReadStoryScreen() {
     isVietnamese, 
     isAutoPlay, 
     playAudio, 
-    playTTSOffline
+    playTTSOffline,
+    isMuted
   ]);
 
   // Auto-play effect
@@ -296,177 +518,206 @@ export default function ReadStoryScreen() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar
-        barStyle="dark-content"
+        barStyle="light-content"
         backgroundColor="transparent"
         translucent
       />
 
-      {/* Background Gradient */}
-      <LinearGradient
-        colors={["#EEF0FE", "#CAFEC3"]}
-        style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
+      {/* PageFlipper - Full Screen */}
+      <PageFlipper
+        ref={pageFlipperRef}
+        data={storySegments.map(segment => JSON.stringify(segment))}
+        pageSize={{ width: screenWidth, height: screenHeight }}
+        portrait={true}
+        singleImageMode={true}
+        enabled={true}
+        pressable={true}
+        renderPage={renderStoryPage}
+        contentContainerStyle={{ flex: 1 }}
+        onFlippedEnd={handleFlippedEnd}
       />
 
-      <SafeAreaView className="flex-1">
-        {/* Header */}
-        <HStack className="justify-between items-center px-6 py-4">
-          <Pressable
-            onPress={handleBack}
+      {/* Fixed Menu Button - Top Right */}
+      <SafeAreaView style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}>
+        <View style={{ padding: 20 }}>
+          <Animated.View
             style={{
-              backgroundColor: "white",
-              borderRadius: 20,
-              width: 40,
-              height: 40,
-              justifyContent: "center",
-              alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 2,
+              transform: [{ scale: pulseAnimation }],
             }}
           >
-            <Ionicons name="arrow-back" size={20} color="#1B4B07" />
-          </Pressable>
+            <Pressable
+              onPress={toggleMenu}
+              style={({ pressed }) => ({
+                width: 70,
+                height: 70,
+                borderRadius: 35,
+                backgroundColor: isMenuVisible ? "#FFE6F2" : "#FFFFFF",
+                justifyContent: "center",
+                alignItems: "center",
+                shadowColor: "#22C55E",
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.4,
+                shadowRadius: 12,
+                elevation: 12,
+                borderWidth: 4,
+                borderColor: isMenuVisible ? "#FF69B4" : "#22C55E",
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.9 : 1 }],
+              })}
+            >
+              <MaterialIcons 
+                name={isMenuVisible ? "close" : "menu"} 
+                size={36} 
+                color={isMenuVisible ? "#FF69B4" : "#22C55E"} 
+              />
+            </Pressable>
+          </Animated.View>
+        </View>
+      </SafeAreaView>
 
-          <Text
-            style={{
-              color: "#1B4B07",
-              fontSize: 18,
-              fontFamily: "Baloo2_700Bold",
-            }}
-          >
-            Đọc truyện
-          </Text>
-
-          {/* Language Toggle */}
+      {/* Dropdown Menu */}
+      {isMenuVisible && (
+        <>
+          {/* Overlay */}
           <Pressable
-            onPress={toggleLanguage}
             style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
+              zIndex: 999,
+            }}
+            onPress={closeMenu}
+          />
+
+          {/* Menu Content */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 110,
+              right: 20,
               backgroundColor: "white",
-              borderRadius: 20,
-              paddingHorizontal: 8,
-              paddingVertical: 2,
+              borderRadius: 24,
+              paddingVertical: 16,
+              paddingHorizontal: 20,
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 2,
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.2,
+              shadowRadius: 16,
+              
+              elevation: 16,
+              zIndex: 1001,
+              opacity: menuAnimation,
+              gap: 6,
+              transform: [
+                {
+                  translateY: menuAnimation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-20, 0],
+                  }),
+                },
+                {
+                  scale: menuAnimation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.8, 1],
+                  }),
+                },
+              ],
             }}
           >
-            <Text
+            {/* Home Button */}
+            <View
               style={{
-                color: "#1B4B07",
-                fontSize: 24,
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+                alignItems: "center",
               }}
             >
-              {isVietnamese ? "🇻🇳" : "🇬🇧"}
-            </Text>
-          </Pressable>
-        </HStack>
+              <Menu3DButton
+                icon={<Ionicons name="home" size={28} color="white" />}
+                onPress={handleMenuBack}
+                color="#EF4444"
+                shadowColor="#DC2626"
+                size={50}
+              />
+            </View>
 
-        {/* Main Content */}
-        <VStack style={{ flex: 1, marginTop: -10 }}>
-          <View style={{ flex: 1 }}>
-            <StoryPage
-              segment={currentSegment}
-              isVietnamese={isVietnamese}
-            />
-          </View>
-        </VStack>
-
-        {/* Bottom Controls */}
-        <VStack
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingHorizontal: 24,
-            paddingVertical: 16,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 8,
-          }}
-        >
-          <HStack className="justify-between items-center">
-            {/* Previous Button */}
-            <ControlButton
-              icon={<Feather name="chevron-left" size={24} color="white" />}
-              onPress={handlePreviousPage}
-              disabled={currentPage === 0}
-              shadowColor="#16A34A"
-            />
-
-            {/* Center Controls */}
-            <HStack space="lg" className="items-center">
-              {/* Audio Button */}
-              <ControlButton
-                icon={<Feather name="volume-2" size={20} color="white" />}
-                onPress={handlePlayAudio}
+            {/* Language Toggle */}
+            <View
+              style={{
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+                alignItems: "center",
+              }}
+            >
+              <Menu3DButton
+                icon={<Text style={{ fontSize: 24 }}>{isVietnamese ? "🇻🇳" : "🇬🇧"}</Text>}
+                onPress={handleToggleLanguage}
                 color="#3B82F6"
-                size={40}
                 shadowColor="#2563EB"
+                size={50}
               />
+            </View>
 
-              {/* Page Progress */}
-              <VStack className="items-center">
-                <Text
-                  style={{
-                    color: "#1B4B07",
-                    fontSize: 16,
-                    fontFamily: "Baloo2_700Bold",
-                  }}
-                >
-                  {currentPage + 1}/{storySegments.length}
-                </Text>
+            {/* Mute Toggle */}
+            <View
+              style={{
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+                alignItems: "center",
+              }}
+            >
+              <Menu3DButton
+                icon={<Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={28} color="white" />}
+                onPress={toggleMute}
+                color={isMuted ? "#F59E0B" : "#10B981"}
+                shadowColor={isMuted ? "#D97706" : "#059669"}
+                size={50}
+              />
+            </View>
 
-                {/* Progress Bar */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 4,
-                    backgroundColor: "#E5E7EB",
-                    borderRadius: 2,
-                    marginTop: 4,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: `${
-                        ((currentPage + 1) / storySegments.length) * 100
-                      }%`,
-                      height: "100%",
-                      backgroundColor: "#22C55E",
-                      borderRadius: 2,
-                    }}
-                  />
-                </View>
-              </VStack>
-
-              {/* Settings Button */}
-              <ControlButton
-                icon={<Feather name={isAutoPlay ? "pause" : "play"} size={20} color="white" />}
-                onPress={handleSettings}
+            {/* Auto Play Toggle */}
+            <View
+              style={{
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+                alignItems: "center",
+              }}
+            >
+              <Menu3DButton
+                icon={<Ionicons name={isAutoPlay ? "pause" : "play"} size={28} color="white" />}
+                onPress={handleToggleAutoPlay}
                 color={isAutoPlay ? "#EF4444" : "#22C55E"}
-                size={40}
                 shadowColor={isAutoPlay ? "#DC2626" : "#16A34A"}
+                size={50}
               />
-            </HStack>
+            </View>
 
-            {/* Next Button */}
-            <ControlButton
-              icon={<Feather name="chevron-right" size={24} color="white" />}
-              onPress={handleNextPage}
-              disabled={currentPage === storySegments.length - 1}
-              shadowColor="#16A34A"
-            />
-          </HStack>
-        </VStack>
-      </SafeAreaView>
+            {/* Restart Button */}
+            <View
+              style={{
+                paddingVertical: 4,
+                paddingHorizontal: 8,
+                alignItems: "center",
+              }}
+            >
+              <Menu3DButton
+                icon={<Ionicons name="refresh" size={28} color="white" />}
+                onPress={handleRestart}
+                color="#8B5CF6"
+                shadowColor="#7C3AED"
+                size={50}
+              />
+            </View>
+
+          
+          </Animated.View>
+        </>
+      )}
     </View>
   );
 }
+
+
