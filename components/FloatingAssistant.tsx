@@ -1,458 +1,570 @@
-import { Ionicons } from '@expo/vector-icons';
-import {
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-  useAudioPlayer,
-  useAudioPlayerStatus,
-  useAudioRecorder,
-  useAudioRecorderState,
-} from 'expo-audio';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Dimensions, Image, Pressable } from 'react-native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, Dimensions, Image, Pressable } from "react-native";
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 
-const FloatingAssistant = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [animation] = useState(new Animated.Value(0));
-  const [bounceAnimation] = useState(new Animated.Value(1));
-  const [pulseAnimation] = useState(new Animated.Value(1));
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY, (status) => {
-    console.log('Recorder status changed:', status);
+// Constants
+const SCREEN_DIMENSIONS = Dimensions.get("window");
+const SCREEN_WIDTH = SCREEN_DIMENSIONS.width;
+const SCREEN_HEIGHT = SCREEN_DIMENSIONS.height;
+
+const BUTTON_SIZES = {
+  main: 60,
+  secondary: 50,
+} as const;
+
+const ANIMATION_CONFIG = {
+  springTension: 100,
+  springFriction: 8,
+  bounceDuration: 100,
+  pulseDuration: 1000,
+  pulseDelay: 3000,
+  longPressDelay: 200,
+} as const;
+
+const POSITIONING = {
+  initialX: SCREEN_WIDTH - 80,
+  initialY: SCREEN_HEIGHT - 200,
+  edgeMargin: 20,
+  minY: 100,
+  maxY: SCREEN_HEIGHT - 250,
+  dragThreshold: 10,
+  micOffset: -80,
+  chatOffset: -140,
+} as const;
+
+const COLORS = {
+  main: {
+    expanded: "#FFE6F2",
+    normal: "#FFFFFF",
+    border: "#D72654",
+    borderExpanded: "#FF69B4",
+    shadow: "#D72654",
+  },
+  mic: {
+    recording: "#FF6B35",
+    normal: "#FFE066",
+    shadow: "#FFB347",
+    icon: "#FFB347",
+    iconRecording: "#FF6B35",
+  },
+  chat: {
+    background: "#A8E6CF",
+    shadow: "#7FD3A6",
+    icon: "#399918",
+  },
+  overlay: "rgba(215, 38, 84, 0.05)",
+  white: "#FFF",
+} as const;
+
+// Types
+interface Position {
+  x: number;
+  y: number;
+}
+
+interface AnimationRefs {
+  expansion: Animated.Value;
+  bounce: Animated.Value;
+  pulse: Animated.Value;
+  translateX: Animated.Value;
+  translateY: Animated.Value;
+}
+
+interface GestureState {
+  isDragging: boolean;
+  dragStartTime: number;
+  longPressTimer: NodeJS.Timeout | null;
+  initialPosition: Position;
+  currentPosition: Position;
+}
+
+// Custom hook for animations
+const useFloatingAssistantAnimations = (): AnimationRefs => {
+  const animations = useRef<AnimationRefs>({
+    expansion: new Animated.Value(0),
+    bounce: new Animated.Value(1),
+    pulse: new Animated.Value(1),
+    translateX: new Animated.Value(POSITIONING.initialX),
+    translateY: new Animated.Value(POSITIONING.initialY),
+  }).current;
+
+  return animations;
+};
+
+// Custom hook for gesture handling
+const useGestureHandling = (
+  animations: AnimationRefs,
+  isExpanded: boolean,
+  setIsExpanded: (expanded: boolean) => void
+) => {
+  const gestureState = useRef<GestureState>({
+    isDragging: false,
+    dragStartTime: 0,
+    longPressTimer: null,
+    initialPosition: { x: 0, y: 0 },
+    currentPosition: { x: POSITIONING.initialX, y: POSITIONING.initialY },
   });
-  const recorderState = useAudioRecorderState(recorder);
-  const player = useAudioPlayer(null);
-  const playerStatus = useAudioPlayerStatus(player);
-  useEffect(() => {
-    (async () => {
-      const { status } = await requestRecordingPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Không được cấp quyền microphone');
-      }
-      // Cấu hình audio mode cho phép ghi âm
-      await setAudioModeAsync({
-        allowsRecording: true,
-        playsInSilentMode: true
-      });
-    })();
-  }, []);
-  const startRecording = async () => {
-    // prepare + bắt đầu ghi
-    await recorder.prepareToRecordAsync();
-    recorder.record();
-  };
-  const stopRecording = async () => {
-    await recorder.stop();
-    console.log('Recorded file uri:', recorder.uri);
-    // Sau khi dừng, load uri đó cho player
-    player.replace(recorder.uri);
-    playRecording();
-  };
-  const playRecording = () => {
-    // Nếu đã có uri
-    if (recorder.uri) {
-      // reset nếu đã phát hết
-      if (playerStatus.didJustFinish) {
-        player.seekTo(0);
-      }
-      player.play();
-    }
-  };
-  // Position animations for drag functionality
-  const translateX = useRef(new Animated.Value(screenWidth - 80)).current; // Start at right side
-  const translateY = useRef(new Animated.Value(screenHeight - 200)).current; // Start near bottom
-  
-  // Track current position values
-  const currentPosition = useRef({ x: screenWidth - 80, y: screenHeight - 200 });
-  
-  // Track drag state and timing
-  const isDragging = useRef(false);
-  const dragStartTime = useRef(0);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Listen to animated values
   useEffect(() => {
-    const xListener = translateX.addListener(({ value }) => {
-      currentPosition.current.x = value;
+    const xListener = animations.translateX.addListener(({ value }) => {
+      gestureState.current.currentPosition.x = value;
     });
-    const yListener = translateY.addListener(({ value }) => {
-      currentPosition.current.y = value;
+    const yListener = animations.translateY.addListener(({ value }) => {
+      gestureState.current.currentPosition.y = value;
     });
 
     return () => {
-      translateX.removeListener(xListener);
-      translateY.removeListener(yListener);
+      animations.translateX.removeListener(xListener);
+      animations.translateY.removeListener(yListener);
     };
-  }, []);
+  }, [animations]);
 
-  // Gentle pulse animation for the main button to attract attention
+  const closeExpandedMenu = useCallback(() => {
+    if (isExpanded) {
+      setIsExpanded(false);
+      Animated.spring(animations.expansion, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: ANIMATION_CONFIG.springTension,
+        friction: ANIMATION_CONFIG.springFriction,
+      }).start();
+    }
+  }, [isExpanded, setIsExpanded, animations.expansion]);
+
+  const snapToEdge = useCallback((currentX: number, currentY: number) => {
+    let finalX = currentX;
+    let finalY = currentY;
+
+    // Constrain Y within screen bounds
+    if (finalY < POSITIONING.minY) finalY = POSITIONING.minY;
+    if (finalY > POSITIONING.maxY) finalY = POSITIONING.maxY;
+
+    // Snap to left or right edge
+    const centerX = SCREEN_WIDTH / 2;
+    finalX = currentX < centerX ? POSITIONING.edgeMargin : SCREEN_WIDTH - 80;
+
+    // Animate to final position
+    Animated.parallel([
+      Animated.spring(animations.translateX, {
+        toValue: finalX,
+        useNativeDriver: true,
+        tension: ANIMATION_CONFIG.springTension,
+        friction: ANIMATION_CONFIG.springFriction,
+      }),
+      Animated.spring(animations.translateY, {
+        toValue: finalY,
+        useNativeDriver: true,
+        tension: ANIMATION_CONFIG.springTension,
+        friction: ANIMATION_CONFIG.springFriction,
+      }),
+    ]).start(() => {
+      setTimeout(() => {
+        gestureState.current.isDragging = false;
+      }, 100);
+    });
+  }, [animations]);
+
+  const onGestureEvent = useCallback((event: any) => {
+    if (gestureState.current.isDragging) {
+      const { translationX, translationY } = event.nativeEvent;
+      const newX = gestureState.current.initialPosition.x + translationX;
+      const newY = gestureState.current.initialPosition.y + translationY;
+
+      animations.translateX.setValue(newX);
+      animations.translateY.setValue(newY);
+    }
+  }, [animations]);
+
+  const onHandlerStateChange = useCallback((event: any) => {
+    const { state, translationX, translationY } = event.nativeEvent;
+
+    if (state === State.BEGAN) {
+      gestureState.current.dragStartTime = Date.now();
+      gestureState.current.isDragging = false;
+      gestureState.current.initialPosition = { ...gestureState.current.currentPosition };
+
+      // Start long press timer
+      gestureState.current.longPressTimer = setTimeout(() => {
+        gestureState.current.isDragging = true;
+        closeExpandedMenu();
+      }, ANIMATION_CONFIG.longPressDelay);
+    } else if (state === State.ACTIVE) {
+      // Check for significant movement
+      if (Math.abs(translationX) > POSITIONING.dragThreshold || Math.abs(translationY) > POSITIONING.dragThreshold) {
+        if (gestureState.current.longPressTimer) {
+          clearTimeout(gestureState.current.longPressTimer);
+          gestureState.current.longPressTimer = null;
+        }
+
+        if (!gestureState.current.isDragging) {
+          gestureState.current.initialPosition = { ...gestureState.current.currentPosition };
+          gestureState.current.isDragging = true;
+        }
+        closeExpandedMenu();
+      }
+    } else if (state === State.END || state === State.CANCELLED) {
+      if (gestureState.current.longPressTimer) {
+        clearTimeout(gestureState.current.longPressTimer);
+        gestureState.current.longPressTimer = null;
+      }
+
+      if (gestureState.current.isDragging) {
+        const currentX = gestureState.current.initialPosition.x + translationX;
+        const currentY = gestureState.current.initialPosition.y + translationY;
+        snapToEdge(currentX, currentY);
+      } else {
+        setTimeout(() => {
+          gestureState.current.isDragging = false;
+        }, 50);
+      }
+    }
+  }, [closeExpandedMenu, snapToEdge]);
+
+  return {
+    onGestureEvent,
+    onHandlerStateChange,
+    isDragging: () => gestureState.current.isDragging,
+  };
+};
+
+// Custom hook for pulse animation
+const usePulseAnimation = (pulseAnimation: Animated.Value) => {
   useEffect(() => {
     const pulse = () => {
       Animated.sequence([
         Animated.timing(pulseAnimation, {
           toValue: 1.1,
-          duration: 1000,
+          duration: ANIMATION_CONFIG.pulseDuration,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnimation, {
           toValue: 1,
-          duration: 1000,
+          duration: ANIMATION_CONFIG.pulseDuration,
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // Repeat after a delay
-        setTimeout(pulse, 3000);
+        setTimeout(pulse, ANIMATION_CONFIG.pulseDelay);
       });
     };
-    
+
     const timer = setTimeout(pulse, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [pulseAnimation]);
+};
 
-  const toggleExpansion = () => {
+// Custom hook for expansion toggle
+const useExpansionToggle = (
+  isExpanded: boolean,
+  setIsExpanded: (expanded: boolean) => void,
+  animations: AnimationRefs,
+  isDragging: () => boolean
+) => {
+  const toggleExpansion = useCallback(() => {
     // Don't toggle if we were dragging
-    if (isDragging.current) {
-      isDragging.current = false;
+    if (isDragging()) {
       return;
     }
 
     const toValue = isExpanded ? 0 : 1;
-    
+
     // Bounce animation for main button
     Animated.sequence([
-      Animated.timing(bounceAnimation, {
+      Animated.timing(animations.bounce, {
         toValue: 0.9,
-        duration: 100,
+        duration: ANIMATION_CONFIG.bounceDuration,
         useNativeDriver: true,
       }),
-      Animated.timing(bounceAnimation, {
+      Animated.timing(animations.bounce, {
         toValue: 1,
-        duration: 100,
+        duration: ANIMATION_CONFIG.bounceDuration,
         useNativeDriver: true,
       }),
     ]).start();
 
     // Expansion animation
-    Animated.spring(animation, {
+    Animated.spring(animations.expansion, {
       toValue,
       useNativeDriver: true,
-      tension: 100,
-      friction: 8,
+      tension: ANIMATION_CONFIG.springTension,
+      friction: ANIMATION_CONFIG.springFriction,
     }).start();
 
     setIsExpanded(!isExpanded);
-  };
+  }, [isExpanded, setIsExpanded, animations, isDragging]);
 
-  // Store the initial position when drag starts
-  const initialPosition = useRef({ x: 0, y: 0 });
+  return toggleExpansion;
+};
 
-  // Pan gesture handler for drag functionality - we'll handle this manually
-  const onGestureEvent = (event: any) => {
-    if (isDragging.current) {
-      const { translationX, translationY } = event.nativeEvent;
-      
-      // Calculate new position relative to initial position
-      const newX = initialPosition.current.x + translationX;
-      const newY = initialPosition.current.y + translationY;
-      
-      // Update position
-      translateX.setValue(newX);
-      translateY.setValue(newY);
-    }
-  };
+// Action Button Component
+interface ActionButtonProps {
+  onPress: () => void;
+  icon: string;
+  backgroundColor: string;
+  shadowColor: string;
+  iconColor: string;
+  style?: any;
+}
 
-  const onHandlerStateChange = (event: any) => {
-    if (event.nativeEvent.state === State.BEGAN) {
-      dragStartTime.current = Date.now();
-      isDragging.current = false;
-      
-      // Store current position as initial position
-      initialPosition.current = {
-        x: currentPosition.current.x,
-        y: currentPosition.current.y,
-      };
-      
-      // Start long press timer (1 second)
-      longPressTimer.current = setTimeout(() => {
-        isDragging.current = true;
-        // Close expanded menu when starting drag
-        if (isExpanded) {
-          setIsExpanded(false);
-          Animated.spring(animation, {
-            toValue: 0,
-            useNativeDriver: true,
-            tension: 100,
-            friction: 8,
-          }).start();
-        }
-      }, 200);
-      
-    } else if (event.nativeEvent.state === State.ACTIVE) {
-      // If we moved significantly, also start dragging
-      const { translationX: x, translationY: y } = event.nativeEvent;
-      if (Math.abs(x) > 10 || Math.abs(y) > 10) {
-        if (longPressTimer.current) {
-          clearTimeout(longPressTimer.current);
-          longPressTimer.current = null;
-        }
-        
-        if (!isDragging.current) {
-          // Store current position as initial position when starting drag
-          initialPosition.current = {
-            x: currentPosition.current.x,
-            y: currentPosition.current.y,
-          };
-          isDragging.current = true;
-        }
-        
-        // Close expanded menu when dragging
-        if (isExpanded) {
-          setIsExpanded(false);
-          Animated.spring(animation, {
-            toValue: 0,
-            useNativeDriver: true,
-            tension: 100,
-            friction: 8,
-          }).start();
-        }
-      }
-      
-    } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
-      // Clear long press timer
-      if (longPressTimer.current) {
-        clearTimeout(longPressTimer.current);
-        longPressTimer.current = null;
-      }
-      
-      if (isDragging.current) {
-        const { translationX, translationY } = event.nativeEvent;
-        
-        // Calculate current position
-        const currentX = initialPosition.current.x + translationX;
-        const currentY = initialPosition.current.y + translationY;
-        
-        let finalX = currentX;
-        let finalY = currentY;
-        
-        // Constrain Y within screen bounds (keep some margin)
-        const minY = 100;
-        const maxY = screenHeight - 250;
-        if (finalY < minY) finalY = minY;
-        if (finalY > maxY) finalY = maxY;
-        
-        // Snap to left or right edge based on current position
-        const centerX = screenWidth / 2;
-        
-        if (currentX < centerX) {
-          // Snap to left edge
-          finalX = 20;
-        } else {
-          // Snap to right edge  
-          finalX = screenWidth - 80;
-        }
+const ActionButton: React.FC<ActionButtonProps> = ({
+  onPress,
+  icon,
+  backgroundColor,
+  shadowColor,
+  iconColor,
+  style,
+}) => (
+  <Pressable
+    onPress={onPress}
+    style={[
+      {
+        width: BUTTON_SIZES.secondary,
+        height: BUTTON_SIZES.secondary,
+        borderRadius: BUTTON_SIZES.secondary / 2,
+        backgroundColor,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 8,
+        borderWidth: 2,
+        borderColor: COLORS.white,
+      },
+      style,
+    ]}
+  >
+    <Ionicons name={icon as any} size={24} color={iconColor} />
+  </Pressable>
+);
 
-        // Animate to final position
-        Animated.parallel([
-          Animated.spring(translateX, {
-            toValue: finalX,
-            useNativeDriver: true,
-            tension: 100,
-            friction: 8,
-          }),
-          Animated.spring(translateY, {
-            toValue: finalY,
-            useNativeDriver: true,
-            tension: 100,
-            friction: 8,
-          }),
-        ]).start(() => {
-          // Reset dragging flag after animation
-          setTimeout(() => {
-            isDragging.current = false;
-          }, 100);
-        });
-      } else {
-        // Short tap - reset dragging flag
-        setTimeout(() => {
-          isDragging.current = false;
-        }, 50);
-      }
-    }
-  };
+// Main Button Component
+interface MainButtonProps {
+  onPress: () => void;
+  isExpanded: boolean;
+  bounceAnimation: Animated.Value;
+  pulseAnimation: Animated.Value;
+}
 
-  const micTranslateY = animation.interpolate({
+const MainButton: React.FC<MainButtonProps> = ({
+  onPress,
+  isExpanded,
+  bounceAnimation,
+  pulseAnimation,
+}) => (
+  <Animated.View
+    style={{
+      transform: [{ scale: bounceAnimation }, { scale: pulseAnimation }],
+    }}
+  >
+    <Pressable
+      onPress={onPress}
+      style={{
+        width: BUTTON_SIZES.main,
+        height: BUTTON_SIZES.main,
+        borderRadius: BUTTON_SIZES.main / 2,
+        backgroundColor: isExpanded ? COLORS.main.expanded : COLORS.main.normal,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: COLORS.main.shadow,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.4,
+        shadowRadius: 12,
+        elevation: 12,
+        borderWidth: 3,
+        borderColor: isExpanded ? COLORS.main.borderExpanded : COLORS.main.border,
+      }}
+    >
+      <Image
+        source={require("@/assets/images/assistant_icon.png")}
+        style={{
+          width: 50,
+          height: 50,
+          resizeMode: "cover",
+          borderRadius: 30,
+          opacity: isExpanded ? 0.9 : 1,
+        }}
+      />
+    </Pressable>
+  </Animated.View>
+);
+
+// Mic Button Component
+interface MicButtonProps {
+  isRecording: boolean;
+  onStartRecording: () => void;
+  onStopRecording: () => void;
+  style?: any;
+}
+
+const MicButton: React.FC<MicButtonProps> = ({
+  isRecording,
+  onStartRecording,
+  onStopRecording,
+  style,
+}) => (
+  <ActionButton
+    onPress={isRecording ? onStopRecording : onStartRecording}
+    icon={isRecording ? "mic-off" : "mic"}
+    backgroundColor={isRecording ? COLORS.mic.recording : COLORS.mic.normal}
+    shadowColor={isRecording ? COLORS.mic.recording : COLORS.mic.shadow}
+    iconColor={isRecording ? COLORS.mic.iconRecording : COLORS.mic.icon}
+    style={style}
+  />
+);
+
+// Chat Button Component
+interface ChatButtonProps {
+  onPress: () => void;
+  style?: any;
+}
+
+const ChatButton: React.FC<ChatButtonProps> = ({ onPress, style }) => (
+  <ActionButton
+    onPress={onPress}
+    icon="chatbubble"
+    backgroundColor={COLORS.chat.background}
+    shadowColor={COLORS.chat.shadow}
+    iconColor={COLORS.chat.icon}
+    style={style}
+  />
+);
+
+// Background Overlay Component
+interface BackgroundOverlayProps {
+  isVisible: boolean;
+  opacity: Animated.AnimatedInterpolation<number>;
+}
+
+const BackgroundOverlay: React.FC<BackgroundOverlayProps> = ({ isVisible, opacity }) => {
+  if (!isVisible) return null;
+
+  return (
+    <Animated.View
+      style={{
+        position: 'absolute',
+        top: -150,
+        left: -20,
+        right: -20,
+        bottom: -20,
+        backgroundColor: COLORS.overlay,
+        borderRadius: 40,
+        opacity,
+      }}
+    />
+  );
+};
+
+// Main Component
+const FloatingAssistant = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { isRecording, startRecognize, stopRecognize, speechResults } = useSpeechRecognize();
+  
+  const animations = useFloatingAssistantAnimations();
+  const gestureHandlers = useGestureHandling(animations, isExpanded, setIsExpanded);
+  const toggleExpansion = useExpansionToggle(isExpanded, setIsExpanded, animations, gestureHandlers.isDragging);
+  
+  usePulseAnimation(animations.pulse);
+
+  console.log({ isRecording, speechResults });
+
+  // Interpolated values for button positions and animations
+  const micTranslateY = animations.expansion.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -80],
+    outputRange: [0, POSITIONING.micOffset],
   });
 
-  const chatTranslateY = animation.interpolate({
+  const chatTranslateY = animations.expansion.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -140],
+    outputRange: [0, POSITIONING.chatOffset],
   });
 
-  const buttonOpacity = animation.interpolate({
+  const buttonOpacity = animations.expansion.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: [0, 0.5, 1],
   });
 
-  const buttonScale = animation.interpolate({
+  const buttonScale = animations.expansion.interpolate({
     inputRange: [0, 1],
     outputRange: [0.3, 1],
   });
 
+  // Action handlers
+  const handleMicStart = useCallback(() => {
+    console.log("Mic recording started");
+    startRecognize('vi-VN');
+  }, [startRecognize]);
+
+  const handleMicStop = useCallback(() => {
+    console.log("Mic recording stopped");
+    stopRecognize();
+  }, [stopRecognize]);
+
+  const handleChatPress = useCallback(() => {
+    console.log("Chat pressed");
+    setIsExpanded(false);
+    // Handle chat functionality here
+  }, [setIsExpanded]);
+
   return (
     <PanGestureHandler
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={onHandlerStateChange}
+      onGestureEvent={gestureHandlers.onGestureEvent}
+      onHandlerStateChange={gestureHandlers.onHandlerStateChange}
       minPointers={1}
       maxPointers={1}
     >
-      <Animated.View 
+      <Animated.View
         style={{
-          position: 'absolute',
+          position: "absolute",
           zIndex: 1000,
           transform: [
-            { translateX },
-            { translateY }
+            { translateX: animations.translateX },
+            { translateY: animations.translateY }
           ],
         }}
       >
+        {/* Background overlay when expanded */}
+        <BackgroundOverlay isVisible={isExpanded} opacity={buttonOpacity} />
+
         {/* Mic Button */}
         <Animated.View
-        style={{
-          position: 'absolute',
-          transform: [
-            { translateY: micTranslateY },
-            { scale: buttonScale }
-          ],
-          opacity: buttonOpacity,
-        }}
-      >
-         <Pressable
-           onPress={() => {
-             console.log('Mic pressed');
-             if (recorderState.isRecording) {
-              stopRecording();
-             } else {
-              startRecording();
-             }
-           }}
           style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            backgroundColor: recorderState.isRecording ? '#FF6B35' : '#FFE066',
-            justifyContent: 'center',
-            alignItems: 'center',
-            shadowColor: recorderState.isRecording ? '#FF6B35' : '#FFB347',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.4,
-            shadowRadius: 8,
-            elevation: 8,
-            borderWidth: 2,
-            borderColor: '#FFF',
-          }}
-        >
-            <Ionicons name={recorderState.isRecording ? 'mic-off' : 'mic'} size={24} color={recorderState.isRecording ? '#FF6B35' : '#FFB347'} />
-        </Pressable>
-      </Animated.View>
-
-      {/* Chat Button */}
-      <Animated.View
-        style={{
-          position: 'absolute',
-          transform: [
-            { translateY: chatTranslateY },
-            { scale: buttonScale }
-          ],
-          opacity: buttonOpacity,
-        }}
-      >
-         <Pressable
-           onPress={() => {
-             console.log('Chat pressed');
-             setIsExpanded(false); // Close menu after selection
-             // Handle chat functionality
-           }}
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            backgroundColor: '#A8E6CF',
-            justifyContent: 'center',
-            alignItems: 'center',
-            shadowColor: '#7FD3A6',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.4,
-            shadowRadius: 8,
-            elevation: 8,
-            borderWidth: 2,
-            borderColor: '#FFF',
-          }}
-        >
-          <Ionicons name="chatbubble" size={24} color="#399918" />
-        </Pressable>
-      </Animated.View>
-
-      {/* Main Assistant Button */}
-      <Animated.View
-        style={{
-          transform: [
-            { scale: bounceAnimation },
-            { scale: pulseAnimation }
-          ],
-        }}
-      >
-        <Pressable
-          onPress={toggleExpansion}
-           style={{
-             width: 60,
-             height: 60,
-             borderRadius: 30,
-             backgroundColor: isExpanded ? '#FFE6F2' : '#FFFFFF',
-             justifyContent: 'center',
-             alignItems: 'center',
-             shadowColor: '#D72654',
-             shadowOffset: { width: 0, height: 6 },
-             shadowOpacity: 0.4,
-             shadowRadius: 12,
-             elevation: 12,
-             borderWidth: 3,
-             borderColor: isExpanded ? '#FF69B4' : '#D72654',
-           }}
-        >
-          <Image
-            source={require('@/assets/images/assistant_icon.png')}
-             style={{
-               width: 50,
-               height: 50,
-               resizeMode: 'cover',
-               borderRadius: 30,
-               opacity: isExpanded ? 0.9 : 1,
-             }}
-          />
-        </Pressable>
-      </Animated.View>
-
-      {/* Background overlay when expanded */}
-      {/* {isExpanded && (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            top: -150,
-            left: -20,
-            right: -20,
-            bottom: -20,
-            backgroundColor: 'rgba(215, 38, 84, 0.05)',
-            borderRadius: 40,
+            position: "absolute",
+            transform: [{ translateY: micTranslateY }, { scale: buttonScale }],
             opacity: buttonOpacity,
           }}
-         />
-       )} */}
+        >
+          <MicButton
+            isRecording={isRecording}
+            onStartRecording={handleMicStart}
+            onStopRecording={handleMicStop}
+          />
+        </Animated.View>
+
+        {/* Chat Button */}
+        <Animated.View
+          style={{
+            position: "absolute",
+            transform: [{ translateY: chatTranslateY }, { scale: buttonScale }],
+            opacity: buttonOpacity,
+          }}
+        >
+          <ChatButton onPress={handleChatPress} />
+        </Animated.View>
+
+        {/* Main Assistant Button */}
+        <MainButton
+          onPress={toggleExpansion}
+          isExpanded={isExpanded}
+          bounceAnimation={animations.bounce}
+          pulseAnimation={animations.pulse}
+        />
       </Animated.View>
     </PanGestureHandler>
-   );
- };
+  );
+};
 
 export default FloatingAssistant;

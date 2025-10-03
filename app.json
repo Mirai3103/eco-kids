@@ -37,7 +37,9 @@
       ],
       "@react-native-google-signin/google-signin",
       "expo-audio",
-      "expo-font"
+      "expo-font",
+      "@laffy1309/react-native-voice-input"
+      
     ],
     "experiments": {
       "typedRoutes": true
