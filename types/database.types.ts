@@ -388,8 +388,11 @@ export type Database = {
           cover_image_url: string | null
           created_at: string | null
           description: string | null
+          embed_text: string | null
+          embedding: string | null
           id: string
           is_active: boolean | null
+          tags: string[] | null
           title: string | null
           topic_id: string | null
         }
@@ -397,8 +400,11 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
+          embed_text?: string | null
+          embedding?: string | null
           id: string
           is_active?: boolean | null
+          tags?: string[] | null
           title?: string | null
           topic_id?: string | null
         }
@@ -406,8 +412,11 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
+          embed_text?: string | null
+          embedding?: string | null
           id?: string
           is_active?: boolean | null
+          tags?: string[] | null
           title?: string | null
           topic_id?: string | null
         }

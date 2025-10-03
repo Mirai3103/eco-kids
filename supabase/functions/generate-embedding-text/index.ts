@@ -3,21 +3,66 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { google } from "@ai-sdk/google";
+import { createClient } from "@supabase/supabase-js";
+import { generateText } from "ai";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import type { Database } from '../../../types/database.types';
+const prompt = (
+  content: string,
+) => (`Bạn là hệ thống chuẩn bị dữ liệu cho mô hình tìm kiếm ngữ nghĩa (semantic search).  
+Hãy đọc toàn bộ nội dung một truyện thiếu nhi song ngữ (chỉ dùng tiếng Việt) rồi viết lại thành một đoạn văn ngắn gọn, súc tích, giữ ý chính.  
 
-console.log("Hello from Functions!")
+Yêu cầu:  
+- Giữ tên truyện.  
+- Tóm tắt nội dung chính: nhân vật, bối cảnh, hành động, thông điệp về môi trường.  
+- Không cần giữ nguyên văn từng đoạn, chỉ chọn lọc ý quan trọng.  
+- Viết liền mạch, ngắn gọn, không xuống dòng, không thêm lời giải thích.  
+- Kết quả sẽ được dùng làm embedding_text.  
+
+Dữ liệu đầu vào:
+${content}
+
+Dữ liệu đầu ra:
+embedding_text (một đoạn văn duy nhất bằng tiếng Việt, súc tích)
+`);
+
+async function generateEmbeddingText(content: string) {
+  if (!content) return "";
+  const { text } = await generateText({
+    model: google("gemini-2.5-flash"),
+    prompt: prompt(content),
+  });
+  return text;
+}
+
+const supabase = createClient<Database>(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
 
 Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+  // get all stories that field embed_text is empty or null
+  const { data, error } = await supabase.from("stories").select(
+    "*,story_segments(*)",
+  ).is("embed_text", null);
+  if (data?.length === 0) {
+    return new Response(JSON.stringify({ message: "No stories found" }), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
-
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
+  for (const story of data || []) {
+    let embeddingText = "Tên truyện: " + story.title + "\n Nội dung: ";
+    for (const segment of story.story_segments) {
+      embeddingText += segment.vi_text + "\n";
+    }
+    embeddingText = await generateEmbeddingText(embeddingText);
+    await supabase.from("stories").update({ embed_text: embeddingText }).eq("id", story.id);
+  }
+  return new Response(JSON.stringify({ message: "Stories updated" }), {
+    headers: { "Content-Type": "application/json" },
+  });
+});
 
 /* To invoke locally:
 

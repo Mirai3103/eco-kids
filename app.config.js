@@ -8,7 +8,6 @@ export default ({ config }) => ({
     googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
   },
   plugins: [
-    'expo-font',
     ...config.plugins,
   ]
 });

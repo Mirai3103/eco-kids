@@ -12,15 +12,15 @@ import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
 import { useSoundStore } from "@/stores/useSoundStore";
 import {
-    Baloo2_600SemiBold,
-    Baloo2_700Bold,
-    useFonts as useBalooFonts,
+  Baloo2_600SemiBold,
+  Baloo2_700Bold,
+  useFonts as useBalooFonts,
 } from "@expo-google-fonts/baloo-2";
 import {
-    NunitoSans_400Regular,
-    NunitoSans_600SemiBold,
-    NunitoSans_700Bold,
-    useFonts as useNunitoFonts,
+  NunitoSans_400Regular,
+  NunitoSans_600SemiBold,
+  NunitoSans_700Bold,
+  useFonts as useNunitoFonts,
 } from "@expo-google-fonts/nunito-sans";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { SplashScreen, Stack, usePathname, useRouter } from "expo-router";
@@ -62,7 +62,7 @@ export default function RootLayout() {
         loop: true,
       }
     });
-    play('bgm');
+    // play('bgm');
     return () => { unload(); };
   }, []);
   React.useEffect(() => {

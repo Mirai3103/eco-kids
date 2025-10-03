@@ -1,8 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  useAudioRecorder,
+  useAudioRecorderState,
+} from 'expo-audio';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Image, Pressable } from 'react-native';
+import { Alert, Animated, Dimensions, Image, Pressable } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const FloatingAssistant = () => {
@@ -10,7 +18,47 @@ const FloatingAssistant = () => {
   const [animation] = useState(new Animated.Value(0));
   const [bounceAnimation] = useState(new Animated.Value(1));
   const [pulseAnimation] = useState(new Animated.Value(1));
-  
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY, (status) => {
+    console.log('Recorder status changed:', status);
+  });
+  const recorderState = useAudioRecorderState(recorder);
+  const player = useAudioPlayer(null);
+  const playerStatus = useAudioPlayerStatus(player);
+  useEffect(() => {
+    (async () => {
+      const { status } = await requestRecordingPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Không được cấp quyền microphone');
+      }
+      // Cấu hình audio mode cho phép ghi âm
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true
+      });
+    })();
+  }, []);
+  const startRecording = async () => {
+    // prepare + bắt đầu ghi
+    await recorder.prepareToRecordAsync();
+    recorder.record();
+  };
+  const stopRecording = async () => {
+    await recorder.stop();
+    console.log('Recorded file uri:', recorder.uri);
+    // Sau khi dừng, load uri đó cho player
+    player.replace(recorder.uri);
+    playRecording();
+  };
+  const playRecording = () => {
+    // Nếu đã có uri
+    if (recorder.uri) {
+      // reset nếu đã phát hết
+      if (playerStatus.didJustFinish) {
+        player.seekTo(0);
+      }
+      player.play();
+    }
+  };
   // Position animations for drag functionality
   const translateX = useRef(new Animated.Value(screenWidth - 80)).current; // Start at right side
   const translateY = useRef(new Animated.Value(screenHeight - 200)).current; // Start near bottom
@@ -284,17 +332,20 @@ const FloatingAssistant = () => {
          <Pressable
            onPress={() => {
              console.log('Mic pressed');
-             setIsExpanded(false); // Close menu after selection
-             // Handle mic functionality
+             if (recorderState.isRecording) {
+              stopRecording();
+             } else {
+              startRecording();
+             }
            }}
           style={{
             width: 50,
             height: 50,
             borderRadius: 25,
-            backgroundColor: '#FFE066',
+            backgroundColor: recorderState.isRecording ? '#FF6B35' : '#FFE066',
             justifyContent: 'center',
             alignItems: 'center',
-            shadowColor: '#FFB347',
+            shadowColor: recorderState.isRecording ? '#FF6B35' : '#FFB347',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.4,
             shadowRadius: 8,
@@ -303,7 +354,7 @@ const FloatingAssistant = () => {
             borderColor: '#FFF',
           }}
         >
-          <Ionicons name="mic" size={24} color="#FF6B35" />
+            <Ionicons name={recorderState.isRecording ? 'mic-off' : 'mic'} size={24} color={recorderState.isRecording ? '#FF6B35' : '#FFB347'} />
         </Pressable>
       </Animated.View>
 
@@ -385,7 +436,7 @@ const FloatingAssistant = () => {
       </Animated.View>
 
       {/* Background overlay when expanded */}
-      {isExpanded && (
+      {/* {isExpanded && (
         <Animated.View
           style={{
             position: 'absolute',
@@ -398,7 +449,7 @@ const FloatingAssistant = () => {
             opacity: buttonOpacity,
           }}
          />
-       )}
+       )} */}
       </Animated.View>
     </PanGestureHandler>
    );
