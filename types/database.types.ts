@@ -608,7 +608,20 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
+        Returns: unknown
+      }
+      match_stories: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          embed_text: string
+          id: string
+          similarity: number
+          title: string
+        }[]
       }
       receive_point_from_question: {
         Args: { p_point: number; p_question_id: string; p_user_id: string }

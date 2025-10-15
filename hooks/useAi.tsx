@@ -1,3 +1,4 @@
+import { similarity_search_tool } from "@/lib/semilarity_search";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import Constants from "expo-constants";
@@ -79,6 +80,9 @@ export const useAi = (options: IUseAiOptions = {}): UseAiReturn => {
           model,
           messages: newMessages, // Gửi toàn bộ lịch sử
           abortSignal: controller.signal,
+          tools: {
+            similarity_search_tool,
+          },
           system: `Bạn là Greenie – người bạn AI dễ thương của trẻ nhỏ là 1 trợ lý A.i của app "EcoKids". 
 Nhiệm vụ của bạn là trò chuyện cho trẻ từ 3 đến 5 tuổi về chủ đề bảo vệ môi trường xanh và tình yêu thiên nhiên.
 
