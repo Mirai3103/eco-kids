@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 export default ({ config }) => ({
   ...config,
   extra: {
@@ -6,8 +6,7 @@ export default ({ config }) => ({
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_KEY,
     ...config.extra,
     googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    geminiApiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
   },
-  plugins: [
-    ...config.plugins,
-  ]
+  plugins: [...config.plugins],
 });

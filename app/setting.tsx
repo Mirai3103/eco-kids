@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
-import Tts from 'react-native-tts';
+import Tts from "react-native-tts";
 
 import {
   Alert,
@@ -162,11 +162,10 @@ const SettingsItem = ({
                 )}
               </VStack>
             </HStack>
-            {rightContent || (
-              showArrow && (
+            {rightContent ||
+              (showArrow && (
                 <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-              )
-            )}
+              ))}
           </HStack>
         </View>
       </Animated.View>
@@ -267,34 +266,30 @@ export default function SettingsScreen() {
   const [autoPlayEnabled, setAutoPlayEnabled] = React.useState(false);
 
   const handleLogout = async () => {
-    Tts.speak('Hello, world!');
-    Alert.alert(
-      "Đăng xuất",
-      "Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng?",
-      [
-        {
-          text: "Hủy",
-          style: "cancel",
+    Tts.speak("Hello, world!");
+    Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng?", [
+      {
+        text: "Hủy",
+        style: "cancel",
+      },
+      {
+        text: "Đăng xuất",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            // Sign out from Supabase
+            await supabase.auth.signOut();
+            // Clear user store
+            logout();
+            // Navigate to login
+            router.replace("/login");
+          } catch (error) {
+            console.error("Logout error:", error);
+            Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
+          }
         },
-        {
-          text: "Đăng xuất",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              // Sign out from Supabase
-              await supabase.auth.signOut();
-              // Clear user store
-              logout();
-              // Navigate to login
-              router.replace("/login");
-            } catch (error) {
-              console.error("Logout error:", error);
-              Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -430,14 +425,14 @@ export default function SettingsScreen() {
             icon="mail-outline"
             title="Liên hệ"
             subtitle="Gửi phản hồi và báo lỗi"
-            onPress={() => console.log("Contact")}
+            onPress={() => router.push("/album/1")}
             color="#DC2626"
           />
           <SettingsItem
             icon="shield-checkmark-outline"
             title="Chính sách bảo mật"
             subtitle="Điều khoản sử dụng và quyền riêng tư"
-            onPress={() => console.log("Privacy policy")}
+            onPress={() => router.push("/album")}
             color="#7C3AED"
           />
           <SettingsItem

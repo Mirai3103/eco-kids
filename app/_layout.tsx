@@ -1,5 +1,8 @@
 import "react-native-gesture-handler";
 import "react-native-reanimated";
+if (typeof globalThis.structuredClone === "undefined") {
+  globalThis.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
+}
 
 import FloatingAssistant from "@/components/FloatingAssistant";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -30,7 +33,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 SplashScreen.preventAutoHideAsync();
-const bgm = require('@/assets/audio/bgm.mp3');
+const bgm = require("@/assets/audio/bgm.mp3");
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [balooLoaded] = useBalooFonts({
@@ -45,7 +48,7 @@ export default function RootLayout() {
   const { session, isLoading } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const { setUser} =useUserStore()
+  const { setUser } = useUserStore();
   const init = useSoundStore((s) => s.init);
   const unload = useSoundStore((s) => s.unloadAll);
   const register = useSoundStore((s) => s.register);
@@ -54,16 +57,18 @@ export default function RootLayout() {
   useEffect(() => {
     init();
     register({
-      key: 'bgm',
+      key: "bgm",
       source: bgm,
-      type: 'theme',
-      config:{
+      type: "theme",
+      config: {
         volume: 0.15,
         loop: true,
-      }
+      },
     });
     // play('bgm');
-    return () => { unload(); };
+    return () => {
+      unload();
+    };
   }, []);
   React.useEffect(() => {
     console.log("session", session);
@@ -75,20 +80,31 @@ export default function RootLayout() {
     }
     if (session) {
       setUser({
-        avatar : session.user.user_metadata.avatar_url.replace(/=s\d+-c/, '=s256-c'),
-        name : session.user.user_metadata.name,
-        id : session.user.id,
-        isGuest : false,
+        avatar: session.user.user_metadata.avatar_url.replace(
+          /=s\d+-c/,
+          "=s256-c"
+        ),
+        name: session.user.user_metadata.name,
+        id: session.user.id,
+        isGuest: false,
       });
-      supabase.from('users').select('*').eq('id', session.user.id).single().then((res) => {
-        setUser({
-          avatar : session.user.user_metadata.avatar_url.replace(/=s\d+-c/, '=s256-c'),
-          name : session.user.user_metadata.name,
-          id : session.user.id,
-          isGuest : false,
-          points : res.data?.points ||0,
+      supabase
+        .from("users")
+        .select("*")
+        .eq("id", session.user.id)
+        .single()
+        .then((res) => {
+          setUser({
+            avatar: session.user.user_metadata.avatar_url.replace(
+              /=s\d+-c/,
+              "=s256-c"
+            ),
+            name: session.user.user_metadata.name,
+            id: session.user.id,
+            isGuest: false,
+            points: res.data?.points || 0,
+          });
         });
-      });
     }
   }, [session, isLoading]);
   if (!balooLoaded || !nunitoLoaded) {
@@ -115,8 +131,14 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen name="topics/[id]" options={{ headerShown: false }} />
-              <Stack.Screen name="stories/[id]/quiz" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="topics/[id]"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="stories/[id]/quiz"
+                options={{ headerShown: false }}
+              />
               <Stack.Screen name="+not-found" />
               <Stack.Screen name="history" options={{ headerShown: false }} />
             </Stack>

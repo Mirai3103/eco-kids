@@ -1,4 +1,6 @@
+import { useAi } from "@/hooks/useAi";
 import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
+import useTTS from "@/hooks/useTTS";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Image, Pressable } from "react-native";
@@ -134,94 +136,112 @@ const useGestureHandling = (
     }
   }, [isExpanded, setIsExpanded, animations.expansion]);
 
-  const snapToEdge = useCallback((currentX: number, currentY: number) => {
-    let finalX = currentX;
-    let finalY = currentY;
+  const snapToEdge = useCallback(
+    (currentX: number, currentY: number) => {
+      let finalX = currentX;
+      let finalY = currentY;
 
-    // Constrain Y within screen bounds
-    if (finalY < POSITIONING.minY) finalY = POSITIONING.minY;
-    if (finalY > POSITIONING.maxY) finalY = POSITIONING.maxY;
+      // Constrain Y within screen bounds
+      if (finalY < POSITIONING.minY) finalY = POSITIONING.minY;
+      if (finalY > POSITIONING.maxY) finalY = POSITIONING.maxY;
 
-    // Snap to left or right edge
-    const centerX = SCREEN_WIDTH / 2;
-    finalX = currentX < centerX ? POSITIONING.edgeMargin : SCREEN_WIDTH - 80;
+      // Snap to left or right edge
+      const centerX = SCREEN_WIDTH / 2;
+      finalX = currentX < centerX ? POSITIONING.edgeMargin : SCREEN_WIDTH - 80;
 
-    // Animate to final position
-    Animated.parallel([
-      Animated.spring(animations.translateX, {
-        toValue: finalX,
-        useNativeDriver: true,
-        tension: ANIMATION_CONFIG.springTension,
-        friction: ANIMATION_CONFIG.springFriction,
-      }),
-      Animated.spring(animations.translateY, {
-        toValue: finalY,
-        useNativeDriver: true,
-        tension: ANIMATION_CONFIG.springTension,
-        friction: ANIMATION_CONFIG.springFriction,
-      }),
-    ]).start(() => {
-      setTimeout(() => {
+      // Animate to final position
+      Animated.parallel([
+        Animated.spring(animations.translateX, {
+          toValue: finalX,
+          useNativeDriver: true,
+          tension: ANIMATION_CONFIG.springTension,
+          friction: ANIMATION_CONFIG.springFriction,
+        }),
+        Animated.spring(animations.translateY, {
+          toValue: finalY,
+          useNativeDriver: true,
+          tension: ANIMATION_CONFIG.springTension,
+          friction: ANIMATION_CONFIG.springFriction,
+        }),
+      ]).start(() => {
+        setTimeout(() => {
+          gestureState.current.isDragging = false;
+        }, 100);
+      });
+    },
+    [animations]
+  );
+
+  const onGestureEvent = useCallback(
+    (event: any) => {
+      if (gestureState.current.isDragging) {
+        const { translationX, translationY } = event.nativeEvent;
+        const newX = gestureState.current.initialPosition.x + translationX;
+        const newY = gestureState.current.initialPosition.y + translationY;
+
+        animations.translateX.setValue(newX);
+        animations.translateY.setValue(newY);
+      }
+    },
+    [animations]
+  );
+
+  const onHandlerStateChange = useCallback(
+    (event: any) => {
+      const { state, translationX, translationY } = event.nativeEvent;
+
+      if (state === State.BEGAN) {
+        gestureState.current.dragStartTime = Date.now();
         gestureState.current.isDragging = false;
-      }, 100);
-    });
-  }, [animations]);
+        gestureState.current.initialPosition = {
+          ...gestureState.current.currentPosition,
+        };
 
-  const onGestureEvent = useCallback((event: any) => {
-    if (gestureState.current.isDragging) {
-      const { translationX, translationY } = event.nativeEvent;
-      const newX = gestureState.current.initialPosition.x + translationX;
-      const newY = gestureState.current.initialPosition.y + translationY;
+        // Start long press timer
+        gestureState.current.longPressTimer = setTimeout(() => {
+          gestureState.current.isDragging = true;
+          closeExpandedMenu();
+        }, ANIMATION_CONFIG.longPressDelay);
+      } else if (state === State.ACTIVE) {
+        // Check for significant movement
+        if (
+          Math.abs(translationX) > POSITIONING.dragThreshold ||
+          Math.abs(translationY) > POSITIONING.dragThreshold
+        ) {
+          if (gestureState.current.longPressTimer) {
+            clearTimeout(gestureState.current.longPressTimer);
+            gestureState.current.longPressTimer = null;
+          }
 
-      animations.translateX.setValue(newX);
-      animations.translateY.setValue(newY);
-    }
-  }, [animations]);
-
-  const onHandlerStateChange = useCallback((event: any) => {
-    const { state, translationX, translationY } = event.nativeEvent;
-
-    if (state === State.BEGAN) {
-      gestureState.current.dragStartTime = Date.now();
-      gestureState.current.isDragging = false;
-      gestureState.current.initialPosition = { ...gestureState.current.currentPosition };
-
-      // Start long press timer
-      gestureState.current.longPressTimer = setTimeout(() => {
-        gestureState.current.isDragging = true;
-        closeExpandedMenu();
-      }, ANIMATION_CONFIG.longPressDelay);
-    } else if (state === State.ACTIVE) {
-      // Check for significant movement
-      if (Math.abs(translationX) > POSITIONING.dragThreshold || Math.abs(translationY) > POSITIONING.dragThreshold) {
+          if (!gestureState.current.isDragging) {
+            gestureState.current.initialPosition = {
+              ...gestureState.current.currentPosition,
+            };
+            gestureState.current.isDragging = true;
+          }
+          closeExpandedMenu();
+        }
+      } else if (state === State.END || state === State.CANCELLED) {
         if (gestureState.current.longPressTimer) {
           clearTimeout(gestureState.current.longPressTimer);
           gestureState.current.longPressTimer = null;
         }
 
-        if (!gestureState.current.isDragging) {
-          gestureState.current.initialPosition = { ...gestureState.current.currentPosition };
-          gestureState.current.isDragging = true;
+        if (gestureState.current.isDragging) {
+          const currentX =
+            gestureState.current.initialPosition.x + translationX;
+          const currentY =
+            gestureState.current.initialPosition.y + translationY;
+          snapToEdge(currentX, currentY);
+        } else {
+          setTimeout(() => {
+            gestureState.current.isDragging = false;
+          }, 50);
         }
-        closeExpandedMenu();
       }
-    } else if (state === State.END || state === State.CANCELLED) {
-      if (gestureState.current.longPressTimer) {
-        clearTimeout(gestureState.current.longPressTimer);
-        gestureState.current.longPressTimer = null;
-      }
-
-      if (gestureState.current.isDragging) {
-        const currentX = gestureState.current.initialPosition.x + translationX;
-        const currentY = gestureState.current.initialPosition.y + translationY;
-        snapToEdge(currentX, currentY);
-      } else {
-        setTimeout(() => {
-          gestureState.current.isDragging = false;
-        }, 50);
-      }
-    }
-  }, [closeExpandedMenu, snapToEdge]);
+    },
+    [closeExpandedMenu, snapToEdge]
+  );
 
   return {
     onGestureEvent,
@@ -375,7 +395,9 @@ const MainButton: React.FC<MainButtonProps> = ({
         shadowRadius: 12,
         elevation: 12,
         borderWidth: 3,
-        borderColor: isExpanded ? COLORS.main.borderExpanded : COLORS.main.border,
+        borderColor: isExpanded
+          ? COLORS.main.borderExpanded
+          : COLORS.main.border,
       }}
     >
       <Image
@@ -439,13 +461,16 @@ interface BackgroundOverlayProps {
   opacity: Animated.AnimatedInterpolation<number>;
 }
 
-const BackgroundOverlay: React.FC<BackgroundOverlayProps> = ({ isVisible, opacity }) => {
+const BackgroundOverlay: React.FC<BackgroundOverlayProps> = ({
+  isVisible,
+  opacity,
+}) => {
   if (!isVisible) return null;
 
   return (
     <Animated.View
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: -150,
         left: -20,
         right: -20,
@@ -461,12 +486,36 @@ const BackgroundOverlay: React.FC<BackgroundOverlayProps> = ({ isVisible, opacit
 // Main Component
 const FloatingAssistant = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { isRecording, startRecognize, stopRecognize, speechResults } = useSpeechRecognize();
-  
+
+  const { playTTSOffline } = useTTS();
+  const { messages, status, error, sendMessage, stop, setMessages } = useAi({
+    onLLMGenerated(message) {
+      playTTSOffline(message, "vi-VN");
+    },
+  });
+  console.log({ messages });
+  const { isRecording, startRecognize, stopRecognize, speechResults } =
+    useSpeechRecognize({
+      onSpeechStart() {
+        console.log("Mic recording started");
+      },
+      onSpeechResults(e) {
+        sendMessage(e.value[e.value.length - 1]);
+      },
+    });
   const animations = useFloatingAssistantAnimations();
-  const gestureHandlers = useGestureHandling(animations, isExpanded, setIsExpanded);
-  const toggleExpansion = useExpansionToggle(isExpanded, setIsExpanded, animations, gestureHandlers.isDragging);
-  
+  const gestureHandlers = useGestureHandling(
+    animations,
+    isExpanded,
+    setIsExpanded
+  );
+  const toggleExpansion = useExpansionToggle(
+    isExpanded,
+    setIsExpanded,
+    animations,
+    gestureHandlers.isDragging
+  );
+
   usePulseAnimation(animations.pulse);
 
   console.log({ isRecording, speechResults });
@@ -495,8 +544,10 @@ const FloatingAssistant = () => {
   // Action handlers
   const handleMicStart = useCallback(() => {
     console.log("Mic recording started");
-    startRecognize('vi-VN');
-  }, [startRecognize]);
+    if (isRecording) return;
+    if (status === "streaming" || status === "submitted") return;
+    startRecognize("vi-VN");
+  }, [startRecognize, isRecording, status]);
 
   const handleMicStop = useCallback(() => {
     console.log("Mic recording stopped");
@@ -522,7 +573,7 @@ const FloatingAssistant = () => {
           zIndex: 1000,
           transform: [
             { translateX: animations.translateX },
-            { translateY: animations.translateY }
+            { translateY: animations.translateY },
           ],
         }}
       >

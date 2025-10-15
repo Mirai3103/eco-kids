@@ -14,8 +14,9 @@
     "build:dev:preview": "eas build --profile development --platform android --profile preview"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.23",
     "@ai-sdk/openai": "^2.0.38",
-    "@ai-sdk/react": "^2.0.56",
+    "@ai-sdk/react": "^2.0.71",
     "@expo-google-fonts/baloo-2": "^0.4.1",
     "@expo-google-fonts/nunito-sans": "^0.4.1",
     "@expo/config": "^11.0.0",
