@@ -488,12 +488,11 @@ const FloatingAssistant = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { playTTSOffline } = useTTS();
-  const { messages, status, error, sendMessage, stop, setMessages } = useAi({
+  const { messages, status, error, sendMessage } = useAi({
     onLLMGenerated(message) {
       playTTSOffline(message, "vi-VN");
     },
   });
-  console.log({ messages });
   const { isRecording, startRecognize, stopRecognize, speechResults } =
     useSpeechRecognize({
       onSpeechStart() {
@@ -517,8 +516,6 @@ const FloatingAssistant = () => {
   );
 
   usePulseAnimation(animations.pulse);
-
-  console.log({ isRecording, speechResults });
 
   // Interpolated values for button positions and animations
   const micTranslateY = animations.expansion.interpolate({
