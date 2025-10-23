@@ -561,6 +561,33 @@ export type Database = {
         Args: { scan_interval: string }
         Returns: string
       }
+      get_recommended_stories_for_user: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          cover_image_url: string
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          similarity: number
+          tags: string[]
+          title: string
+          topic_id: string
+        }[]
+      }
+      get_stories_slim: {
+        Args: never
+        Returns: {
+          cover_image_url: string
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          tags: string[]
+          title: string
+          topic_id: string
+        }[]
+      }
       log_reading_progress: {
         Args: { p_segment_id: string; p_story_id: string; p_user_id: string }
         Returns: undefined
