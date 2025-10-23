@@ -63,3 +63,28 @@ export const getAllStoriesQueryOptions = (
   },
   select: (data) => data as Story[] | undefined,
 });
+
+export const getAllRecommendedStoriesQueryOptions = (
+  user_id: string,
+  limit: number = 10
+): UseQueryOptions<
+  unknown,
+  Error,
+  Story[] | undefined,
+  ["recommended_stories", string, number]
+> => ({
+  queryKey: ["recommended_stories", user_id, limit],
+  queryFn: async () => {
+    if (!user_id) {
+      throw new Error("user_id is required");
+    }
+    return await supabase
+      .rpc("get_recommended_stories_for_user", {
+        p_user_id: user_id,
+        p_limit: limit,
+      })
+      .then((res) => res.data || []);
+  },
+  enabled: !!user_id,
+  select: (data) => data as Story[] | undefined,
+});

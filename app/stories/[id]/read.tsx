@@ -314,6 +314,12 @@ export default function ReadStoryScreen() {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  React.useEffect(() => {
+    // increase view count
+    supabase.rpc("increment_story_view", {
+      story_id: storyId,
+    });
+  }, []);
 
   // Refs
   const pageFlipperRef = useRef<any>(null);

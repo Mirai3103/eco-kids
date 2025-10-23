@@ -395,6 +395,7 @@ export type Database = {
           tags: string[] | null
           title: string | null
           topic_id: string | null
+          views_count: number | null
         }
         Insert: {
           cover_image_url?: string | null
@@ -407,6 +408,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           topic_id?: string | null
+          views_count?: number | null
         }
         Update: {
           cover_image_url?: string | null
@@ -419,6 +421,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           topic_id?: string | null
+          views_count?: number | null
         }
         Relationships: [
           {
@@ -588,6 +591,7 @@ export type Database = {
           topic_id: string
         }[]
       }
+      increment_story_view: { Args: { story_id: string }; Returns: undefined }
       log_reading_progress: {
         Args: { p_segment_id: string; p_story_id: string; p_user_id: string }
         Returns: undefined

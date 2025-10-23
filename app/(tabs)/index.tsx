@@ -15,7 +15,8 @@ import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { getAllStoriesQueryOptions } from "@/lib/queries/story.query";
+import useSession from "@/hooks/useSession";
+import { getAllRecommendedStoriesQueryOptions } from "@/lib/queries/story.query";
 import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { Story, Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -166,17 +167,21 @@ const TopicIsland = ({
             }}
             className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-lg"
           >
-              {/* <Text style={{ fontSize: 32 }} className="leading-loose">
+            {/* <Text style={{ fontSize: 32 }} className="leading-loose">
                 {topic.meta_data.icon}
               </Text> */}
-              <ExpoImage
-              cachePolicy={'memory-disk'}
-                source={{ uri: topic.meta_data.icon }}
-                style={{ width: 56, height: 56 }}
-              />
+            <ExpoImage
+              cachePolicy={"memory-disk"}
+              source={{ uri: topic.meta_data.icon }}
+              style={{ width: 56, height: 56 }}
+            />
           </HStack>
           <Text
-            style={{ color: "#1B4B07", fontSize: 15, fontFamily: "NunitoSans_600SemiBold" }}
+            style={{
+              color: "#1B4B07",
+              fontSize: 15,
+              fontFamily: "NunitoSans_600SemiBold",
+            }}
             className="text-center"
           >
             {topic.name}
@@ -194,7 +199,7 @@ const StoryCard = ({
   withButton = false,
   onPress,
 }: {
-  story: Story
+  story: Story;
   size?: "small" | "large";
   withButton?: boolean;
   onPress?: () => void;
@@ -241,7 +246,11 @@ const StoryCard = ({
   });
 
   return (
-    <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
       <Animated.View
         style={{
           transform: [{ scale: scaleAnim }, { rotate }],
@@ -265,9 +274,9 @@ const StoryCard = ({
           <Center className="flex-1">
             <ExpoImage
               source={{ uri: story.cover_image_url! }}
-              cachePolicy={'memory-disk'}
+              cachePolicy={"memory-disk"}
               alt="story-image"
-              style={{ width: '100%', height: '100%', borderRadius: 20 }}
+              style={{ width: "100%", height: "100%", borderRadius: 20 }}
             />
           </Center>
           <Text
@@ -299,6 +308,7 @@ const StoryCard = ({
 
 export default function EcoKidsHomeScreen() {
   const router = useRouter();
+  const session = useSession();
   const {
     data: topics = [],
     isLoading,
@@ -308,13 +318,14 @@ export default function EcoKidsHomeScreen() {
     data: stories = [],
     isLoading: isStoriesLoading,
     error: storiesError,
-  } = useQuery(getAllStoriesQueryOptions(0, 4));
+  } = useQuery(
+    getAllRecommendedStoriesQueryOptions(session.session!.user.id, 4)
+  );
   React.useEffect(() => {
-    if(!isLoading) {
+    if (!isLoading) {
       SplashScreen.hideAsync();
     }
-  }, [isLoading])
-  
+  }, [isLoading]);
 
   return (
     <View className="flex-1">
