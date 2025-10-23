@@ -530,6 +530,7 @@ export type Database = {
           id: string
           name: string | null
           points: number | null
+          recommend_vector: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -538,6 +539,7 @@ export type Database = {
           id?: string
           name?: string | null
           points?: number | null
+          recommend_vector?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -546,6 +548,7 @@ export type Database = {
           id?: string
           name?: string | null
           points?: number | null
+          recommend_vector?: string | null
         }
         Relationships: []
       }
@@ -554,6 +557,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      batch_update_all_user_vectors: {
+        Args: { scan_interval: string }
+        Returns: string
+      }
+      log_reading_progress: {
+        Args: { p_segment_id: string; p_story_id: string; p_user_id: string }
+        Returns: undefined
+      }
       match_stories: {
         Args: {
           match_count?: number
@@ -570,6 +581,10 @@ export type Database = {
       receive_point_from_question: {
         Args: { p_point: number; p_question_id: string; p_user_id: string }
         Returns: boolean
+      }
+      update_user_recommend_vector: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

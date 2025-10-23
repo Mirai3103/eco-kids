@@ -1,5 +1,6 @@
 import { StorySegment } from "@/types";
 import { UseQueryOptions } from "@tanstack/react-query";
+import { getStorySegmentsOfflineById } from "../offline";
 import { supabase } from "../supabase";
 
 export const getAllStorySegmentsQueryByStoryIdOptions = (
@@ -12,13 +13,16 @@ export const getAllStorySegmentsQueryByStoryIdOptions = (
 > => ({
   queryKey: ["story_segments", storyId],
   queryFn: async () => {
-    console.log("fetching all stories data............", storyId);
+    const storySegments = await getStorySegmentsOfflineById(storyId);
+    if (storySegments) {
+      console.log("get cached story segments success");
+      return storySegments as StorySegment[] | undefined;
+    }
     return await supabase
       .from("story_segments")
       .select("*, audio_segments(*)")
       .eq("story_id", storyId)
       .then((res) => {
-        console.log("res", res);
         return res.data;
       });
   },

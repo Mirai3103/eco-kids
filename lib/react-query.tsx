@@ -47,7 +47,10 @@ export default function ReactQueryProvider({
           const topics = (await queryClient.ensureQueryData(
             getAllTopicsQueryOptions()
           )) as Topic[];
-          await Image.prefetch(topics.map((topic) => topic.meta_data.icon||""),'memory-disk')
+          await Image.prefetch(
+            topics.map((topic) => topic.meta_data.icon || ""),
+            "memory-disk"
+          );
           await Promise.all(
             topics.map((topic) => {
               queryClient.prefetchQuery({
@@ -57,11 +60,9 @@ export default function ReactQueryProvider({
             })
           );
         }
-        prepare()
-          .catch((err) => {
-            console.log(err);
-          })
-          
+        prepare().catch((err) => {
+          console.log(err);
+        });
       }}
       onError={() => {
         console.log("onError");

@@ -1,17 +1,24 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import PageFlipper from '@laffy1309/react-native-page-flipper';
-import { useQuery } from "@tanstack/react-query";
+import PageFlipper from "@laffy1309/react-native-page-flipper";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ImageStyle, TextStyle } from "react-native";
 import {
+  Alert,
   Animated,
   Dimensions,
   Pressable,
   StatusBar,
   View,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -25,8 +32,11 @@ import { useImageLoader } from "@/hooks/useImageLoader";
 import useTTS from "@/hooks/useTTS";
 
 // Queries and Types
+import useSession from "@/hooks/useSession";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
+import { supabase } from "@/lib/supabase";
 import { StorySegment } from "@/types";
+import * as Network from "expo-network";
 
 // Constants
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -67,255 +77,294 @@ interface Menu3DButtonProps {
   size?: number;
 }
 
-
 // 3D Control Button Component
-const ControlButton = React.memo<ControlButtonProps>(({
-  icon,
-  onPress,
-  disabled = false,
-  color = "#22C55E",
-  size = 48,
-  shadowColor = "#22C55E",
-}) => {
-  const shadowStyle: ViewStyle = useMemo(() => ({
-    backgroundColor: disabled ? "#9CA3AF" : shadowColor,
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    position: "absolute",
-    top: 3,
-    left: 0,
-  }), [disabled, shadowColor, size]);
-
-  const topLayerStyle: ViewStyle = useMemo(() => ({
-    backgroundColor: disabled ? "#D1D5DB" : color,
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    justifyContent: "center",
-    alignItems: "center",
-  }), [disabled, color, size]);
-
-  return (
-    <Pressable
-      onPress={disabled ? undefined : onPress}
-      disabled={disabled}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.8 : 1,
-        transform: [{ scale: pressed ? 0.95 : 1 }],
-      })}
-    >
-      <View style={{ position: "relative" }}>
-        <View style={shadowStyle} />
-        <View style={topLayerStyle}>
-          {icon}
-        </View>
-      </View>
-    </Pressable>
-  );
-});
-
-// Floating Button Component
-const FloatingButton = React.memo<FloatingButtonProps>(({
-  icon,
-  onPress,
-  color = "#22C55E",
-  disabled = false,
-  size = 50,
-}) => {
-  return (
-    <Pressable
-      onPress={disabled ? undefined : onPress}
-      disabled={disabled}
-      style={({ pressed }) => ({
+const ControlButton = React.memo<ControlButtonProps>(
+  ({
+    icon,
+    onPress,
+    disabled = false,
+    color = "#22C55E",
+    size = 48,
+    shadowColor = "#22C55E",
+  }) => {
+    const shadowStyle: ViewStyle = useMemo(
+      () => ({
+        backgroundColor: disabled ? "#9CA3AF" : shadowColor,
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: disabled ? "#9CA3AF" : color,
+        position: "absolute",
+        top: 3,
+        left: 0,
+      }),
+      [disabled, shadowColor, size]
+    );
+
+    const topLayerStyle: ViewStyle = useMemo(
+      () => ({
+        backgroundColor: disabled ? "#D1D5DB" : color,
+        width: size,
+        height: size,
+        borderRadius: size / 2,
         justifyContent: "center",
         alignItems: "center",
-        shadowColor: color,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
-        shadowRadius: 8,
-        elevation: 8,
-        borderWidth: 2,
-        borderColor: "#FFF",
-        opacity: pressed ? 0.8 : 1,
-        transform: [{ scale: pressed ? 0.95 : 1 }],
-      })}
-    >
-      {icon}
-    </Pressable>
-  );
-});
+      }),
+      [disabled, color, size]
+    );
+
+    return (
+      <Pressable
+        onPress={disabled ? undefined : onPress}
+        disabled={disabled}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.8 : 1,
+          transform: [{ scale: pressed ? 0.95 : 1 }],
+        })}
+      >
+        <View style={{ position: "relative" }}>
+          <View style={shadowStyle} />
+          <View style={topLayerStyle}>{icon}</View>
+        </View>
+      </Pressable>
+    );
+  }
+);
+
+// Floating Button Component
+const FloatingButton = React.memo<FloatingButtonProps>(
+  ({ icon, onPress, color = "#22C55E", disabled = false, size = 50 }) => {
+    return (
+      <Pressable
+        onPress={disabled ? undefined : onPress}
+        disabled={disabled}
+        style={({ pressed }) => ({
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: disabled ? "#9CA3AF" : color,
+          justifyContent: "center",
+          alignItems: "center",
+          shadowColor: color,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.4,
+          shadowRadius: 8,
+          elevation: 8,
+          borderWidth: 2,
+          borderColor: "#FFF",
+          opacity: pressed ? 0.8 : 1,
+          transform: [{ scale: pressed ? 0.95 : 1 }],
+        })}
+      >
+        {icon}
+      </Pressable>
+    );
+  }
+);
 
 // Menu 3D Button Component
-const Menu3DButton = React.memo<Menu3DButtonProps>(({
-  icon,
-  onPress,
-  color = "#22C55E",
-  shadowColor,
-  disabled = false,
-  size = 50,
-}) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+const Menu3DButton = React.memo<Menu3DButtonProps>(
+  ({
+    icon,
+    onPress,
+    color = "#22C55E",
+    shadowColor,
+    disabled = false,
+    size = 50,
+  }) => {
+    const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      useNativeDriver: true,
-    }).start();
-  };
+    const handlePressIn = () => {
+      Animated.spring(scaleAnim, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }).start();
+    };
 
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 3,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
-  };
+    const handlePressOut = () => {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    };
 
-  const effectiveShadowColor = shadowColor || color;
+    const effectiveShadowColor = shadowColor || color;
 
-  return (
-    <Pressable
-      onPress={disabled ? undefined : onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      disabled={disabled}
-    >
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <View style={{ position: "relative" }}>
-          {/* Shadow/Bottom layer */}
-          <View
-            style={{
-              backgroundColor: disabled ? "#6B7280" : effectiveShadowColor,
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              position: "absolute",
-              top: 4,
-              left: 0,
-            }}
-          />
-          {/* Top layer */}
-          <View
-            style={{
-              backgroundColor: disabled ? "#9CA3AF" : color,
-              width: size,
-              height: size,
-              borderRadius: size / 2,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {icon}
+    return (
+      <Pressable
+        onPress={disabled ? undefined : onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled}
+      >
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <View style={{ position: "relative" }}>
+            {/* Shadow/Bottom layer */}
+            <View
+              style={{
+                backgroundColor: disabled ? "#6B7280" : effectiveShadowColor,
+                width: size,
+                height: size,
+                borderRadius: size / 2,
+                position: "absolute",
+                top: 4,
+                left: 0,
+              }}
+            />
+            {/* Top layer */}
+            <View
+              style={{
+                backgroundColor: disabled ? "#9CA3AF" : color,
+                width: size,
+                height: size,
+                borderRadius: size / 2,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {icon}
+            </View>
           </View>
-        </View>
-      </Animated.View>
-    </Pressable>
-  );
-});
+        </Animated.View>
+      </Pressable>
+    );
+  }
+);
 
 // Story Page Component
-const StoryPage = React.memo<StoryPageProps>(({
-  segment,
-  isVietnamese = true,
-}) => {
-  const containerStyle: ViewStyle = useMemo(() => ({
-    flex: 1,
-    backgroundColor: "white",
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    margin:0
-  }), []);
+const StoryPage = React.memo<StoryPageProps>(
+  ({ segment, isVietnamese = true }) => {
+    const containerStyle: ViewStyle = useMemo(
+      () => ({
+        flex: 1,
+        backgroundColor: "white",
+        borderRadius: 16,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5,
+        margin: 0,
+      }),
+      []
+    );
 
-  const imageStyle: ImageStyle = useMemo(() => ({
-    width: screenWidth - 40,
-    height: screenHeight * 0.55,
-    borderRadius: 12,
-  }), []);
+    const imageStyle: ImageStyle = useMemo(
+      () => ({
+        width: screenWidth - 40,
+        height: screenHeight * 0.55,
+        borderRadius: 12,
+      }),
+      []
+    );
 
-  const textStyle: TextStyle = useMemo(() => ({
-    color: "#1B4B07",
-    fontSize: 18,
-    lineHeight: 28,
-    textAlign: "center" as const,
-    fontFamily: "NunitoSans_600SemiBold",
-    marginBottom: 16,
-  }), []);
+    const textStyle: TextStyle = useMemo(
+      () => ({
+        color: "#1B4B07",
+        fontSize: 18,
+        lineHeight: 28,
+        textAlign: "center" as const,
+        fontFamily: "NunitoSans_600SemiBold",
+        marginBottom: 16,
+      }),
+      []
+    );
 
-  const displayText = useMemo(() => {
-    return isVietnamese ? segment?.vi_text : segment?.en_text || "";
-  }, [isVietnamese, segment?.vi_text, segment?.en_text]);
+    const displayText = useMemo(() => {
+      return isVietnamese ? segment?.vi_text : segment?.en_text || "";
+    }, [isVietnamese, segment?.vi_text, segment?.en_text]);
 
-  if (!segment) return null;
+    if (!segment) return null;
 
-  return (
-    <View style={containerStyle}>
-      <View style={{ flex: 1, padding: 20, justifyContent: 'space-between' }}>
-        {/* Image Section */}
-        {segment.image_url && (
-          <Center style={{ flex: 1, marginBottom: 20 }}>
-            <ExpoImage
-              source={{ uri: segment.image_url }}
-              style={imageStyle}
-              alt={`Story page ${(segment.segment_index || 0) + 1}`}
-              contentFit="cover"
-              cachePolicy="memory-disk"
-            />
-          </Center>
-        )}
+    return (
+      <View style={containerStyle}>
+        <View style={{ flex: 1, padding: 20, justifyContent: "space-between" }}>
+          {/* Image Section */}
+          {segment.image_url && (
+            <Center style={{ flex: 1, marginBottom: 20 }}>
+              <ExpoImage
+                source={{ uri: segment.image_url }}
+                style={imageStyle}
+                alt={`Story page ${(segment.segment_index || 0) + 1}`}
+                contentFit="cover"
+                cachePolicy="memory-disk"
+              />
+            </Center>
+          )}
 
-        {/* Text Content Section */}
-        <View style={{ paddingBottom: 40 }}>
-          <Text style={textStyle}>
-            {displayText}
-          </Text>
+          {/* Text Content Section */}
+          <View style={{ paddingBottom: 40 }}>
+            <Text style={textStyle}>{displayText}</Text>
+          </View>
         </View>
       </View>
-    </View>
-  );
-});
+    );
+  }
+);
 
 export default function ReadStoryScreen() {
+  console.log("ReadStoryScreen");
   const params = useLocalSearchParams();
   const storyId = params.id as string;
-  
+
   // State
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  
+
   // Refs
   const pageFlipperRef = useRef<any>(null);
-  
+
   // Menu animations
   const [menuAnimation] = useState(new Animated.Value(0));
   const [pulseAnimation] = useState(new Animated.Value(1));
-  
+  const networkState = Network.useNetworkState();
+  console.log(networkState, ":networkState");
+
+  const session = useSession();
+  const mutation = useMutation({
+    mutationFn: async ({
+      storyId,
+      segmentId,
+      userId,
+    }: {
+      storyId: string;
+      segmentId: string;
+      userId: string;
+    }) => {
+      return await supabase.rpc("log_reading_progress", {
+        p_story_id: storyId,
+        p_segment_id: segmentId,
+        p_user_id: userId,
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      Alert.alert("Lỗi", "Không thể ghi nhận tiến trình đọc");
+    },
+  });
   // Data fetching
   const { data, isLoading } = useQuery(
     getAllStorySegmentsQueryByStoryIdOptions(storyId)
   );
-  
+
   // Memoized computations
   const storySegments = useMemo(() => {
-    return data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0)) || [];
+    return (
+      data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0)) ||
+      []
+    );
   }, [data?.length]);
-  
+
   const imageUrls = useMemo(() => {
-    return storySegments.map((segment) => segment.image_url).filter(Boolean) as string[];
+    return storySegments
+      .map((segment) => segment.image_url)
+      .filter(Boolean) as string[];
   }, [storySegments]);
-  
+
   const audioUrls = useMemo(() => {
     return storySegments.map((segment) => {
       const audioSegment = segment.audio_segments?.find(
@@ -324,10 +373,10 @@ export default function ReadStoryScreen() {
       return audioSegment?.audio_url || "";
     });
   }, [storySegments]);
-  
+
   // Hooks
   const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
-  const { playAudio, playTTSOffline,stopAll,playTTSOnline } = useTTS();
+  const { playAudio, playTTSOffline, stopAll, playTTSOnline } = useTTS();
 
   // Gentle pulse animation for the main button
   useEffect(() => {
@@ -347,14 +396,14 @@ export default function ReadStoryScreen() {
         setTimeout(pulse, 4000);
       });
     };
-    
+
     const timer = setTimeout(pulse, 3000);
     return () => clearTimeout(timer);
   }, []);
 
   // Navigation handlers
   const handleBack = useCallback(() => {
-    stopAll()
+    stopAll();
     router.back();
   }, [stopAll]);
 
@@ -370,33 +419,39 @@ export default function ReadStoryScreen() {
     }
   }, [currentPage, storySegments.length]);
 
-  const handleFlippedEnd = useCallback((pageIndex: number) => {
-    setCurrentPage(pageIndex);
-  }, []);
+  const handleFlippedEnd = useCallback(
+    (pageIndex: number) => {
+      mutation.mutate({
+        storyId,
+        segmentId: storySegments[pageIndex].id,
+        userId: session.session!.user.id,
+      });
+      setCurrentPage(pageIndex);
+    },
+    [session.session?.user.id, storyId, storySegments]
+  );
 
   // Render function for PageFlipper
-  const renderStoryPage = useCallback((segmentData: string) => {
-    const segment = JSON.parse(segmentData);
-    return (
-      <StoryPage
-        segment={segment}
-        isVietnamese={isVietnamese}
-      />
-    );
-  }, [isVietnamese]);
+  const renderStoryPage = useCallback(
+    (segmentData: string) => {
+      const segment = JSON.parse(segmentData);
+      return <StoryPage segment={segment} isVietnamese={isVietnamese} />;
+    },
+    [isVietnamese]
+  );
 
   const toggleLanguage = useCallback(() => {
-    setIsVietnamese(prev => !prev);
+    setIsVietnamese((prev) => !prev);
   }, []);
 
   const handleSettings = useCallback(() => {
-    setIsAutoPlay(prev => !prev);
+    setIsAutoPlay((prev) => !prev);
   }, []);
 
   const toggleMenu = useCallback(() => {
     const toValue = isMenuVisible ? 0 : 1;
     setIsMenuVisible(!isMenuVisible);
-    
+
     Animated.spring(menuAnimation, {
       toValue,
       useNativeDriver: true,
@@ -416,7 +471,7 @@ export default function ReadStoryScreen() {
   }, [menuAnimation]);
 
   const toggleMute = useCallback(() => {
-    setIsMuted(prev => !prev);
+    setIsMuted((prev) => !prev);
     if (!isMuted) {
       stopAll();
     }
@@ -437,23 +492,23 @@ export default function ReadStoryScreen() {
   }, [stopAll]);
 
   const handleToggleLanguage = useCallback(() => {
-    setIsVietnamese(prev => !prev);
+    setIsVietnamese((prev) => !prev);
     closeMenu();
   }, [closeMenu]);
 
   const handleToggleAutoPlay = useCallback(() => {
-    setIsAutoPlay(prev => !prev);
+    setIsAutoPlay((prev) => !prev);
     closeMenu();
   }, [closeMenu]);
 
   // Audio handling
   const handlePlayAudio = useCallback(() => {
     if (isMuted) return;
-    
+
     const currentSegment = storySegments[currentPage];
     if (!currentSegment) return;
 
-    stopAll()
+    stopAll();
     const handleFinish = () => {
       if (isAutoPlay && currentPage < storySegments.length - 1) {
         if (pageFlipperRef.current) {
@@ -466,19 +521,21 @@ export default function ReadStoryScreen() {
     if (audioUrl) {
       playAudio(audioUrl, handleFinish);
     } else {
-      const text = isVietnamese ? currentSegment.vi_text : currentSegment.en_text;
+      const text = isVietnamese
+        ? currentSegment.vi_text
+        : currentSegment.en_text;
       const language = isVietnamese ? "vi" : "en";
       playTTSOnline(text || "", "female", language, handleFinish);
     }
   }, [
-    currentPage, 
-    storySegments, 
-    audioUrls, 
-    isVietnamese, 
-    isAutoPlay, 
-    playAudio, 
+    currentPage,
+    storySegments,
+    audioUrls,
+    isVietnamese,
+    isAutoPlay,
+    playAudio,
     playTTSOffline,
-    isMuted
+    isMuted,
   ]);
 
   // Auto-play effect
@@ -500,7 +557,7 @@ export default function ReadStoryScreen() {
   // Error state
   if (!storySegments.length) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>No story segments found</Text>
       </View>
     );
@@ -509,7 +566,7 @@ export default function ReadStoryScreen() {
   const currentSegment = storySegments[currentPage];
   if (!currentSegment) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Story segment not found</Text>
       </View>
     );
@@ -526,7 +583,7 @@ export default function ReadStoryScreen() {
       {/* PageFlipper - Full Screen */}
       <PageFlipper
         ref={pageFlipperRef}
-        data={storySegments.map(segment => JSON.stringify(segment))}
+        data={storySegments.map((segment) => JSON.stringify(segment))}
         pageSize={{ width: screenWidth, height: screenHeight }}
         portrait={true}
         singleImageMode={true}
@@ -538,7 +595,9 @@ export default function ReadStoryScreen() {
       />
 
       {/* Fixed Menu Button - Top Right */}
-      <SafeAreaView style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}>
+      <SafeAreaView
+        style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}
+      >
         <View style={{ padding: 20 }}>
           <Animated.View
             style={{
@@ -565,10 +624,10 @@ export default function ReadStoryScreen() {
                 transform: [{ scale: pressed ? 0.9 : 1 }],
               })}
             >
-              <MaterialIcons 
-                name={isMenuVisible ? "close" : "menu"} 
-                size={36} 
-                color={isMenuVisible ? "#FF69B4" : "#22C55E"} 
+              <MaterialIcons
+                name={isMenuVisible ? "close" : "menu"}
+                size={36}
+                color={isMenuVisible ? "#FF69B4" : "#22C55E"}
               />
             </Pressable>
           </Animated.View>
@@ -606,7 +665,7 @@ export default function ReadStoryScreen() {
               shadowOffset: { width: 0, height: 8 },
               shadowOpacity: 0.2,
               shadowRadius: 16,
-              
+
               elevation: 16,
               zIndex: 1001,
               opacity: menuAnimation,
@@ -653,7 +712,11 @@ export default function ReadStoryScreen() {
               }}
             >
               <Menu3DButton
-                icon={<Text style={{ fontSize: 24 }}>{isVietnamese ? "🇻🇳" : "🇬🇧"}</Text>}
+                icon={
+                  <Text style={{ fontSize: 24 }}>
+                    {isVietnamese ? "🇻🇳" : "🇬🇧"}
+                  </Text>
+                }
                 onPress={handleToggleLanguage}
                 color="#3B82F6"
                 shadowColor="#2563EB"
@@ -670,7 +733,13 @@ export default function ReadStoryScreen() {
               }}
             >
               <Menu3DButton
-                icon={<Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={28} color="white" />}
+                icon={
+                  <Ionicons
+                    name={isMuted ? "volume-mute" : "volume-high"}
+                    size={28}
+                    color="white"
+                  />
+                }
                 onPress={toggleMute}
                 color={isMuted ? "#F59E0B" : "#10B981"}
                 shadowColor={isMuted ? "#D97706" : "#059669"}
@@ -687,7 +756,13 @@ export default function ReadStoryScreen() {
               }}
             >
               <Menu3DButton
-                icon={<Ionicons name={isAutoPlay ? "pause" : "play"} size={28} color="white" />}
+                icon={
+                  <Ionicons
+                    name={isAutoPlay ? "pause" : "play"}
+                    size={28}
+                    color="white"
+                  />
+                }
                 onPress={handleToggleAutoPlay}
                 color={isAutoPlay ? "#EF4444" : "#22C55E"}
                 shadowColor={isAutoPlay ? "#DC2626" : "#16A34A"}
@@ -711,13 +786,9 @@ export default function ReadStoryScreen() {
                 size={50}
               />
             </View>
-
-          
           </Animated.View>
         </>
       )}
     </View>
   );
 }
-
-
