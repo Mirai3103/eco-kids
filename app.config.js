@@ -8,6 +8,7 @@ export default ({ config }) => ({
     googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     geminiApiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
     mistralApiKey: process.env.EXPO_PUBLIC_MISTRAL_API_KEY,
+    deepseekApiKey: process.env.EXPO_PUBLIC_DEEPSEEK_API_KEY,
   },
   plugins: [...config.plugins],
 });

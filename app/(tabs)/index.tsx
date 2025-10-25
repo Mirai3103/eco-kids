@@ -319,7 +319,7 @@ export default function EcoKidsHomeScreen() {
     isLoading: isStoriesLoading,
     error: storiesError,
   } = useQuery(
-    getAllRecommendedStoriesQueryOptions(session.session!.user.id, 4)
+    getAllRecommendedStoriesQueryOptions(session.session?.user.id, 4)
   );
   React.useEffect(() => {
     if (!isLoading) {

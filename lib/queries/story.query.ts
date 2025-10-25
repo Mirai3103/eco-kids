@@ -65,13 +65,13 @@ export const getAllStoriesQueryOptions = (
 });
 
 export const getAllRecommendedStoriesQueryOptions = (
-  user_id: string,
+  user_id?: string,
   limit: number = 10
 ): UseQueryOptions<
   unknown,
   Error,
   Story[] | undefined,
-  ["recommended_stories", string, number]
+  ["recommended_stories", string | undefined, number]
 > => ({
   queryKey: ["recommended_stories", user_id, limit],
   queryFn: async () => {
