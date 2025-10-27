@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      albums: {
+        Row: {
+          color: Json | null
+          id: number
+          name: string
+          thumbnail: string | null
+          updated_at: string
+        }
+        Insert: {
+          color?: Json | null
+          id?: number
+          name: string
+          thumbnail?: string | null
+          updated_at?: string
+        }
+        Update: {
+          color?: Json | null
+          id?: number
+          name?: string
+          thumbnail?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       answers: {
         Row: {
           content: string | null
@@ -323,7 +347,7 @@ export type Database = {
       }
       rewards: {
         Row: {
-          category: string | null
+          category: number | null
           cost: number | null
           id: string
           image_url: string | null
@@ -331,7 +355,7 @@ export type Database = {
           name: string | null
         }
         Insert: {
-          category?: string | null
+          category?: number | null
           cost?: number | null
           id: string
           image_url?: string | null
@@ -339,14 +363,22 @@ export type Database = {
           name?: string | null
         }
         Update: {
-          category?: string | null
+          category?: number | null
           cost?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
           name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rewards_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "albums"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       segment_embeddings: {
         Row: {

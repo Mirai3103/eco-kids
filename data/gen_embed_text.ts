@@ -45,7 +45,7 @@ async function generateEmbeddingText(content: string) {
 const { data, error } = await supabase
   .from("stories")
   .select("*,story_segments(*),topics(*)")
-  .is("embed_text", null);
+  // .is("embed_text", null);
 if (data?.length === 0) {
   console.log("No stories found");
   process.exit(0);
@@ -56,7 +56,7 @@ for (const story of data || []) {
     embeddingText += segment.vi_text + "\n";
   }
   embeddingText = await generateEmbeddingText(embeddingText);
-  embeddingText = `Thể loại: ${
+  embeddingText = `Tên truyện: ${story.title} có Thể loại: ${
     story.topics!.name
   } Nội dung về ${embeddingText}`;
   await supabase
@@ -64,5 +64,5 @@ for (const story of data || []) {
     .update({ embed_text: embeddingText.trim() })
     .eq("id", story.id);
   console.log(`updated ${story.id} length ${embeddingText.length}`);
-  await new Promise((resolve) => setTimeout(resolve, 30000));
+  await new Promise((resolve) => setTimeout(resolve, 25000));
 }

@@ -1,5 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { Image as ExpoImage } from "expo-image";
+import * as Crypto from 'expo-crypto';
+import { Image as ExpoImage, Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,52 +14,27 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+type RewardWithUnlocked = Reward & {
+  unlocked: boolean;
+};
 // GlueStack UI Components
+import { CongratulationsModal } from "@/components/CongratulationsModal";
+import LoadingScreen from "@/components/LoadingScreen";
+import { StickerDetailModal } from "@/components/StickerDetailModal";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
+import { useUserStore } from "@/stores/user.store";
+import { Album, Reward } from "@/types";
+import { useMutation, useQuery, useQueryClient, } from "@tanstack/react-query";
 
 const { width: screenWidth } = Dimensions.get("window");
 const stickerSize = (screenWidth - 64) / 3; // 3 columns with padding
 
-// Mock sticker data
-const mockStickers = [
-  { id: 1, name: "Cây xanh", cost: 10, unlocked: true },
-  { id: 2, name: "Hoa đẹp", cost: 15, unlocked: true },
-  { id: 3, name: "Mặt trời", cost: 20, unlocked: false },
-  { id: 4, name: "Đại dương", cost: 10, unlocked: true },
-  { id: 5, name: "Rừng cây", cost: 25, unlocked: false },
-  { id: 6, name: "Động vật", cost: 15, unlocked: false },
-  { id: 7, name: "Thiên nhiên", cost: 10, unlocked: true },
-  { id: 8, name: "Bầu trời", cost: 20, unlocked: false },
-  { id: 9, name: "Trái đất", cost: 30, unlocked: false },
-  { id: 10, name: "Nước sạch", cost: 15, unlocked: true },
-  { id: 11, name: "Không khí", cost: 20, unlocked: false },
-  { id: 12, name: "Sinh vật", cost: 25, unlocked: false },
-];
-
 // Mock album data
-const mockAlbumData: Record<string, any> = {
-  "1": {
-    id: 1,
-    name: "Bảo vệ môi trường",
-    description: "Thu thập sticker về bảo vệ môi trường",
-    icon: "🌍",
-    bgColor: "#E8F5E8",
-    color: theme.palette.primary[400],
-  },
-  "2": {
-    id: 2,
-    name: "Động vật dễ thương",
-    description: "Những sticker động vật đáng yêu",
-    icon: "🐼",
-    bgColor: "#FFF3E0",
-    color: "#FF9800",
-  },
-};
 
 // Sticker Card Component
 const StickerCard = ({
@@ -66,7 +42,7 @@ const StickerCard = ({
   index,
   onPress,
 }: {
-  sticker: (typeof mockStickers)[0];
+  sticker: RewardWithUnlocked;
   index: number;
   onPress: () => void;
 }) => {
@@ -125,10 +101,9 @@ const StickerCard = ({
       }}
     >
       <Pressable
-        onPress={sticker.unlocked ? undefined : onPress}
+        onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        disabled={sticker.unlocked}
       >
         <View style={{ position: "relative" }}>
           {/* Shadow layer */}
@@ -176,7 +151,7 @@ const StickerCard = ({
             >
               <ExpoImage
                 source={{
-                  uri: "https://res.cloudinary.com/dkvga054t/image/upload/v1760524850/sticker_jn3z2a.png",
+                  uri: sticker.image_url!,
                 }}
                 style={{
                   width: "100%",
@@ -254,7 +229,7 @@ const StickerCard = ({
 
             {/* Sticker Name/Cost */}
             <Center className="mt-1">
-              <Text
+            <Text
                 style={{
                   fontSize: 12,
                   fontFamily: "NunitoSans_600SemiBold",
@@ -263,8 +238,8 @@ const StickerCard = ({
                 }}
                 numberOfLines={1}
               >
-                {sticker.unlocked ? sticker.name : `${sticker.cost} ⭐`}
-              </Text>
+                { `${sticker.cost} ⭐`}
+              </Text> 
             </Center>
           </View>
         </View>
@@ -282,7 +257,7 @@ const UnlockModal = ({
   onUnlock,
 }: {
   visible: boolean;
-  sticker: (typeof mockStickers)[0] | null;
+  sticker: RewardWithUnlocked | null;
   userStars: number;
   onClose: () => void;
   onUnlock: () => void;
@@ -313,7 +288,7 @@ const UnlockModal = ({
 
   if (!sticker) return null;
 
-  const canUnlock = userStars >= sticker.cost;
+  const canUnlock = userStars >= (sticker.cost || 0);
 
   return (
     <Modal transparent visible={visible} animationType="none">
@@ -368,8 +343,8 @@ const UnlockModal = ({
               {/* Sticker Preview */}
               <View
                 style={{
-                  width: 120,
-                  height: 120,
+                  width: 220,
+                  height: 220,
                   borderRadius: 16,
                   overflow: "hidden",
                   borderWidth: 3,
@@ -378,7 +353,7 @@ const UnlockModal = ({
               >
                 <ExpoImage
                   source={{
-                    uri: "https://res.cloudinary.com/dkvga054t/image/upload/v1760524850/sticker_jn3z2a.png",
+                    uri: sticker.image_url!,
                   }}
                   style={{ width: "100%", height: "100%" }}
                   contentFit="cover"
@@ -387,7 +362,7 @@ const UnlockModal = ({
               </View>
 
               {/* Sticker Name */}
-              <Text
+            {sticker.name &&  <Text
                 style={{
                   fontSize: 24,
                   fontFamily: "Baloo2_700Bold",
@@ -396,7 +371,7 @@ const UnlockModal = ({
                 }}
               >
                 {sticker.name}
-              </Text>
+              </Text> }
 
               {/* Cost Info */}
               <HStack space="md" className="items-center">
@@ -460,7 +435,7 @@ const UnlockModal = ({
                     textAlign: "center",
                   }}
                 >
-                  Bé cần thêm {sticker.cost - userStars} sao nữa nhé! 🌟
+                  Bé cần thêm {(sticker.cost || 0) - userStars} sao nữa nhé! 🌟
                 </Text>
               )}
 
@@ -526,16 +501,99 @@ const UnlockModal = ({
 export default function AlbumDetails() {
   const params = useLocalSearchParams();
   const albumId = params.id as string;
-  const [userStars, setUserStars] = useState(150);
-  const [stickers, setStickers] = useState(mockStickers);
-  const [selectedSticker, setSelectedSticker] = useState<
-    (typeof mockStickers)[0] | null
-  >(null);
+  const { user: currentUser,updateUserPoints: updateUserPointsStore } = useUserStore();
+  const userStars = currentUser?.points || 0;
+  const { mutate: updateUserPoints, isPending: isUpdatingPoints  } = useMutation({
+    mutationFn: async (points: number) => {
+      return supabase.from("users").update({ points }).eq("id", currentUser!.id).select().single();
+    },
+    onSuccess: (data) => {
+      updateUserPointsStore(data.data?.points || 0);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+  const queryClient = useQueryClient();
+  const { mutate: saveReward, isPending: isSavingReward  } = useMutation({
+    mutationFn: async (rewardId: string) => {
+      return supabase.from("user_rewards").insert({
+        id: Crypto.randomUUID(),
+        reward_id: rewardId,
+        user_id: currentUser!.id,
+        claimed_at: new Date().toISOString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rewards", albumId] });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const {
+    data: unlockedRewards,
+    isLoading: loading1,
+  } = useQuery({
+    queryKey: ["rewards", albumId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rewards")
+        .select(
+          `
+        id,
+        name,
+        image_url,
+        cost,
+        is_active,
+        category,
+        user_rewards!left (
+          claimed_at
+        )
+      `
+        )
+        .eq("category", Number(albumId)) 
+        .eq("user_rewards.user_id", currentUser!.id) 
+        .order("cost", { ascending: true });
+      return data;
+    },
+    select: (data) =>
+      data?.map((reward) => ({
+        ...reward,
+        unlocked: reward.user_rewards?.length > 0,
+      })) || [],
+    enabled: !!currentUser?.id,
+  });
+
+  const allRewards = React.useMemo(() => {
+
+
+    return [...(unlockedRewards || [])].sort(
+      (a, b) => (a.cost || 0) - (b.cost || 0)
+    );
+  }, [unlockedRewards]);
+  const [selectedSticker, setSelectedSticker] =
+    useState<RewardWithUnlocked | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [congratsModalVisible, setCongratsModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedDetailSticker, setSelectedDetailSticker] =
+    useState<RewardWithUnlocked | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const album = mockAlbumData[albumId] || mockAlbumData["1"];
-  const unlockedCount = stickers.filter((s) => s.unlocked).length;
+  const { data: album, isLoading: loading3 } = useQuery({
+    queryKey: ["albums", albumId],
+    queryFn: async () => {
+      return supabase
+        .from("albums")
+        .select("*")
+        .eq("id", Number(albumId))
+        .single()
+        .then((res) => res.data as Album);
+    },
+  });
+  const unlockedCount = allRewards.filter((s) => s.unlocked).length;
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -549,29 +607,51 @@ export default function AlbumDetails() {
     router.back();
   };
 
-  const handleStickerPress = (sticker: (typeof mockStickers)[0]) => {
+  const handleStickerPress = (sticker: RewardWithUnlocked) => {
     if (!sticker.unlocked) {
+      // Open unlock modal for locked stickers
       setSelectedSticker(sticker);
       setModalVisible(true);
+    } else {
+      // Open detail modal for unlocked stickers
+      setSelectedDetailSticker(sticker);
+      setDetailModalVisible(true);
     }
   };
 
   const handleUnlock = () => {
-    if (selectedSticker && userStars >= selectedSticker.cost) {
+    if (selectedSticker && userStars >= selectedSticker.cost!) {
       // Update stars
-      setUserStars(userStars - selectedSticker.cost);
+      updateUserPoints(userStars - selectedSticker.cost!);
 
       // Unlock sticker
-      setStickers(
-        stickers.map((s) =>
-          s.id === selectedSticker.id ? { ...s, unlocked: true } : s
-        )
-      );
-
+      const unlockedSticker = { ...selectedSticker, unlocked: true };
+      saveReward(selectedSticker.id!);
+      
+      // Close unlock modal and show congratulations modal
       setModalVisible(false);
       setSelectedSticker(null);
+      
+      // Show congratulations modal after a short delay
+      setTimeout(() => {
+        setSelectedSticker(unlockedSticker);
+        setCongratsModalVisible(true);
+      }, 300);
     }
   };
+
+  const handleCongratsClose = () => {
+    setCongratsModalVisible(false);
+    setSelectedSticker(null);
+  };
+
+  const handleDetailClose = () => {
+    setDetailModalVisible(false);
+    setSelectedDetailSticker(null);
+  };
+  if (loading1 || loading3 || !album) {
+    return <LoadingScreen />;
+  }
 
   return (
     <View className="flex-1">
@@ -583,7 +663,7 @@ export default function AlbumDetails() {
 
       {/* Background Gradient */}
       <LinearGradient
-        colors={[album.bgColor, "#CAFEC3"]}
+        colors={[album!.color!.bgColor as string, "#CAFEC3"]}
         style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -612,7 +692,10 @@ export default function AlbumDetails() {
           </Pressable>
 
           <HStack space="sm" className="items-center">
-            <Text style={{ fontSize: 28 }}>{album.icon}</Text>
+            <Image
+              source={{ uri: album!.thumbnail! }}
+              style={{ width: 28, height: 28 }}
+            />
             <Text
               style={{
                 color: "#1B4B07",
@@ -620,7 +703,7 @@ export default function AlbumDetails() {
                 fontFamily: "Baloo2_700Bold",
               }}
             >
-              {album.name}
+              {album!.name}
             </Text>
           </HStack>
 
@@ -668,7 +751,7 @@ export default function AlbumDetails() {
           <View style={{ position: "relative" }}>
             <View
               style={{
-                backgroundColor: album.color,
+                backgroundColor: album!.color!.bgColor as string,
                 borderRadius: 16,
                 position: "absolute",
                 top: 4,
@@ -683,7 +766,7 @@ export default function AlbumDetails() {
                 borderRadius: 16,
                 padding: 16,
                 borderWidth: 2,
-                borderColor: album.color,
+                borderColor: album!.color!.color as string,
               }}
             >
               <HStack className="justify-between items-center">
@@ -700,10 +783,10 @@ export default function AlbumDetails() {
                   style={{
                     fontSize: 16,
                     fontFamily: "Baloo2_700Bold",
-                    color: album.color,
+                    color: album!.color!.color as string,
                   }}
                 >
-                  {unlockedCount}/{stickers.length}
+                  {unlockedCount}/{allRewards.length}
                 </Text>
               </HStack>
               <View
@@ -718,9 +801,9 @@ export default function AlbumDetails() {
               >
                 <View
                   style={{
-                    width: `${(unlockedCount / stickers.length) * 100}%`,
+                    width: `${(unlockedCount / allRewards.length) * 100}%`,
                     height: "100%",
-                    backgroundColor: album.color,
+                    backgroundColor: album!.color!.color as string,
                     borderRadius: 4,
                   }}
                 />
@@ -746,10 +829,10 @@ export default function AlbumDetails() {
                 justifyContent: "space-between",
               }}
             >
-              {stickers.map((sticker, index) => (
+              {allRewards.map((sticker, index) => (
                 <StickerCard
-                  key={sticker.id}
-                  sticker={sticker}
+                  key={index}
+                  sticker={sticker as any}
                   index={index}
                   onPress={() => handleStickerPress(sticker)}
                 />
@@ -769,6 +852,20 @@ export default function AlbumDetails() {
           setSelectedSticker(null);
         }}
         onUnlock={handleUnlock}
+      />
+
+      {/* Congratulations Modal */}
+      <CongratulationsModal
+        visible={congratsModalVisible}
+        sticker={selectedSticker as Reward | null}
+        onClose={handleCongratsClose}
+      />
+
+      {/* Sticker Detail Modal */}
+      <StickerDetailModal
+        visible={detailModalVisible}
+        sticker={selectedDetailSticker as Reward | null}
+        onClose={handleDetailClose}
       />
     </View>
   );

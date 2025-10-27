@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Dimensions,
@@ -16,53 +16,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
+import { useUserStore } from "@/stores/user.store";
+import type { Album as AlbumType } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { Image } from "expo-image";
 
 const { width: screenWidth } = Dimensions.get("window");
 
 // Mock data - replace with actual API calls
-const mockAlbums = [
-  {
-    id: 1,
-    name: "Bảo vệ môi trường",
-    description: "Thu thập sticker về bảo vệ môi trường",
-    totalStickers: 12,
-    unlockedStickers: 8,
-    icon: "🌍",
-    bgColor: "#E8F5E8",
-    color: theme.palette.primary[400],
-  },
-  {
-    id: 2,
-    name: "Động vật dễ thương",
-    description: "Những sticker động vật đáng yêu",
-    totalStickers: 15,
-    unlockedStickers: 5,
-    icon: "🐼",
-    bgColor: "#FFF3E0",
-    color: "#FF9800",
-  },
-  {
-    id: 3,
-    name: "Cây cối xanh",
-    description: "Bộ sưu tập về cây cối và thiên nhiên",
-    totalStickers: 10,
-    unlockedStickers: 10,
-    icon: "🌳",
-    bgColor: "#E8F5E8",
-    color: theme.palette.primary[500],
-  },
-  {
-    id: 4,
-    name: "Đại dương xanh",
-    description: "Khám phá thế giới đại dương",
-    totalStickers: 18,
-    unlockedStickers: 3,
-    icon: "🌊",
-    bgColor: "#E3F2FD",
-    color: "#2196F3",
-  },
-];
 
 // Album Card Component with 3D Effect
 const AlbumCard = ({
@@ -70,14 +33,39 @@ const AlbumCard = ({
   index,
   onPress,
 }: {
-  album: (typeof mockAlbums)[0];
+  album: AlbumType;
   index: number;
   onPress: () => void;
 }) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
+  const { user: currentUser } = useUserStore();
+  const { data: rewards, error } = useQuery({
+    queryKey: ["rewards", album.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rewards")
+        .select(
+          `
+        id,
+        name,
+        image_url,
+        cost,
+        is_active,
+        user_rewards!left (
+          claimed_at
+        )
+      `
+        )
+        .eq("category", album.id) // album id
+        .eq("user_rewards.user_id", currentUser!.id) // user id
+        .order("cost", { ascending: true });
+      return data?.filter((reward) => reward.user_rewards.length > 0)
+    },
 
+    enabled: !!currentUser?.id,
+  });
   useEffect(() => {
     Animated.parallel([
       Animated.spring(scaleAnim, {
@@ -111,9 +99,9 @@ const AlbumCard = ({
       useNativeDriver: true,
     }).start();
   };
-
-  const progress = (album.unlockedStickers / album.totalStickers) * 100;
-  const isComplete = album.unlockedStickers === album.totalStickers;
+  const totalUserRewards = rewards?.length || 0;
+  const progress = (totalUserRewards / album.rewards.length) * 100;
+  const isComplete = totalUserRewards === album.rewards.length;
 
   return (
     <Animated.View
@@ -135,7 +123,7 @@ const AlbumCard = ({
           {/* Shadow layer - 3D effect */}
           <View
             style={{
-              backgroundColor: album.color,
+              backgroundColor: album.color.bgColor,
               borderRadius: 24,
               position: "absolute",
               top: 6,
@@ -147,11 +135,11 @@ const AlbumCard = ({
           {/* Top layer */}
           <View
             style={{
-              backgroundColor: album.bgColor,
+              backgroundColor: album.color.bgColor,
               borderRadius: 24,
               padding: 20,
               borderWidth: 3,
-              borderColor: album.color,
+              borderColor: album.color.color,
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.1,
@@ -170,7 +158,7 @@ const AlbumCard = ({
                   justifyContent: "center",
                   alignItems: "center",
                   borderWidth: 2,
-                  borderColor: album.color,
+                  borderColor: album.color.color,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.1,
@@ -178,7 +166,10 @@ const AlbumCard = ({
                   elevation: 3,
                 }}
               >
-                <Text style={{ fontSize: 36 }}>{album.icon}</Text>
+                <Image
+                  source={{ uri: album!.thumbnail! }}
+                  style={{ width: "100%", height: "100%" }}
+                />
               </View>
 
               {/* Album Info */}
@@ -192,7 +183,7 @@ const AlbumCard = ({
                 >
                   {album.name}
                 </Text>
-                <Text
+                {/* <Text
                   style={{
                     color: "#4A5568",
                     fontSize: 14,
@@ -200,8 +191,8 @@ const AlbumCard = ({
                   }}
                   numberOfLines={2}
                 >
-                  {album.description}
-                </Text>
+                  {album.name}
+                </Text> */}
 
                 {/* Progress Bar */}
                 <View className="mt-2">
@@ -218,7 +209,7 @@ const AlbumCard = ({
                       style={{
                         width: `${progress}%`,
                         height: "100%",
-                        backgroundColor: album.color,
+                        backgroundColor: album.color.color,
                         borderRadius: 4,
                       }}
                     />
@@ -231,7 +222,7 @@ const AlbumCard = ({
                         fontFamily: "NunitoSans_600SemiBold",
                       }}
                     >
-                      {album.unlockedStickers}/{album.totalStickers} sticker
+                      {totalUserRewards}/{album.rewards.length} sticker
                     </Text>
                     {isComplete && <Text style={{ fontSize: 14 }}>✨</Text>}
                   </HStack>
@@ -239,7 +230,11 @@ const AlbumCard = ({
               </VStack>
 
               {/* Arrow Icon */}
-              <Ionicons name="chevron-forward" size={24} color={album.color} />
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={album.color.color}
+              />
             </HStack>
           </View>
         </View>
@@ -322,9 +317,17 @@ const StarDisplay = ({ count }: { count: number }) => {
 };
 
 export default function Album() {
-  const [userStars] = useState(150); // Mock user stars
+  const { user: currentUser } = useUserStore();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
+  const { data, isLoading } = useQuery({
+    queryKey: ["albums"],
+    queryFn: async () => {
+      return supabase
+        .from("albums")
+        .select("*, rewards(*)")
+        .then((res) => res.data);
+    },
+  });
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -389,7 +392,7 @@ export default function Album() {
             Bộ sưu tập
           </Text>
 
-          <StarDisplay count={userStars} />
+          <StarDisplay count={currentUser?.points || 0} />
         </HStack>
 
         {/* Main Content */}
@@ -403,10 +406,10 @@ export default function Album() {
             }}
           >
             <VStack space="md" className="mt-4">
-              {mockAlbums.map((album, index) => (
+              {data?.map((album, index) => (
                 <AlbumCard
                   key={album.id}
-                  album={album}
+                  album={album as any}
                   index={index}
                   onPress={() => handleAlbumPress(album.id)}
                 />

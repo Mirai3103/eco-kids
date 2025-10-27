@@ -5,7 +5,7 @@ import { supabase } from "./utils";
 const { data, error } = await supabase
   .from("stories")
   .select("*,story_segments(*),topics(*)")
-  .not("embed_text", "is", null);
+  // .not("embed_text", "is", null);
 
 const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY!,

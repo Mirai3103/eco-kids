@@ -24,15 +24,19 @@ interface UserStore {
   setUser: (user: User) => void;
   loginAsGuest: () => void;
   logout: () => void;
+  updateUserPoints: (points: number) => void;
+  updateUserAvatar: (avatar: string) => void;
 }
 
 export const useUserStore = create<UserStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: createGuestUser(),
       setUser: (user) => set({ user }),
       loginAsGuest: () => set({ user: createGuestUser() }),
       logout: () => set({ user: null }),
+      updateUserPoints: (points: number) => set({ user: { ...get().user!, points } }),
+      updateUserAvatar: (avatar: string) => set({ user: { ...get().user!, avatar } }),
     }),
     {
       name: "user-storage",

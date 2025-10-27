@@ -95,7 +95,7 @@ export default function RootLayout() {
         .single()
         .then((res) => {
           setUser({
-            avatar: session.user.user_metadata.avatar_url.replace(
+            avatar: res.data?.avatar_url || session.user.user_metadata.avatar_url.replace(
               /=s\d+-c/,
               "=s256-c"
             ),

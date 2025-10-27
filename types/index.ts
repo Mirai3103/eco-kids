@@ -28,7 +28,13 @@ export type StorySegment = Database["public"]["Tables"]["story_segments"]["Row"]
   story_id: string;
   audio_segments: AudioSegment[];
 }
-
+export type Album =  Database["public"]["Tables"]["albums"]["Row"] & {
+  rewards: Database["public"]["Tables"]["rewards"]["Row"][]
+  color:{
+    [key:string]:string
+  }
+}
+export type Reward = Database["public"]["Tables"]["rewards"]["Row"]
 export type StoryWithSegments = Story & {
   story_segments: StorySegment[];
 }
