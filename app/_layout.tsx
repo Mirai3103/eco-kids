@@ -13,6 +13,8 @@ import ReactQueryProvider from "@/lib/react-query";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
 import { useSoundStore } from "@/stores/useSoundStore";
+import { CircularRevealProvider } from "@/contexts/CircularRevealContext";
+import { CircularRevealOverlay } from "@/components/CircularRevealOverlay";
 import {
   Baloo2_600SemiBold,
   Baloo2_700Bold,
@@ -121,30 +123,43 @@ export default function RootLayout() {
       <ReactQueryProvider>
         <GluestackUIProvider mode="light">
           <ThemeProvider value={DefaultTheme}>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="stories/[id]"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="stories/[id]/read"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="topics/[id]"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="stories/[id]/quiz"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="+not-found" />
-              <Stack.Screen name="history" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="dark" backgroundColor="transparent" translucent />
-            {/* {session && pathname !== "/login" && <FloatingAssistant />} */}
+            <CircularRevealProvider>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="chat"
+                  options={{
+                    headerShown: false,
+                    presentation: "transparentModal",
+                    animation: "none",
+                  }}
+                />
+                <Stack.Screen
+                  name="stories/[id]"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="stories/[id]/read"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="topics/[id]"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="stories/[id]/quiz"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="+not-found" />
+                <Stack.Screen name="history" options={{ headerShown: false }} />
+              </Stack>
+              <StatusBar style="dark" backgroundColor="transparent" translucent />
+              {/* {session && pathname !== "/login" && <FloatingAssistant />} */}
+
+              {/* Circular Reveal Overlay */}
+              <CircularRevealOverlay />
+            </CircularRevealProvider>
           </ThemeProvider>
         </GluestackUIProvider>
       </ReactQueryProvider>

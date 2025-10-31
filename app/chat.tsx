@@ -21,6 +21,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useCircularReveal } from "@/contexts/CircularRevealContext";
 
 // 3D Button Component
 const Button3D = ({
@@ -155,6 +156,19 @@ export default function ChatScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const { completeReveal, isAnimating } = useCircularReveal();
+
+  // Complete the circular reveal animation when component mounts
+  useEffect(() => {
+    if (isAnimating) {
+      // Wait for the animation to complete before clearing
+      const timer = setTimeout(() => {
+        completeReveal();
+      }, 650); // Slightly longer than the animation duration (600ms + 50ms buffer)
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Auto scroll to bottom when new message arrives
   useEffect(() => {

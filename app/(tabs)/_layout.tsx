@@ -1,11 +1,12 @@
 import "@/lib/native-wind";
 
 import { HStack } from "@/components/ui/hstack";
+import { useCircularReveal } from "@/contexts/CircularRevealContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as ExpoImage } from "expo-image";
 import { Tabs, useRouter } from "expo-router";
 import { MotiView } from "moti";
-import React from "react";
+import React, { useRef } from "react";
 import { Dimensions, Pressable, View } from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -13,10 +14,30 @@ const { width: screenWidth } = Dimensions.get("window");
 // Floating Assistant Button Component
 const FloatingAssistantButton = () => {
   const router = useRouter();
+  const { triggerReveal } = useCircularReveal();
+  const buttonRef = useRef<View>(null);
+
+  const handlePress = () => {
+    buttonRef.current?.measureInWindow((x, y, width, height) => {
+      // Calculate center of the button
+      const centerX = x + width / 2;
+      const centerY = y + height / 2;
+
+      // Trigger the circular reveal animation
+      triggerReveal(centerX, centerY);
+
+      // Small delay before navigation to let animation start
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          router.push("/chat");
+        }, 400);
+      });
+    });
+  };
 
   return (
     <Pressable
-      onPress={() => router.push("/chat")}
+      onPress={handlePress}
       style={{
         position: "absolute",
         top: -25,
@@ -26,6 +47,7 @@ const FloatingAssistantButton = () => {
       }}
     >
       <MotiView
+        ref={buttonRef}
         from={{
           scale: 0.8,
           opacity: 0,
