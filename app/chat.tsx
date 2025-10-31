@@ -1,0 +1,440 @@
+import { Center } from "@/components/ui/center";
+import { HStack } from "@/components/ui/hstack";
+import { Pressable } from "@/components/ui/pressable";
+import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { useAi } from "@/hooks/useAi";
+import { Ionicons } from "@expo/vector-icons";
+import { Image as ExpoImage } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { MotiView } from "moti";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+// 3D Button Component
+const Button3D = ({
+  onPress,
+  onPressIn,
+  onPressOut,
+  children,
+  size = "medium",
+  color = "#399918",
+  shadowColor = "#2a800d",
+  disabled = false,
+}: {
+  onPress: () => void;
+  onPressIn?: () => void;
+  onPressOut?: () => void;
+  children: React.ReactNode;
+  size?: "small" | "medium" | "large";
+  color?: string;
+  shadowColor?: string;
+  disabled?: boolean;
+}) => {
+  const buttonSize = size === "small" ? 40 : size === "large" ? 60 : 50;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      disabled={disabled}
+      style={{ opacity: disabled ? 0.5 : 1 }}
+    >
+      <View className="relative">
+        {/* Shadow layer */}
+        <View
+          style={{
+            backgroundColor: shadowColor,
+            width: buttonSize,
+            height: buttonSize,
+            borderRadius: buttonSize / 2,
+            position: "absolute",
+            top: 4,
+            left: 0,
+          }}
+        />
+        {/* Top layer */}
+        <View
+          style={{
+            backgroundColor: color,
+            width: buttonSize,
+            height: buttonSize,
+            borderRadius: buttonSize / 2,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {children}
+        </View>
+      </View>
+    </Pressable>
+  );
+};
+
+// Chat Bubble Component
+const ChatBubble = ({
+  message,
+  isUser,
+  index,
+}: {
+  message: string;
+  isUser: boolean;
+  index: number;
+}) => {
+  return (
+    <MotiView
+      from={{ opacity: 0, translateY: 20 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{
+        type: "timing",
+        duration: 300,
+        delay: index * 50,
+      }}
+    >
+      <HStack
+        className={`mb-4 ${isUser ? "justify-end" : "justify-start"}`}
+        style={{ paddingHorizontal: 16 }}
+      >
+        {!isUser && (
+          <ExpoImage
+            source={require("@/assets/images/assistant_icon.png")}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              marginRight: 8,
+            }}
+            contentFit="contain"
+          />
+        )}
+        <View
+          style={{
+            backgroundColor: isUser ? "#399918" : "white",
+            borderRadius: 20,
+            padding: 12,
+            paddingHorizontal: 16,
+            maxWidth: "70%",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+          }}
+        >
+          <Text
+            style={{
+              color: isUser ? "white" : "#1B4B07",
+              fontSize: 15,
+              fontFamily: "NunitoSans_600SemiBold",
+            }}
+          >
+            {message}
+          </Text>
+        </View>
+      </HStack>
+    </MotiView>
+  );
+};
+
+export default function ChatScreen() {
+  const router = useRouter();
+  const { messages, status, sendMessage } = useAi();
+  const [inputText, setInputText] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Auto scroll to bottom when new message arrives
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (inputText.trim() && status !== "streaming") {
+      await sendMessage(inputText);
+      setInputText("");
+    }
+  };
+
+  const handleMicPress = () => {
+    setIsRecording(!isRecording);
+    // TODO: Implement voice recording
+  };
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <View className="flex-1">
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={["#EEF0FE", "#CAFEC3"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      />
+
+      <SafeAreaView className="flex-1">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        >
+          {/* Header */}
+          <HStack
+            className="items-center px-4 py-3"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderBottomLeftRadius: 20,
+              borderBottomRightRadius: 20,
+            }}
+          >
+            <Pressable onPress={() => router.back()}>
+              <View
+                style={{
+                  backgroundColor: "#F0F0F0",
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="arrow-back" size={24} color="#399918" />
+              </View>
+            </Pressable>
+
+            <HStack className="flex-1 items-center justify-center">
+              <ExpoImage
+                source={require("@/assets/images/assistant_icon.png")}
+                style={{ width: 40, height: 40, marginRight: 8 }}
+                contentFit="contain"
+              />
+              <VStack>
+                <Text
+                  style={{
+                    color: "#1B4B07",
+                    fontSize: 18,
+                    fontFamily: "Baloo2_700Bold",
+                  }}
+                >
+                  Greenie
+                </Text>
+                <Text
+                  style={{
+                    color: "#666",
+                    fontSize: 12,
+                    fontFamily: "NunitoSans_600SemiBold",
+                  }}
+                >
+                  Trợ lý AI của bé
+                </Text>
+              </VStack>
+            </HStack>
+
+            <View style={{ width: 40 }} />
+          </HStack>
+
+          {/* Messages Area */}
+          <ScrollView
+            ref={scrollViewRef}
+            className="flex-1"
+            contentContainerStyle={{ paddingTop: 16, paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {messages.length === 0 ? (
+              <Center className="flex-1 px-4 mt-20">
+                <MotiView
+                  from={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    type: "spring",
+                    damping: 15,
+                    delay: 200,
+                  }}
+                >
+                  <ExpoImage
+                    source={require("@/assets/images/assistant_icon.png")}
+                    style={{ width: 100, height: 100, marginBottom: 16 }}
+                    contentFit="contain"
+                  />
+                </MotiView>
+                <Text
+                  style={{
+                    color: "#1B4B07",
+                    fontSize: 20,
+                    textAlign: "center",
+                    fontFamily: "Baloo2_700Bold",
+                    marginBottom: 8,
+                  }}
+                >
+                  Xin chào! 👋
+                </Text>
+                <Text
+                  style={{
+                    color: "#666",
+                    fontSize: 16,
+                    textAlign: "center",
+                    fontFamily: "NunitoSans_600SemiBold",
+                  }}
+                >
+                  Mình là Greenie, trợ lý của bé về môi trường xanh!
+                </Text>
+              </Center>
+            ) : (
+              <VStack>
+                {messages
+                  .filter(
+                    (msg) => msg.role === "user" || msg.role === "assistant"
+                  )
+                  .map((msg, index) => (
+                    <ChatBubble
+                      key={index}
+                      message={
+                        typeof msg.content === "string"
+                          ? msg.content
+                          : JSON.stringify(msg.content)
+                      }
+                      isUser={msg.role === "user"}
+                      index={index}
+                    />
+                  ))}
+                {status === "streaming" && (
+                  <HStack className="justify-start px-4">
+                    <ExpoImage
+                      source={require("@/assets/images/assistant_icon.png")}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 18,
+                        marginRight: 8,
+                      }}
+                      contentFit="contain"
+                    />
+                    <View
+                      style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        padding: 16,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 3,
+                      }}
+                    >
+                      <Spinner size="small" color="#399918" />
+                    </View>
+                  </HStack>
+                )}
+              </VStack>
+            )}
+          </ScrollView>
+
+          {/* Input Bar */}
+          <View
+            style={{
+              backgroundColor: "white",
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              paddingBottom: Platform.OS === "ios" ? 24 : 12,
+              borderTopLeftRadius: 25,
+              borderTopRightRadius: 25,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 10,
+            }}
+          >
+            <HStack className="items-center" space="md">
+              {/* Mic Button */}
+              <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                <Button3D
+                  onPress={handleMicPress}
+                  onPressIn={handlePressIn}
+                  onPressOut={handlePressOut}
+                  color={isRecording ? "#D72654" : "#399918"}
+                  shadowColor={isRecording ? "#a01a3f" : "#2a800d"}
+                >
+                  <Ionicons
+                    name={isRecording ? "stop" : "mic"}
+                    size={24}
+                    color="white"
+                  />
+                </Button3D>
+              </Animated.View>
+
+              {/* Text Input */}
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "#F5F5F5",
+                  borderRadius: 25,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                }}
+              >
+                <TextInput
+                  value={inputText}
+                  onChangeText={setInputText}
+                  placeholder="Nhập tin nhắn..."
+                  placeholderTextColor="#999"
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "NunitoSans_600SemiBold",
+                    color: "#1B4B07",
+                  }}
+                  multiline
+                  maxLength={500}
+                  onSubmitEditing={handleSend}
+                />
+              </View>
+
+              {/* Send Button */}
+              <Button3D
+                onPress={handleSend}
+                color="#399918"
+                shadowColor="#2a800d"
+                disabled={!inputText.trim() || status === "streaming"}
+              >
+                <Ionicons name="send" size={20} color="white" />
+              </Button3D>
+            </HStack>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
+  );
+}

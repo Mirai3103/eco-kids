@@ -4,7 +4,6 @@ if (typeof globalThis.structuredClone === "undefined") {
   globalThis.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
 }
 
-import FloatingAssistant from "@/components/FloatingAssistant";
 import LoadingScreen from "@/components/LoadingScreen";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
@@ -95,10 +94,12 @@ export default function RootLayout() {
         .single()
         .then((res) => {
           setUser({
-            avatar: res.data?.avatar_url || session.user.user_metadata.avatar_url.replace(
-              /=s\d+-c/,
-              "=s256-c"
-            ),
+            avatar:
+              res.data?.avatar_url ||
+              session.user.user_metadata.avatar_url.replace(
+                /=s\d+-c/,
+                "=s256-c"
+              ),
             name: session.user.user_metadata.name,
             id: session.user.id,
             isGuest: false,
@@ -143,7 +144,7 @@ export default function RootLayout() {
               <Stack.Screen name="history" options={{ headerShown: false }} />
             </Stack>
             <StatusBar style="dark" backgroundColor="transparent" translucent />
-            {session && pathname !== "/login" && <FloatingAssistant />}
+            {/* {session && pathname !== "/login" && <FloatingAssistant />} */}
           </ThemeProvider>
         </GluestackUIProvider>
       </ReactQueryProvider>
