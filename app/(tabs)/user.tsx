@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
 import { AvatarSelectionModal } from "@/components/AvatarSelectionModal";
+import { SafeModal } from "@/components/SafeModal";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -432,9 +433,17 @@ export default function UserProfileScreen() {
   const queryClient = useQueryClient();
   const { user, logout, updateUserAvatar } = useUserStore();
   const [avatarModalVisible, setAvatarModalVisible] = React.useState(false);
-  
+  const [safeModalVisible, setSafeModalVisible] = React.useState(false);
+
   const handleSettingsPress = () => {
-    router.push("/setting");
+    setSafeModalVisible(true);
+  };
+
+  const handleSafeModalVerified = () => {
+    setSafeModalVisible(false);
+    setTimeout(() => {
+      router.push("/setting");
+    }, 300);
   };
 
   const { data: unlockedRewards } = useQuery({
@@ -815,6 +824,15 @@ export default function UserProfileScreen() {
         onClose={() => setAvatarModalVisible(false)}
         onSelect={handleAvatarSelect}
         isLoading={updateAvatarMutation.isPending}
+      />
+
+      {/* Safe Modal for Settings Access */}
+      <SafeModal
+        visible={safeModalVisible}
+        onClose={() => setSafeModalVisible(false)}
+        onVerified={handleSafeModalVerified}
+        title="Cần sự giúp đỡ của phụ huynh"
+        message="Hãy nhờ bố mẹ giúp bé giải câu đố này để vào cài đặt nhé!"
       />
     </View>
   );
