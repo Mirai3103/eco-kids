@@ -1,5 +1,6 @@
 import { Feather, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Image as ExpoImage } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -87,7 +88,7 @@ const CircularProgress = ({
   );
 };
 
-// Enhanced 3D Button Component
+// Enhanced 3D Button Component with Floating Animation
 const Action3DButton = ({
   icon,
   label,
@@ -97,6 +98,7 @@ const Action3DButton = ({
   progress = 0,
   showProgress = false,
   disabled = false,
+  delay = 0,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -106,21 +108,43 @@ const Action3DButton = ({
   progress?: number;
   showProgress?: boolean;
   disabled?: boolean;
+  delay?: number;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const shadowAnim = useRef(new Animated.Value(0)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  // Floating animation
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -8,
+          duration: 2000,
+          delay,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    animation.start();
+    return () => animation.stop();
+  }, []);
 
   const handlePressIn = () => {
     if (disabled) return;
     Animated.parallel([
       Animated.spring(scaleAnim, {
-        toValue: 0.95,
+        toValue: 0.9,
         useNativeDriver: true,
       }),
-      Animated.timing(shadowAnim, {
+      Animated.spring(rotateAnim, {
         toValue: 1,
-        duration: 150,
-        useNativeDriver: false,
+        useNativeDriver: true,
       }),
     ]).start();
   };
@@ -130,91 +154,93 @@ const Action3DButton = ({
     Animated.parallel([
       Animated.spring(scaleAnim, {
         toValue: 1,
+        friction: 3,
+        tension: 40,
         useNativeDriver: true,
       }),
-      Animated.timing(shadowAnim, {
+      Animated.spring(rotateAnim, {
         toValue: 0,
-        duration: 150,
-        useNativeDriver: false,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
       }),
     ]).start();
   };
 
-  const shadowOpacity = shadowAnim.interpolate({
+  const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.3, 0.1],
+    outputRange: ["0deg", "5deg"],
   });
-
-  const shadowOffset = shadowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [8, 4],
-  });
-
-  const buttonStyle = {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    justifyContent: "center" as const,
-    alignItems: "center" as const,
-    position: "relative" as const,
-    // 3D Effect with gradient-like shadows
-    shadowColor: color,
-    shadowOffset: { width: 0, height: shadowOffset },
-    shadowOpacity: disabled ? 0.1 : shadowOpacity,
-    shadowRadius: 15,
-    elevation: disabled ? 5 : 12,
-    // Gradient effect simulation
-    backgroundColor: color,
-    borderWidth: 2,
-    borderColor: darkerColor,
-    borderBottomWidth: 6,
-    borderBottomColor: darkerColor,
-    opacity: disabled ? 0.6 : 1,
-  };
 
   return (
     <VStack space="md" className="items-center">
       <Animated.View
-        style={[
-          buttonStyle,
-          {
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
+        style={{
+          transform: [
+            { translateY: floatAnim },
+            { scale: scaleAnim },
+            { rotate },
+          ],
+        }}
       >
-        <Pressable
-          // onPressIn={handlePressIn}
-          // onPressOut={handlePressOut}
-          onPress={disabled ? undefined : onPress}
-          disabled={disabled}
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 45,
-            justifyContent: "center",
-            alignItems: "center",
-            // Inner gradient effect
-            backgroundColor: color,
-            position: "relative",
-          }}
-        >
-          {/* Progress Circle for Read Button */}
-          {showProgress && <CircularProgress progress={progress} size={90} />}
+        <View style={{ position: "relative" }}>
+          {/* Shadow/Bottom layer */}
+          <View
+            style={{
+              position: "absolute",
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: darkerColor,
+              top: 6,
+              left: 0,
+              opacity: disabled ? 0.4 : 0.8,
+            }}
+          />
 
-          {/* Icon */}
-          <View style={{ zIndex: 2 }}>{icon}</View>
-        </Pressable>
+          {/* Main Button */}
+          <Pressable
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            onPress={disabled ? undefined : onPress}
+            disabled={disabled}
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: color,
+              justifyContent: "center",
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: disabled ? 0.1 : 0.3,
+              shadowRadius: 12,
+              elevation: disabled ? 3 : 10,
+              borderWidth: 3,
+              borderColor: "#fff",
+              opacity: disabled ? 0.6 : 1,
+            }}
+          >
+            {/* Progress Circle for Read Button */}
+            {showProgress && (
+              <CircularProgress progress={progress} size={100} />
+            )}
+
+            {/* Icon */}
+            <View style={{ zIndex: 2 }}>{icon}</View>
+          </Pressable>
+        </View>
       </Animated.View>
 
       {/* Label */}
       <Text
-        className=" text-xl font-bold"
         style={{
           color: "#1B4B07",
+          fontSize: 18,
           fontWeight: "600",
-          textShadowColor: "rgba(0, 0, 0, 0.1)",
+          textShadowColor: "rgba(255, 255, 255, 0.8)",
           textShadowOffset: { width: 0, height: 1 },
-          textShadowRadius: 2,
+          textShadowRadius: 4,
           fontFamily: "Baloo2_700Bold",
           opacity: disabled ? 0.6 : 1,
         }}
@@ -225,39 +251,66 @@ const Action3DButton = ({
   );
 };
 
-// Tag Component
-// const InfoTag = ({ tag }: { tag: (typeof storyData.tags)[0] }) => {
-//   return (
-//     <View
-//       style={{
-//         backgroundColor: tag.color,
-//         borderRadius: 20,
-//         paddingHorizontal: 12,
-//         paddingVertical: 6,
-//         marginHorizontal: 4,
-//         marginVertical: 4,
-//         shadowColor: "#000",
-//         shadowOffset: { width: 0, height: 1 },
-//         shadowOpacity: 0.1,
-//         shadowRadius: 2,
-//         elevation: 1,
-//       }}
-//     >
-//       <HStack space="xs" className="items-center">
-//         <Text style={{ fontSize: 12 }}>{tag.icon}</Text>
-//         <Text
-//           style={{
-//             color: "#1B4B07",
-//             fontSize: 12,
-//             fontFamily: "NunitoSans_600SemiBold"
-//           }}
-//         >
-//           {tag.label}
-//         </Text>
-//       </HStack>
-//     </View>
-//   );
-// };
+// Info Tag Component
+const InfoTag = ({
+  icon,
+  label,
+  color = "#E8F5E8",
+}: {
+  icon: string;
+  label: string;
+  color?: string;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 6,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <Animated.View
+      style={{
+        transform: [{ scale: scaleAnim }],
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: color,
+          borderRadius: 16,
+          paddingHorizontal: 14,
+          paddingVertical: 8,
+          marginHorizontal: 4,
+          marginVertical: 4,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+          borderWidth: 2,
+          borderColor: "#fff",
+        }}
+      >
+        <HStack space="xs" className="items-center">
+          <Text style={{ fontSize: 16 }}>{icon}</Text>
+          <Text
+            style={{
+              color: "#1B4B07",
+              fontSize: 14,
+              fontFamily: "NunitoSans_700Bold",
+            }}
+          >
+            {label}
+          </Text>
+        </HStack>
+      </View>
+    </Animated.View>
+  );
+};
 
 // Spinning Loader Component
 const SpinningLoader = () => {
@@ -284,10 +337,75 @@ const SpinningLoader = () => {
     </Animated.View>
   );
 };
+// Decorative Circle Component
+const DecorativeCircle = ({
+  size,
+  color,
+  top,
+  left,
+  right,
+  delay = 0,
+}: {
+  size: number;
+  color: string;
+  top?: number;
+  left?: number;
+  right?: number;
+  delay?: number;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Entrance animation
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      delay,
+      friction: 4,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+
+    // Floating animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -10,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  return (
+    <Animated.View
+      style={{
+        position: "absolute",
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: color,
+        top,
+        left,
+        right,
+        opacity: 0.15,
+        transform: [{ scale: scaleAnim }, { translateY: floatAnim }],
+      }}
+    />
+  );
+};
+
 // Main Content Component with entrance animations
 const StoryContent = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+  const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
   const [readProgress, setReadProgress] = useState(65); // Example progress
   const params = useLocalSearchParams();
   const storyId = params.id as string;
@@ -308,6 +426,12 @@ const StoryContent = () => {
         Animated.timing(slideAnim, {
           toValue: 0,
           duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.spring(imageScaleAnim, {
+          toValue: 1,
+          friction: 5,
+          tension: 40,
           useNativeDriver: true,
         }),
       ]),
@@ -347,34 +471,41 @@ const StoryContent = () => {
       }}
     >
       <VStack space="2xl" className="px-6">
-        {/* Image Block */}
-        <View
+        {/* Image Block with Animation */}
+        <Animated.View
           style={{
-            backgroundColor: "white",
-            borderRadius: 24,
-            padding: 8,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.15,
-            shadowRadius: 16,
-            elevation: 10,
-            width: screenWidth - 32,
+            transform: [{ scale: imageScaleAnim }],
           }}
         >
-          <ExpoImage
-            source={{
-              uri: story!.cover_image_url!,
-            }}
+          <View
             style={{
-              width: "100%",
-              height: 240,
-              borderRadius: 16,
+              backgroundColor: "white",
+              borderRadius: 24,
+              padding: 12,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 12 },
+              shadowOpacity: 0.25,
+              shadowRadius: 20,
+              elevation: 15,
+              width: screenWidth - 48,
+              alignSelf: "center",
             }}
-            alt="Story Cover"
-            contentFit="cover"
-            cachePolicy={"memory-disk"}
-          />
-        </View>
+          >
+            <ExpoImage
+              source={{
+                uri: story!.cover_image_url!,
+              }}
+              style={{
+                width: "100%",
+                height: 280,
+                borderRadius: 16,
+              }}
+              alt="Story Cover"
+              contentFit="cover"
+              cachePolicy={"memory-disk"}
+            />
+          </View>
+        </Animated.View>
 
         {/* Info Block */}
         <VStack space="lg" className="items-center">
@@ -384,9 +515,13 @@ const StoryContent = () => {
             style={{
               color: "#1B4B07",
               textAlign: "center",
-              lineHeight: 42,
-              marginBottom: 8,
-              fontSize: 36,
+              lineHeight: 44,
+              marginBottom: 12,
+              fontSize: 32,
+              textShadowColor: "rgba(255, 255, 255, 0.8)",
+              textShadowOffset: { width: 0, height: 2 },
+              textShadowRadius: 4,
+              paddingHorizontal: 16,
             }}
             className="font-heading"
           >
@@ -394,58 +529,186 @@ const StoryContent = () => {
           </Text>
 
           {/* Story Synopsis */}
-          <Text
-            style={{
-              color: "#4A5568",
-              fontSize: 16,
-              lineHeight: 24,
-              textAlign: "center",
-              marginBottom: 0,
-              paddingHorizontal: 8,
-            }}
-            className="font-body"
-          >
-            {story?.description}
-          </Text>
-
-          {/* Info Tags */}
           {/* <View
             style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              alignItems: "center",
-              maxWidth: screenWidth - 40,
+              backgroundColor: "rgba(255, 255, 255, 0.7)",
+              borderRadius: 20,
+              padding: 16,
+              marginHorizontal: 16,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 3,
             }}
           >
-            {story?.tags.map((tag, index) => (
-              <InfoTag key={index} tag={tag} />
-            ))}
+            <Text
+              style={{
+                color: "#2D3748",
+                fontSize: 16,
+                lineHeight: 26,
+                textAlign: "center",
+                fontFamily: "NunitoSans_400Regular",
+              }}
+            >
+              {story?.description}
+            </Text>
           </View> */}
+
+          {/* Metadata Information */}
+          <View
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.6)",
+              borderRadius: 16,
+              padding: 16,
+              marginHorizontal: 16,
+              marginTop: 12,
+              width: screenWidth - 64,
+            }}
+          >
+            <VStack space="sm">
+              {/* Author */}
+              <HStack space="xs">
+                <Text
+                  style={{
+                    color: "#1B4B07",
+                    fontSize: 15,
+                    fontFamily: "NunitoSans_700Bold",
+                  }}
+                >
+                  Tác giả:
+                </Text>
+                <Text
+                  style={{
+                    color: "#4A5568",
+                    fontSize: 15,
+                    fontFamily: "NunitoSans_400Regular",
+                  }}
+                >
+                  Eco Kids Team
+                </Text>
+              </HStack>
+
+              {/* Age Group */}
+              <HStack space="xs">
+                <Text
+                  style={{
+                    color: "#1B4B07",
+                    fontSize: 15,
+                    fontFamily: "NunitoSans_700Bold",
+                  }}
+                >
+                  Độ tuổi:
+                </Text>
+                <Text
+                  style={{
+                    color: "#4A5568",
+                    fontSize: 15,
+                    fontFamily: "NunitoSans_400Regular",
+                  }}
+                >
+                  5-8 tuổi
+                </Text>
+              </HStack>
+
+              {/* Duration */}
+              <HStack space="xs">
+                <Text
+                  style={{
+                    color: "#1B4B07",
+                    fontSize: 15,
+                    fontFamily: "NunitoSans_700Bold",
+                  }}
+                >
+                  Thời lượng:
+                </Text>
+                <Text
+                  style={{
+                    color: "#4A5568",
+                    fontSize: 15,
+                    fontFamily: "NunitoSans_400Regular",
+                  }}
+                >
+                  10 phút
+                </Text>
+              </HStack>
+
+              {/* Views Count */}
+              {story?.views_count && (
+                <HStack space="xs">
+                  <Text
+                    style={{
+                      color: "#1B4B07",
+                      fontSize: 15,
+                      fontFamily: "NunitoSans_700Bold",
+                    }}
+                  >
+                    Lượt xem:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#4A5568",
+                      fontSize: 15,
+                      fontFamily: "NunitoSans_400Regular",
+                    }}
+                  >
+                    {story.views_count}
+                  </Text>
+                </HStack>
+              )}
+
+              {/* Tags from database */}
+              {story?.tags && story.tags.length > 0 && (
+                <HStack space="xs">
+                  <Text
+                    style={{
+                      color: "#1B4B07",
+                      fontSize: 15,
+                      fontFamily: "NunitoSans_700Bold",
+                    }}
+                  >
+                    Thể loại:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#4A5568",
+                      fontSize: 15,
+                      fontFamily: "NunitoSans_400Regular",
+                      flex: 1,
+                    }}
+                  >
+                    {story.tags.join(", ")}
+                  </Text>
+                </HStack>
+              )}
+            </VStack>
+          </View>
         </VStack>
 
         {/* Enhanced 3D Action Buttons */}
-        <View style={{ marginTop: 5 }}>
-          <HStack space="lg" className="w-full justify-center items-center">
+        <View style={{ marginTop: 20 }}>
+          <HStack space="xl" className="w-full justify-center items-center">
             <Action3DButton
-              icon={<Feather name="book-open" size={36} color="white" />}
+              icon={<Feather name="book-open" size={40} color="white" />}
               label={networkState.isConnected ? "Đọc" : "Đọc offline"}
               onPress={handleReadPress}
               color={theme.palette.primary[400]}
-              darkerColor={theme.palette.primary[500]}
+              darkerColor={theme.palette.primary[600]}
               progress={readProgress}
               showProgress={true}
               disabled={!networkState.isConnected && status !== "completed"}
+              delay={0}
             />
 
             {status === "idle" && (
               <Action3DButton
-                icon={<Feather name="download" size={32} color="white" />}
+                icon={<Feather name="download" size={36} color="white" />}
                 label="Tải xuống"
                 onPress={handleDownloadPress}
                 color="#3B82F6"
-                darkerColor="#2563EB"
+                darkerColor="#1E40AF"
                 disabled={!networkState.isConnected}
+                delay={300}
               />
             )}
 
@@ -457,38 +720,42 @@ const StoryContent = () => {
                 color="#9CA3AF"
                 darkerColor="#6B7280"
                 disabled={true}
+                delay={300}
               />
             )}
 
             {status === "completed" && (
               <Action3DButton
-                icon={<Feather name="check-circle" size={32} color="white" />}
+                icon={<Feather name="check-circle" size={36} color="white" />}
                 label="Đã tải"
                 onPress={() => {}}
                 color="#10B981"
-                darkerColor="#059669"
+                darkerColor="#047857"
                 disabled={true}
+                delay={300}
               />
             )}
 
             {status === "error" && (
               <Action3DButton
-                icon={<Feather name="alert-circle" size={32} color="white" />}
+                icon={<Feather name="alert-circle" size={36} color="white" />}
                 label="Thử lại"
                 onPress={handleDownloadPress}
                 color="#EF4444"
-                darkerColor="#DC2626"
+                darkerColor="#B91C1C"
                 disabled={!networkState.isConnected}
+                delay={300}
               />
             )}
 
             <Action3DButton
-              icon={<FontAwesome6 name="brain" size={32} color="white" />}
+              icon={<FontAwesome6 name="brain" size={36} color="white" />}
               label="Quiz"
               onPress={handleQuizPress}
-              color={theme.palette.primary[300]}
-              darkerColor={theme.palette.primary[400]}
+              color={theme.palette.secondary[500]}
+              darkerColor={theme.palette.secondary[700]}
               disabled={!networkState.isConnected}
+              delay={600}
             />
           </HStack>
 
@@ -560,8 +827,50 @@ export default function StoryDetailsScreen() {
   console.log("Story ID:", storyId);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F7F8FA" }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7F8FA" />
+    <View style={{ flex: 1 }}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={["#C7F9CC", "#80ED99"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      />
+
+      {/* Decorative Circles */}
+      <DecorativeCircle
+        size={120}
+        color="#667FF3"
+        top={50}
+        right={-30}
+        delay={200}
+      />
+      <DecorativeCircle
+        size={80}
+        color="#5EF02C"
+        top={200}
+        left={-20}
+        delay={400}
+      />
+      <DecorativeCircle
+        size={100}
+        color="#2857E0"
+        top={450}
+        right={20}
+        delay={600}
+      />
+      <DecorativeCircle
+        size={60}
+        color="#399918"
+        top={600}
+        left={30}
+        delay={800}
+      />
 
       <SafeAreaView className="flex-1">
         {/* Header */}

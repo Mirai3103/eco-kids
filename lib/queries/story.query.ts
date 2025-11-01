@@ -88,3 +88,34 @@ export const getAllRecommendedStoriesQueryOptions = (
   enabled: !!user_id,
   select: (data) => data as Story[] | undefined,
 });
+
+export const searchStoriesInfinite = async ({
+  searchQuery,
+  topicId,
+  pageParam = 0,
+  limit = 10,
+}: {
+  searchQuery: string;
+  topicId?: string;
+  pageParam?: number;
+  limit?: number;
+}) => {
+  let query = supabase
+    .from("stories")
+    .select("*")
+    .ilike("title", `%${searchQuery}%`);
+
+  if (topicId) {
+    query = query.eq("topic_id", topicId);
+  }
+
+  const { data, error } = await query
+    .range(pageParam * limit, (pageParam + 1) * limit - 1)
+    .order("title", { ascending: true });
+
+  if (error) throw error;
+  return {
+    data: data as Story[],
+    nextPage: data.length === limit ? pageParam + 1 : undefined,
+  };
+};
