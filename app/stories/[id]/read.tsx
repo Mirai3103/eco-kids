@@ -33,6 +33,7 @@ import useTTS from "@/hooks/useTTS";
 
 // Queries and Types
 import useSession from "@/hooks/useSession";
+import { recalculateVector } from "@/lib/egde";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { supabase } from "@/lib/supabase";
 import { StorySegment } from "@/types";
@@ -346,6 +347,9 @@ export default function ReadStoryScreen() {
         p_segment_id: segmentId,
         p_user_id: userId,
       });
+    },
+    onSuccess: () => {
+      recalculateVector({ userId: session.session!.user.id });
     },
     onError: (error) => {
       console.error(error);

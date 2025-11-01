@@ -3,6 +3,7 @@ import { embed } from "ai";
 // import Constants from "expo-constants";
 import { tool } from "ai";
 import Constants from "expo-constants";
+import { router } from "expo-router";
 import { z } from "zod/v4";
 import { supabase } from "./supabase";
 
@@ -34,4 +35,17 @@ export const similarity_search_tool = tool({
     top_k,
     results: await similarity_search(query, top_k),
   }),
+});
+export const navigate_to_story_tool = tool({
+  description: "Navigate to the story page",
+  inputSchema: z.object({
+    story_id: z.string().describe("The id of the story to navigate to"),
+  }),
+  execute: async ({ story_id }) => {
+    router.push(`/stories/${story_id}`);
+    return {
+      success: true,
+      message: `Navigated to the story page: ${story_id}`,
+    };
+  },
 });

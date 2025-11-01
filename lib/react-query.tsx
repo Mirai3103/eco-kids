@@ -16,7 +16,7 @@ onlineManager.setEventListener((setOnline) => {
   });
   return eventSubscription.remove;
 });
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     // for react native offline first
     // queries: {

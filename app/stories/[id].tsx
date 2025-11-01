@@ -19,6 +19,7 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { recalculateVector } from "@/lib/egde";
 import useOfflineStory from "@/lib/offline";
 import { getStoryByIdQueryOptions } from "@/lib/queries/story.query";
 import { supabase } from "@/lib/supabase";
@@ -821,6 +822,7 @@ export default function StoryDetailsScreen() {
         user_id: user!.id,
       });
     }
+    recalculateVector({ userId: user!.id });
   };
 
   // In a real app, fetch story data based on storyId

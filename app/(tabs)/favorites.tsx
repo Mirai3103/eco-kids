@@ -19,6 +19,7 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { recalculateVector } from "@/lib/egde";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
 import { FavoriteStory } from "@/types";
@@ -172,7 +173,6 @@ const FavoriteStoryCard = ({
     onPress();
   };
 
-
   return (
     <Animated.View
       style={{
@@ -241,8 +241,6 @@ const FavoriteStoryCard = ({
               >
                 {story?.stories?.title}
               </Text>
-
-         
 
               <HStack className="justify-between items-center mt-2">
                 <HStack space="sm">
@@ -349,7 +347,11 @@ export default function FavoritesScreen() {
   const router = useRouter();
   const { user } = useUserStore();
   // const [favoriteStories, setFavoriteStories] = useState();
-  const { data: favoriteStories, isLoading ,refetch} = useQuery({
+  const {
+    data: favoriteStories,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["favoriteStories"],
     queryFn: async () =>
       supabase
@@ -359,12 +361,16 @@ export default function FavoritesScreen() {
         .then((res) => res.data as FavoriteStory[]),
   });
 
-
   const handleRemoveFromFavorites = (storyId: string) => {
-    supabase.from("favorite_stories").delete().eq("story_id", storyId).eq("user_id", user!.id).then(() => { 
-      refetch();
-    });
-    
+    supabase
+      .from("favorite_stories")
+      .delete()
+      .eq("story_id", storyId)
+      .eq("user_id", user!.id)
+      .then(() => {
+        refetch();
+      });
+    recalculateVector({ userId: user!.id });
   };
 
   const handleStoryPress = (story: FavoriteStory) => {
@@ -422,7 +428,7 @@ export default function FavoritesScreen() {
         </HStack>
 
         {/* Stats Bar */}
-        {(favoriteStories?.length||0) > 0 && (
+        {(favoriteStories?.length || 0) > 0 && (
           <View
             style={{
               backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -486,7 +492,6 @@ export default function FavoritesScreen() {
                 >
                   <Text style={{ fontSize: 20 }}>⭐</Text>
                 </View>
-                
               </HStack>
             </HStack>
           </View>
