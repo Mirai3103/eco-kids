@@ -36,6 +36,7 @@ import useSession from "@/hooks/useSession";
 import { recalculateVector } from "@/lib/egde";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { supabase } from "@/lib/supabase";
+import { useReadStore } from "@/stores/read.store";
 import { StorySegment } from "@/types";
 import * as Network from "expo-network";
 
@@ -308,7 +309,7 @@ export default function ReadStoryScreen() {
   console.log("ReadStoryScreen");
   const params = useLocalSearchParams();
   const storyId = params.id as string;
-
+  const { lastReadStoryId, setLastReadStoryId } = useReadStore();
   // State
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
@@ -437,6 +438,7 @@ export default function ReadStoryScreen() {
         userId: session.session!.user.id,
       });
       setCurrentPage(pageIndex);
+      if (pageIndex >= 2) setLastReadStoryId(storyId);
     },
     [session.session?.user.id, storyId, storySegments]
   );

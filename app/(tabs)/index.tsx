@@ -18,6 +18,7 @@ import { VStack } from "@/components/ui/vstack";
 import useSession from "@/hooks/useSession";
 import { getAllRecommendedStoriesQueryOptions } from "@/lib/queries/story.query";
 import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
+import { useReadStore } from "@/stores/read.store";
 import { Story, Topic } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
@@ -314,19 +315,20 @@ export default function EcoKidsHomeScreen() {
     isLoading,
     error,
   } = useQuery(getAllTopicsQueryOptions());
+  const { lastReadStoryId } = useReadStore();
   const {
     data: stories = [],
     isLoading: isStoriesLoading,
     error: storiesError,
   } = useQuery(
-    getAllRecommendedStoriesQueryOptions(session.session?.user.id, 4)
+    getAllRecommendedStoriesQueryOptions(session.session?.user.id,lastReadStoryId || undefined, 5)
   );
   React.useEffect(() => {
     if (!isLoading) {
       SplashScreen.hideAsync();
     }
   }, [isLoading]);
-
+  
   return (
     <View className="flex-1">
       <StatusBar
