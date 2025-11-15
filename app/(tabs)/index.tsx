@@ -20,30 +20,11 @@ import { getAllRecommendedStoriesQueryOptions } from "@/lib/queries/story.query"
 import { getAllTopicsQueryOptions } from "@/lib/queries/topic.query";
 import { useReadStore } from "@/stores/read.store";
 import { Story, Topic } from "@/types";
+import * as Sentry from "@sentry/react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { SplashScreen, useRouter } from "expo-router";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-const featuredStory = {
-  id: 1,
-  title: "Cuộc phiêu lưu của chú ong nhỏ",
-  image: "🌸",
-
-  bgColor: "#CAFEC3",
-};
-
-const newStories = [
-  { id: 1, title: "Rùa biển và nhựa", image: "🐢", bgColor: "#E3F2FD" },
-  { id: 2, title: "Cây xanh kỳ diệu", image: "🌱", bgColor: "#E8F5E8" },
-  { id: 3, title: "Gấu trúc và tre", image: "🐼", bgColor: "#FFF3E0" },
-];
-
-const recentStories = [
-  { id: 1, title: "Chim cánh cụt bé nhỏ", image: "🐧", bgColor: "#E3F2FD" },
-  { id: 2, title: "Vườn hoa nhiều màu", image: "🌺", bgColor: "#FCE4EC" },
-  { id: 3, title: "Ong làm mật", image: "🍯", bgColor: "#FFF8E1" },
-];
-
 // 3D Button Component
 const Button3D = ({
   title,
@@ -321,14 +302,23 @@ export default function EcoKidsHomeScreen() {
     isLoading: isStoriesLoading,
     error: storiesError,
   } = useQuery(
-    getAllRecommendedStoriesQueryOptions(session.session?.user.id,lastReadStoryId || undefined, 5)
+    getAllRecommendedStoriesQueryOptions(
+      session.session?.user.id,
+      lastReadStoryId || undefined,
+      5
+    )
   );
   React.useEffect(() => {
+    Sentry.captureException(storiesError);
+  }, [error]);
+
+  React.useEffect(() => {
+    Sentry.captureMessage("Home screen loaded" + JSON.stringify(stories)+(isLoading ? "loading" : "loaded"));
     if (!isLoading) {
       SplashScreen.hideAsync();
     }
   }, [isLoading]);
-  
+
   return (
     <View className="flex-1">
       <StatusBar

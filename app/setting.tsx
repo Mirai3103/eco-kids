@@ -22,7 +22,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
-
+import Sentry from "@sentry/react-native";
 const { width: screenWidth } = Dimensions.get("window");
 
 // Custom Header Component for Settings
@@ -394,7 +394,7 @@ export default function SettingsScreen() {
             icon="download-outline"
             title="Tải xuống"
             subtitle="Quản lý truyện đã tải về"
-            onPress={() => console.log("Manage downloads")}
+            onPress={() => { Sentry.captureException(new Error('First error')) }}
             color="#EC4899"
           />
           <SettingsItem

@@ -4,8 +4,10 @@ if (typeof globalThis.structuredClone === "undefined") {
   globalThis.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
 }
 
+import { CircularRevealOverlay } from "@/components/CircularRevealOverlay";
 import LoadingScreen from "@/components/LoadingScreen";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { CircularRevealProvider } from "@/contexts/CircularRevealContext";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import useSession from "@/hooks/useSession";
@@ -13,8 +15,6 @@ import ReactQueryProvider from "@/lib/react-query";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
 import { useSoundStore } from "@/stores/useSoundStore";
-import { CircularRevealProvider } from "@/contexts/CircularRevealContext";
-import { CircularRevealOverlay } from "@/components/CircularRevealOverlay";
 import {
   Baloo2_600SemiBold,
   Baloo2_700Bold,
@@ -27,15 +27,40 @@ import {
   useFonts as useNunitoFonts,
 } from "@expo-google-fonts/nunito-sans";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { SplashScreen, Stack, usePathname, useRouter } from "expo-router";
+import * as Sentry from "@sentry/react-native";
+import Constants from "expo-constants";
+import { Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+const isProduction = Constants.expoConfig?.extra?.isProduction;
+if (isProduction) {
+  Sentry.init({
+    dsn: "https://94a5775dcbc7c7f8a38c0717d22be979@o4510369999486976.ingest.us.sentry.io/4510370002239488",
 
-SplashScreen.preventAutoHideAsync();
+    // Adds more context data to events (IP address, cookies, user, etc.)
+    // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+    sendDefaultPii: true,
+
+    // Enable Logs
+    enableLogs: true,
+
+    // Configure Session Replay
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1,
+    integrations: [
+      Sentry.mobileReplayIntegration(),
+      Sentry.feedbackIntegration(),
+    ],
+
+    // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+    // spotlight: __DEV__,
+  });
+}
+
 const bgm = require("@/assets/audio/bgm.mp3");
-export default function RootLayout() {
+ function RootLayout() {
   const colorScheme = useColorScheme();
   const [balooLoaded] = useBalooFonts({
     Baloo2_600SemiBold,
@@ -79,7 +104,13 @@ export default function RootLayout() {
       router.replace("/login");
       return;
     }
+    Sentry.captureMessage("Session loaded" + JSON.stringify(session));
     if (session) {
+      Sentry.setUser({
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.user_metadata.name,
+      });
       setUser({
         avatar: session.user.user_metadata.avatar_url.replace(
           /=s\d+-c/,
@@ -111,10 +142,12 @@ export default function RootLayout() {
     }
   }, [session, isLoading]);
   if (!balooLoaded || !nunitoLoaded) {
+    Sentry.captureMessage("Fonts not loaded");
     return null;
   }
 
   if (isLoading) {
+    Sentry.captureMessage("Loading screen");
     return <LoadingScreen />;
   }
 
@@ -154,7 +187,11 @@ export default function RootLayout() {
                 <Stack.Screen name="+not-found" />
                 <Stack.Screen name="history" options={{ headerShown: false }} />
               </Stack>
-              <StatusBar style="dark" backgroundColor="transparent" translucent />
+              <StatusBar
+                style="dark"
+                backgroundColor="transparent"
+                translucent
+              />
               {/* {session && pathname !== "/login" && <FloatingAssistant />} */}
 
               {/* Circular Reveal Overlay */}
@@ -166,3 +203,4 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+export default Sentry.wrap(RootLayout);
