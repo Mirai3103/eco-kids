@@ -16,9 +16,18 @@ const model = deepseek("deepseek-chat");
 type Status = "submitted" | "streaming" | "ready" | "error";
 type Role = "system" | "user" | "assistant" | "tool";
 
-interface IMessage {
+ interface IMessage {
   role: Role;
-  content: string | ToolContent | { type: "text"; text: string };
+  content: string | ToolContent | { type: "text"; text: string } | { type: "text"; text: string }[] ;
+}
+export function getMessageContent(message: any) {
+   if (typeof message.content === "string") {
+    return message.content;
+   }  else if (typeof message.content === "object" && Array.isArray(message.content)) {
+    return message.content.map((text: any) => text.text).join("");
+   }
+   console.log(message.content, "message.content");
+   return "";
 }
 
 type UseAiReturn = {

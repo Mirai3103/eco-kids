@@ -4,7 +4,8 @@ import { Pressable } from "@/components/ui/pressable";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useAi } from "@/hooks/useAi";
+import { useCircularReveal } from "@/contexts/CircularRevealContext";
+import { getMessageContent, useAi } from "@/hooks/useAi";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,7 +22,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useCircularReveal } from "@/contexts/CircularRevealContext";
 
 // 3D Button Component
 const Button3D = ({
@@ -203,6 +203,7 @@ export default function ChatScreen() {
     }).start();
   };
 
+
   return (
     <View className="flex-1">
       <StatusBar
@@ -332,13 +333,11 @@ export default function ChatScreen() {
                   .filter(
                     (msg) => msg.role === "user" || msg.role === "assistant"
                   )
-                  .map((msg, index) => (
+                  .map((msg:any, index) => (
                     <ChatBubble
                       key={index}
                       message={
-                        typeof msg.content === "string"
-                          ? msg.content
-                          : JSON.stringify(msg.content)
+                        getMessageContent(msg) as string
                       }
                       isUser={msg.role === "user"}
                       index={index}
@@ -452,3 +451,7 @@ export default function ChatScreen() {
     </View>
   );
 }
+// interface IMessage {
+//   role: Role;
+//   content: string  | { type: "text"; text: string } | { type: "text"; text: string }[] ;
+// }
