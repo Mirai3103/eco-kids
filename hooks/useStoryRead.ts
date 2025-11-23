@@ -24,7 +24,7 @@ const AUTO_PLAY_DELAY = 1000;
 
 export const useStoryRead = (storyId: string) => {
   const { setLastReadStoryId } = useReadStore();
-  
+
   // State
   const [currentPage, setCurrentPage] = useState(0);
   const [isVietnamese, setIsVietnamese] = useState(true);
@@ -153,7 +153,13 @@ export const useStoryRead = (storyId: string) => {
       setCurrentPage(pageIndex);
       if (pageIndex >= 2) setLastReadStoryId(storyId);
     },
-    [session.session?.user.id, storyId, storySegments, mutation, setLastReadStoryId]
+    [
+      session.session?.user.id,
+      storyId,
+      storySegments,
+      mutation,
+      setLastReadStoryId,
+    ]
   );
 
   const toggleMenu = useCallback(() => {
@@ -178,33 +184,11 @@ export const useStoryRead = (storyId: string) => {
     }).start();
   }, [menuAnimation]);
 
-  const toggleMute = useCallback(() => {
-    setIsMuted((prev) => {
-      const newState = !prev;
-      if (newState) {
-        stopAll();
-      }
-      return newState;
-    });
-    closeMenu();
-  }, [stopAll, closeMenu]);
-
-  const handleRestart = useCallback(() => {
-    if (pageFlipperRef.current) {
-      pageFlipperRef.current.goToPage(0);
-      setCurrentPage(0);
-    }
-    closeMenu();
-  }, [closeMenu]);
-
-  const handleMenuBack = useCallback(() => {
-    stopAll();
-    router.back();
-  }, [stopAll]);
-
   const handlePlayAudio = useCallback(
-    (forceLanguage?: boolean) => {
-      if (isMuted) return;
+    (options?: { forceLanguage?: boolean; ignoreMute?: boolean }) => {
+      const { forceLanguage, ignoreMute } = options || {};
+
+      if (isMuted && !ignoreMute) return;
 
       const currentSegment = storySegments[currentPage];
       if (!currentSegment) return;
@@ -219,12 +203,12 @@ export const useStoryRead = (storyId: string) => {
       };
 
       const audioUrl = audioUrls[currentPage];
-      // Note: This logic assumes audioUrls are only for Vietnamese.
-      // If we want English audio, we might need a different logic or check if audioUrl exists for the target language.
       
       const targetIsVietnamese =
         forceLanguage !== undefined ? forceLanguage : isVietnamese;
 
+      // Only play audio URL if it matches the target language (assuming audioUrls are Vietnamese)
+      // If we switch to English, we should probably use TTS unless we have English audio
       if (targetIsVietnamese && audioUrl) {
         playAudio(audioUrl, handleFinish);
       } else {
@@ -247,18 +231,51 @@ export const useStoryRead = (storyId: string) => {
     ]
   );
 
-  const handleToggleLanguage = useCallback(() => {
-    setIsVietnamese((prev) => {
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
       const newState = !prev;
-      // Replay audio with new language
-      setTimeout(() => handlePlayAudio(newState), 100);
+      if (newState) {
+        stopAll();
+      } else {
+        // Unmuted, play audio immediately
+        // Use ignoreMute: true because state update hasn't propagated to handlePlayAudio yet
+        setTimeout(() => handlePlayAudio({ ignoreMute: true }), 100);
+      }
       return newState;
     });
     closeMenu();
-  }, [closeMenu, handlePlayAudio]);
+  }, [stopAll, closeMenu, handlePlayAudio]);
+
+  const handleRestart = useCallback(() => {
+    if (pageFlipperRef.current) {
+      pageFlipperRef.current.goToPage(0);
+      setCurrentPage(0);
+    }
+    closeMenu();
+  }, [closeMenu]);
+
+  const handleMenuBack = useCallback(() => {
+    stopAll();
+    router.back();
+  }, [stopAll]);
+
+  const handleToggleLanguage = useCallback(() => {
+    stopAll();
+    setIsVietnamese((prev) => {
+      const newState = !prev;
+      // Replay audio with new language immediately
+      setTimeout(() => handlePlayAudio({ forceLanguage: newState }), 100);
+      return newState;
+    });
+    closeMenu();
+  }, [closeMenu, handlePlayAudio, stopAll]);
 
   const handleToggleAutoPlay = useCallback(() => {
-    setIsAutoPlay((prev) => !prev);
+    setIsAutoPlay((prev) => {
+      const newState = !prev;
+      isAutoPlayRef.current = newState; // Update ref immediately to prevent race conditions
+      return newState;
+    });
     closeMenu();
   }, [closeMenu]);
 
@@ -283,14 +300,14 @@ export const useStoryRead = (storyId: string) => {
     isLoading,
     isImageLoading,
     storySegments,
-    
+
     // Refs
     pageFlipperRef,
-    
+
     // Animations
     menuAnimation,
     pulseAnimation,
-    
+
     // Handlers
     handleFlippedEnd,
     toggleMenu,
