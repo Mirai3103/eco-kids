@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import { Alert, Animated } from "react-native";
 
@@ -19,16 +19,19 @@ import { recalculateVector } from "@/lib/egde";
 import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
 import { supabase } from "@/lib/supabase";
 import { useReadStore } from "@/stores/read.store";
+import { useSettingStore } from "@/stores/setting.store";
 
 const AUTO_PLAY_DELAY = 1000;
 
 export const useStoryRead = (storyId: string) => {
   const { setLastReadStoryId } = useReadStore();
+  const { isDefaultAutoPlay, defaultLanguage, defaultGender } = useSettingStore();
 
   // State
   const [currentPage, setCurrentPage] = useState(0);
-  const [isVietnamese, setIsVietnamese] = useState(true);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isVietnamese, setIsVietnamese] = useState(defaultLanguage === "vi");
+  const [gender, setGender] = useState<"male" | "female">(defaultGender);
+  const [isAutoPlay, setIsAutoPlay] = useState(isDefaultAutoPlay);
   const [isMuted, setIsMuted] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -130,12 +133,13 @@ export const useStoryRead = (storyId: string) => {
 
   const audioUrls = useMemo(() => {
     return storySegments.map((segment) => {
+      const targetLang = isVietnamese ? "vi" : "en";
       const audioSegment = segment.audio_segments?.find(
-        (audio) => audio.language === "vi" && audio.gender === "female"
+        (audio) => audio.language === targetLang && audio.gender === gender
       );
       return audioSegment?.audio_url || "";
     });
-  }, [storySegments]);
+  }, [storySegments, isVietnamese, gender]);
 
   // Image preloading
   const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
@@ -207,16 +211,14 @@ export const useStoryRead = (storyId: string) => {
       const targetIsVietnamese =
         forceLanguage !== undefined ? forceLanguage : isVietnamese;
 
-      // Only play audio URL if it matches the target language (assuming audioUrls are Vietnamese)
-      // If we switch to English, we should probably use TTS unless we have English audio
-      if (targetIsVietnamese && audioUrl) {
+      if (audioUrl) {
         playAudio(audioUrl, handleFinish);
       } else {
         const text = targetIsVietnamese
           ? currentSegment.vi_text
           : currentSegment.en_text;
         const language = targetIsVietnamese ? "vi" : "en";
-        playTTSOnline(text || "", "female", language, handleFinish);
+        playTTSOnline(text || "", gender, language, handleFinish);
       }
     },
     [
@@ -228,6 +230,7 @@ export const useStoryRead = (storyId: string) => {
       isMuted,
       playTTSOnline,
       stopAll,
+      gender
     ]
   );
 
@@ -238,7 +241,6 @@ export const useStoryRead = (storyId: string) => {
         stopAll();
       } else {
         // Unmuted, play audio immediately
-        // Use ignoreMute: true because state update hasn't propagated to handlePlayAudio yet
         setTimeout(() => handlePlayAudio({ ignoreMute: true }), 100);
       }
       return newState;
@@ -294,6 +296,7 @@ export const useStoryRead = (storyId: string) => {
     // State
     currentPage,
     isVietnamese,
+    gender,
     isAutoPlay,
     isMuted,
     isMenuVisible,

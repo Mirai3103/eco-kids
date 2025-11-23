@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Tts from "react-native-tts";
 
 import {
@@ -18,9 +18,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
 import { HStack } from "@/components/ui/hstack";
+import { SelectionModal } from "@/components/ui/SelectionModal";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
+import { useSettingStore } from "@/stores/setting.store";
 import { useUserStore } from "@/stores/user.store";
 import Sentry from "@sentry/react-native";
 const { width: screenWidth } = Dimensions.get("window");
@@ -261,9 +263,21 @@ const LogoutButton = ({ onPress }: { onPress: () => void }) => {
 export default function SettingsScreen() {
   const router = useRouter();
   const { logout } = useUserStore();
-  const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [soundEnabled, setSoundEnabled] = React.useState(true);
-  const [autoPlayEnabled, setAutoPlayEnabled] = React.useState(false);
+  const {
+    isDefaultAutoPlay,
+    defaultLanguage,
+    defaultGender,
+    setIsDefaultAutoPlay,
+    setDefaultLanguage,
+    setDefaultGender,
+  } = useSettingStore();
+
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Modal states
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [genderModalVisible, setGenderModalVisible] = useState(false);
 
   const handleLogout = async () => {
     Tts.speak("Hello, world!");
@@ -372,20 +386,27 @@ export default function SettingsScreen() {
             showArrow={false}
             rightContent={
               <Switch
-                value={autoPlayEnabled}
-                onValueChange={setAutoPlayEnabled}
+                value={isDefaultAutoPlay}
+                onValueChange={setIsDefaultAutoPlay}
                 trackColor={{ false: "#E5E7EB", true: "#399918" }}
-                thumbColor={autoPlayEnabled ? "#ffffff" : "#f4f3f4"}
+                thumbColor={isDefaultAutoPlay ? "#ffffff" : "#f4f3f4"}
               />
             }
             color="#06B6D4"
           />
           <SettingsItem
             icon="language-outline"
-            title="Ngôn ngữ"
-            subtitle="Tiếng Việt"
-            onPress={() => console.log("Change language")}
+            title="Ngôn ngữ mặc định"
+            subtitle={defaultLanguage === "vi" ? "Tiếng Việt" : "Tiếng Anh"}
+            onPress={() => setLanguageModalVisible(true)}
             color="#10B981"
+          />
+          <SettingsItem
+            icon="male-female-outline"
+            title="Giới tính mặc định"
+            subtitle={defaultGender === "male" ? "Nam" : "Nữ"}
+            onPress={() => setGenderModalVisible(true)}
+            color="#F59E0B"
           />
 
           {/* Content & Reading */}
@@ -448,6 +469,31 @@ export default function SettingsScreen() {
             <LogoutButton onPress={handleLogout} />
           </View>
         </ScrollView>
+
+        {/* Modals */}
+        <SelectionModal
+          visible={languageModalVisible}
+          onClose={() => setLanguageModalVisible(false)}
+          title="Chọn ngôn ngữ mặc định"
+          options={[
+            { label: "Tiếng Việt", value: "vi", icon: "flag-outline", color: "#EF4444" },
+            { label: "Tiếng Anh", value: "en", icon: "flag-outline", color: "#3B82F6" },
+          ]}
+          onSelect={setDefaultLanguage}
+          selectedValue={defaultLanguage}
+        />
+
+        <SelectionModal
+          visible={genderModalVisible}
+          onClose={() => setGenderModalVisible(false)}
+          title="Chọn giới tính mặc định"
+          options={[
+            { label: "Nam", value: "male", icon: "male-outline", color: "#3B82F6" },
+            { label: "Nữ", value: "female", icon: "female-outline", color: "#EC4899" },
+          ]}
+          onSelect={setDefaultGender}
+          selectedValue={defaultGender}
+        />
       </SafeAreaView>
     </View>
   );
