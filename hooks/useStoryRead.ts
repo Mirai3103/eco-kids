@@ -1,23 +1,15 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMachine } from "@xstate/react";
 import { router } from "expo-router";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Alert, Animated } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Animated } from "react-native";
 
 // Hooks
 import { useImageLoader } from "@/hooks/useImageLoader";
 import useSession from "@/hooks/useSession";
 import useTTS from "@/hooks/useTTS";
 
-// Queries and Types
-import { recalculateVector } from "@/lib/egde";
-import { getAllStorySegmentsQueryByStoryIdOptions } from "@/lib/queries/segment.query";
-import { supabase } from "@/lib/supabase";
+// State Machine
+import { storyReadMachine } from "@/machines/storyReadMachine";
 import { useReadStore } from "@/stores/read.store";
 import { useSettingStore } from "@/stores/setting.store";
 
@@ -25,74 +17,73 @@ const AUTO_PLAY_DELAY = 1000;
 
 export const useStoryRead = (storyId: string) => {
   const { setLastReadStoryId } = useReadStore();
-  const { isDefaultAutoPlay, defaultLanguage, defaultGender } = useSettingStore();
+  const { isDefaultAutoPlay, defaultLanguage, defaultGender } =
+    useSettingStore();
 
-  // State
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isVietnamese, setIsVietnamese] = useState(defaultLanguage === "vi");
-  const [gender, setGender] = useState<"male" | "female">(defaultGender);
-  const [isAutoPlay, setIsAutoPlay] = useState(isDefaultAutoPlay);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  // Session
+  const session = useSession();
+
+  // Initialize state machine
+  const [state, send] = useMachine(storyReadMachine, {
+    input: {
+      storyId,
+      userId: session.session?.user.id,
+      isVietnamese: defaultLanguage === "vi",
+      gender: defaultGender,
+      isAutoPlay: isDefaultAutoPlay,
+    },
+  });
 
   // Refs
   const pageFlipperRef = useRef<any>(null);
-  const isAutoPlayRef = useRef(isAutoPlay);
-
-  // Update ref when state changes
-  useEffect(() => {
-    isAutoPlayRef.current = isAutoPlay;
-  }, [isAutoPlay]);
 
   // Animations
   const [menuAnimation] = useState(new Animated.Value(0));
   const [pulseAnimation] = useState(new Animated.Value(1));
 
   // Hooks
-  const session = useSession();
   const { playAudio, stopAll, playTTSOnline } = useTTS();
 
-  // Data fetching
-  const { data, isLoading } = useQuery(
-    getAllStorySegmentsQueryByStoryIdOptions(storyId)
+  // Extract state values
+  const {
+    currentPage,
+    isVietnamese,
+    gender,
+    isAutoPlay,
+    isMuted,
+    isMenuVisible,
+    storySegments,
+    imageUrls,
+    audioUrls,
+  } = state.context;
+
+  const isLoading = state.matches("loading");
+  const isInPreloadState = state.matches({ loading: "preloadingImages" });
+
+  // Debug logging
+  useEffect(() => {
+    console.log("🔍 State Machine:", state.value);
+    console.log("📊 Context:", {
+      segmentsCount: storySegments.length,
+      imagesCount: imageUrls.length,
+      audioCount: audioUrls.length,
+    });
+  }, [state.value, storySegments.length, imageUrls.length, audioUrls.length]);
+
+  // Image preloading - only starts after segments are loaded
+  const shouldStartPreload = isInPreloadState && imageUrls.length > 0;
+  const { isLoading: isImageLoading } = useImageLoader(
+    imageUrls,
+    shouldStartPreload
   );
 
-  const mutation = useMutation({
-    mutationFn: async ({
-      storyId,
-      segmentId,
-      userId,
-    }: {
-      storyId: string;
-      segmentId: string;
-      userId: string;
-    }) => {
-      return await supabase.rpc("log_reading_progress", {
-        p_story_id: storyId,
-        p_segment_id: segmentId,
-        p_user_id: userId,
-      });
-    },
-    onSuccess: () => {
-      if (session.session?.user.id) {
-        recalculateVector({ userId: session.session.user.id });
-      }
-    },
-    onError: (error) => {
-      console.error(error);
-      Alert.alert("Lỗi", "Không thể ghi nhận tiến trình đọc");
-    },
-  });
-
-  // Effects
+  // Notify machine when images are loaded
   useEffect(() => {
-    // increase view count
-    if (storyId) {
-      supabase.rpc("increment_story_view", {
-        story_id: storyId,
-      });
+    // If in preload state with no images, or images are loaded
+    if (isInPreloadState && (imageUrls.length === 0 || !isImageLoading)) {
+      send({ type: "IMAGES_LOADED" });
     }
-  }, [storyId]);
+  }, [isInPreloadState, isImageLoading, send, imageUrls.length]);
 
   // Gentle pulse animation for the main button
   useEffect(() => {
@@ -117,58 +108,20 @@ export const useStoryRead = (storyId: string) => {
     return () => clearTimeout(timer);
   }, [pulseAnimation]);
 
-  // Memoized computations
-  const storySegments = useMemo(() => {
-    return (
-      data?.sort((a, b) => (a.segment_index || 0) - (b.segment_index || 0)) ||
-      []
-    );
-  }, [data]);
-
-  const imageUrls = useMemo(() => {
-    return storySegments
-      .map((segment) => segment.image_url)
-      .filter(Boolean) as string[];
-  }, [storySegments]);
-
-  const audioUrls = useMemo(() => {
-    return storySegments.map((segment) => {
-      const targetLang = isVietnamese ? "vi" : "en";
-      const audioSegment = segment.audio_segments?.find(
-        (audio) => audio.language === targetLang && audio.gender === gender
-      );
-      return audioSegment?.audio_url || "";
-    });
-  }, [storySegments, isVietnamese, gender]);
-
-  // Image preloading
-  const { isLoading: isImageLoading } = useImageLoader(imageUrls, !isLoading);
-
   // Handlers
   const handleFlippedEnd = useCallback(
     (pageIndex: number) => {
-      if (session.session?.user.id && storySegments[pageIndex]) {
-        mutation.mutate({
-          storyId,
-          segmentId: storySegments[pageIndex].id,
-          userId: session.session.user.id,
-        });
+      send({ type: "PAGE_FLIPPED", pageIndex });
+      if (pageIndex >= 2) {
+        setLastReadStoryId(storyId);
       }
-      setCurrentPage(pageIndex);
-      if (pageIndex >= 2) setLastReadStoryId(storyId);
     },
-    [
-      session.session?.user.id,
-      storyId,
-      storySegments,
-      mutation,
-      setLastReadStoryId,
-    ]
+    [send, storyId, setLastReadStoryId]
   );
 
   const toggleMenu = useCallback(() => {
     const toValue = isMenuVisible ? 0 : 1;
-    setIsMenuVisible(!isMenuVisible);
+    send({ type: "TOGGLE_MENU" });
 
     Animated.spring(menuAnimation, {
       toValue,
@@ -176,17 +129,17 @@ export const useStoryRead = (storyId: string) => {
       tension: 100,
       friction: 8,
     }).start();
-  }, [isMenuVisible, menuAnimation]);
+  }, [isMenuVisible, menuAnimation, send]);
 
   const closeMenu = useCallback(() => {
-    setIsMenuVisible(false);
+    send({ type: "CLOSE_MENU" });
     Animated.spring(menuAnimation, {
       toValue: 0,
       useNativeDriver: true,
       tension: 100,
       friction: 8,
     }).start();
-  }, [menuAnimation]);
+  }, [menuAnimation, send]);
 
   const handlePlayAudio = useCallback(
     (options?: { forceLanguage?: boolean; ignoreMute?: boolean }) => {
@@ -199,7 +152,8 @@ export const useStoryRead = (storyId: string) => {
 
       stopAll();
       const handleFinish = () => {
-        if (isAutoPlayRef.current && currentPage < storySegments.length - 1) {
+        send({ type: "AUDIO_FINISHED" });
+        if (isAutoPlay && currentPage < storySegments.length - 1) {
           if (pageFlipperRef.current) {
             pageFlipperRef.current.nextPage();
           }
@@ -207,7 +161,7 @@ export const useStoryRead = (storyId: string) => {
       };
 
       const audioUrl = audioUrls[currentPage];
-      
+
       const targetIsVietnamese =
         forceLanguage !== undefined ? forceLanguage : isVietnamese;
 
@@ -230,67 +184,60 @@ export const useStoryRead = (storyId: string) => {
       isMuted,
       playTTSOnline,
       stopAll,
-      gender
+      gender,
+      isAutoPlay,
+      send,
     ]
   );
 
   const toggleMute = useCallback(() => {
-    setIsMuted((prev) => {
-      const newState = !prev;
-      if (newState) {
-        stopAll();
-      } else {
-        // Unmuted, play audio immediately
-        setTimeout(() => handlePlayAudio({ ignoreMute: true }), 100);
-      }
-      return newState;
-    });
-    closeMenu();
-  }, [stopAll, closeMenu, handlePlayAudio]);
+    const newIsMuted = !isMuted;
+    send({ type: "TOGGLE_MUTE" });
+
+    if (newIsMuted) {
+      stopAll();
+    } else {
+      // Unmuted, play audio immediately
+      setTimeout(() => handlePlayAudio({ ignoreMute: true }), 100);
+    }
+  }, [isMuted, send, stopAll, handlePlayAudio]);
 
   const handleRestart = useCallback(() => {
+    stopAll();
+    send({ type: "RESTART" });
     if (pageFlipperRef.current) {
       pageFlipperRef.current.goToPage(0);
-      setCurrentPage(0);
     }
-    closeMenu();
-  }, [closeMenu]);
+  }, [send, stopAll]);
 
   const handleMenuBack = useCallback(() => {
     stopAll();
+    send({ type: "BACK" });
     router.back();
-  }, [stopAll]);
+  }, [stopAll, send]);
 
   const handleToggleLanguage = useCallback(() => {
     stopAll();
-    setIsVietnamese((prev) => {
-      const newState = !prev;
-      // Replay audio with new language immediately
-      setTimeout(() => handlePlayAudio({ forceLanguage: newState }), 100);
-      return newState;
-    });
-    closeMenu();
-  }, [closeMenu, handlePlayAudio, stopAll]);
+    const newIsVietnamese = !isVietnamese;
+    send({ type: "TOGGLE_LANGUAGE" });
+    // Replay audio with new language immediately
+    setTimeout(() => handlePlayAudio({ forceLanguage: newIsVietnamese }), 100);
+  }, [isVietnamese, send, stopAll, handlePlayAudio]);
 
   const handleToggleAutoPlay = useCallback(() => {
-    setIsAutoPlay((prev) => {
-      const newState = !prev;
-      isAutoPlayRef.current = newState; // Update ref immediately to prevent race conditions
-      return newState;
-    });
-    closeMenu();
-  }, [closeMenu]);
+    send({ type: "TOGGLE_AUTOPLAY" });
+  }, [send]);
 
-  // Auto-play effect
+  // Auto-play effect - trigger audio when in playingAudio state
   useEffect(() => {
-    if (isAutoPlay && storySegments.length > 0) {
+    if (state.matches({ ready: "playingAudio" })) {
       const timer = setTimeout(() => {
         handlePlayAudio();
       }, AUTO_PLAY_DELAY);
 
       return () => clearTimeout(timer);
     }
-  }, [handlePlayAudio, isAutoPlay, currentPage, storySegments.length]);
+  }, [state, handlePlayAudio]);
 
   return {
     // State
@@ -300,7 +247,7 @@ export const useStoryRead = (storyId: string) => {
     isAutoPlay,
     isMuted,
     isMenuVisible,
-    isLoading,
+    isLoading: isLoading || isImageLoading,
     isImageLoading,
     storySegments,
 
@@ -320,5 +267,8 @@ export const useStoryRead = (storyId: string) => {
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
+
+    // Machine state (for debugging)
+    machineState: state.value,
   };
 };
