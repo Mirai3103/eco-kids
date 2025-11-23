@@ -717,7 +717,7 @@ const StoryContent = () => {
               <Action3DButton
                 icon={<SpinningLoader />}
                 label="Đang tải..."
-                onPress={() => {}}
+                onPress={() => { }}
                 color="#9CA3AF"
                 darkerColor="#6B7280"
                 disabled={true}
@@ -729,7 +729,7 @@ const StoryContent = () => {
               <Action3DButton
                 icon={<Feather name="check-circle" size={36} color="white" />}
                 label="Đã tải"
-                onPress={() => {}}
+                onPress={() => { }}
                 color="#10B981"
                 darkerColor="#047857"
                 disabled={true}
@@ -759,19 +759,6 @@ const StoryContent = () => {
               delay={600}
             />
           </HStack>
-
-          {/* Progress Text for Read Button */}
-          {/* <View style={{ marginTop: 12, alignItems: 'center' }}>
-            <Text 
-              style={{ 
-                color: '#6B7280', 
-                fontSize: 14,
-                fontWeight: '500'
-              }}
-            >
-              Tiến độ đọc: {readProgress}%
-            </Text>
-          </View> */}
         </View>
       </VStack>
     </Animated.View>
