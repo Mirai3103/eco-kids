@@ -8,6 +8,7 @@ interface User {
   avatar: string;
   isGuest: boolean;
   points?: number;
+  birthdday?: string | null;
 }
 function createGuestUser(): User {
   return {
@@ -26,6 +27,7 @@ interface UserStore {
   logout: () => void;
   updateUserPoints: (points: number) => void;
   updateUserAvatar: (avatar: string) => void;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -37,6 +39,7 @@ export const useUserStore = create<UserStore>()(
       logout: () => set({ user: null }),
       updateUserPoints: (points: number) => set({ user: { ...get().user!, points } }),
       updateUserAvatar: (avatar: string) => set({ user: { ...get().user!, avatar } }),
+      updateUser: (updates: Partial<User>) => set({ user: { ...get().user!, ...updates } }),
     }),
     {
       name: "user-storage",

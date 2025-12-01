@@ -19,9 +19,9 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import useSession from "@/hooks/useSession";
 import { recalculateVector } from "@/lib/egde";
 import { supabase } from "@/lib/supabase";
-import { useUserStore } from "@/stores/user.store";
 import { FavoriteStory } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
@@ -345,32 +345,35 @@ const EmptyState = () => {
 
 export default function FavoritesScreen() {
   const router = useRouter();
-  const { user } = useUserStore();
+  const { session } = useSession();
+  const userId = session?.user.id;
   // const [favoriteStories, setFavoriteStories] = useState();
   const {
     data: favoriteStories,
     isLoading,
     refetch,
+    error
   } = useQuery({
-    queryKey: ["favoriteStories"],
+    queryKey: ["favoriteStories", userId],
     queryFn: async () =>
       supabase
         .from("favorite_stories")
         .select("*, stories(*, topics(*))")
-        .eq("user_id", user!.id)
+        .eq("user_id", userId!)
         .then((res) => res.data as FavoriteStory[]),
   });
-
+  console.log("favoriteStories", favoriteStories,userId);
+  console.log("error", error);
   const handleRemoveFromFavorites = (storyId: string) => {
     supabase
       .from("favorite_stories")
       .delete()
       .eq("story_id", storyId)
-      .eq("user_id", user!.id)
+      .eq("user_id", userId!)
       .then(() => {
         refetch();
       });
-    recalculateVector({ userId: user!.id });
+    recalculateVector({ userId: userId! });
   };
 
   const handleStoryPress = (story: FavoriteStory) => {

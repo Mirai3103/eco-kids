@@ -24,7 +24,6 @@ import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
 import { useSettingStore } from "@/stores/setting.store";
 import { useUserStore } from "@/stores/user.store";
-import Sentry from "@sentry/react-native";
 const { width: screenWidth } = Dimensions.get("window");
 
 // Custom Header Component for Settings
@@ -335,8 +334,8 @@ export default function SettingsScreen() {
           <SettingsItem
             icon="person-outline"
             title="Thông tin cá nhân"
-            subtitle="Chỉnh sửa tên, avatar và thông tin khác"
-            onPress={() => console.log("Edit profile")}
+            subtitle="Chỉnh sửa tên, avatar và ngày sinh"
+            onPress={() => router.push("/profile-edit")}
             color="#3B82F6"
           />
           <SettingsItem
@@ -415,7 +414,7 @@ export default function SettingsScreen() {
             icon="download-outline"
             title="Tải xuống"
             subtitle="Quản lý truyện đã tải về"
-            onPress={() => { Sentry.captureException(new Error('First error')) }}
+            onPress={() => { router.push("/manage-downloads") }}
             color="#EC4899"
           />
           <SettingsItem

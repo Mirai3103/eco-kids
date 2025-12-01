@@ -120,6 +120,7 @@ const bgm = require("@/assets/audio/bgm.mp3");
         id: session.user.id,
         isGuest: false,
       });
+      console.log("setUser", session.user.id);
       supabase
         .from("users")
         .select("*")

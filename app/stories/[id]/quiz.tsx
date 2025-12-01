@@ -13,13 +13,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Tts from 'react-native-tts';
 // GlueStack UI Components
 import LoadingScreen from "@/components/LoadingScreen";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import useSession from "@/hooks/useSession";
+import useTTS from "@/hooks/useTTS";
 import { getQuizByStoryIdQueryOptions } from "@/lib/queries/quiz.query";
 import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
@@ -404,10 +405,11 @@ const AudioButton = ({
       rotateAnim.setValue(0);
     }
   }, [isPlaying]);
+  const {playTTSOnline} = useTTS();
 
   const handlePress = async () => {
     if (!audioUrl){
-      Tts.speak(content);
+      playTTSOnline(content, "female", "vi");
       return;
     }
     
@@ -797,7 +799,14 @@ const QuizResults = ({
   );
 };
 const POINT_PER_QUESTION = 10;
-
+async function getNewPoints(userId: string)  {
+  const { data, error } = await supabase.from("users").select("points").eq("id", userId).single();
+  if (error) {
+    console.error(error);
+    return 0;
+  }
+  return data?.points || 0;
+}
 // Celebration Screen Component
 const CelebrationScreen = ({
   onContinue,
@@ -812,6 +821,7 @@ const CelebrationScreen = ({
   const starAppearRef = useRef<LottieView>(null);
   const starIconRef = useRef<LottieView>(null);
   const [showContinueButton, setShowContinueButton] = useState(false);
+
 
   useEffect(() => {
     // Start celebration animation sequence
@@ -856,13 +866,13 @@ const CelebrationScreen = ({
     // Show continue button after animations
     const timer = setTimeout(() => {
       setShowContinueButton(true);
-    }, 2000);
+    }, 1000);
 
     // Auto continue after 4 seconds
     const autoTimer = setTimeout(() => {
       onContinue();
     }, 10000);
-
+   
     return () => {
       clearTimeout(timer);
       clearTimeout(autoTimer);
@@ -1086,7 +1096,6 @@ const CelebrationScreen = ({
                       }}
                     >
                       <HStack space="sm" className="items-center">
-                        <Text style={{ fontSize: 20 }}>🚀</Text>
                         <Text
                           style={{
                             color: theme.palette.primary[600],
@@ -1120,26 +1129,32 @@ export default function Quiz() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [lastCorrectAnswer, setLastCorrectAnswer] = useState(false);
   const { data: quizData, isLoading } = useQuery(getQuizByStoryIdQueryOptions(storyId));
-  const { user } = useUserStore();
+  const {session} = useSession();
+  const userId = session?.user.id;
+  const {updateUserPoints} = useUserStore();
   const handleAnswerCorrect =async (questionId: string) => {
     await supabase.rpc('receive_point_from_question',{
       p_point: POINT_PER_QUESTION,
       p_question_id: questionId,
-      p_user_id: user!.id,
+      p_user_id: userId!,
 
     })
+    getNewPoints(userId!).then((points) => {
+      updateUserPoints(points);
+    });
   };
   const handleBack = () => {
     router.back();
   };
+  const {playTTSOnline} = useTTS();
 
   const handleOptionPress = (optionIndex: number) => {
     if (isAnswered) return;
 
     setSelectedOption(optionIndex);
-    Tts.engines().then(engines => console.log({engines}));
-    Tts.voices().then(voices => console.log({voices}));
-    Tts.speak(quizData![currentQuestion].answers[optionIndex].content!);
+    if (quizData![currentQuestion].answers[optionIndex].content!) {
+      playTTSOnline(quizData![currentQuestion].answers[optionIndex].content!, "female", "vi");
+    }
   };
 
   const handleSubmitAnswer = () => {

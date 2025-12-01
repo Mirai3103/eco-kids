@@ -19,6 +19,7 @@ export const useStoryRead = (storyId: string) => {
   const { setLastReadStoryId } = useReadStore();
   const { isDefaultAutoPlay, defaultLanguage, defaultGender } =
     useSettingStore();
+    console.log({ isDefaultAutoPlay, defaultLanguage, defaultGender } )
 
   // Session
   const session = useSession();
@@ -111,12 +112,15 @@ export const useStoryRead = (storyId: string) => {
   // Handlers
   const handleFlippedEnd = useCallback(
     (pageIndex: number) => {
+      console.log("📄 Page flipped to:", pageIndex);
+      // Stop current audio when flipping page
+      stopAll();
       send({ type: "PAGE_FLIPPED", pageIndex });
       if (pageIndex >= 2) {
         setLastReadStoryId(storyId);
       }
     },
-    [send, storyId, setLastReadStoryId]
+    [send, storyId, setLastReadStoryId, stopAll]
   );
 
   const toggleMenu = useCallback(() => {
@@ -153,10 +157,14 @@ export const useStoryRead = (storyId: string) => {
       stopAll();
       const handleFinish = () => {
         send({ type: "AUDIO_FINISHED" });
+        // Auto-flip page nếu isAutoPlay = true
         if (isAutoPlay && currentPage < storySegments.length - 1) {
+          console.log("📖 Auto-flipping to next page...");
           if (pageFlipperRef.current) {
             pageFlipperRef.current.nextPage();
           }
+        } else {
+          console.log("📄 Audio finished, staying on current page");
         }
       };
 
@@ -172,7 +180,7 @@ export const useStoryRead = (storyId: string) => {
           ? currentSegment.vi_text
           : currentSegment.en_text;
         const language = targetIsVietnamese ? "vi" : "en";
-        playTTSOnline(text || "", gender, language, handleFinish);
+        playTTSOnline(text || "", gender, language, handleFinish, currentSegment.id);
       }
     },
     [
@@ -229,15 +237,22 @@ export const useStoryRead = (storyId: string) => {
   }, [send]);
 
   // Auto-play effect - trigger audio when in playingAudio state
+  const isPlayingAudio = state.matches({ ready: "playingAudio" });
+  
   useEffect(() => {
-    if (state.matches({ ready: "playingAudio" })) {
+    console.log("🔍 Is Playing Audio State:", isPlayingAudio, "Page:", currentPage);
+    if (isPlayingAudio) {
+      console.log("🎵 Scheduling audio playback...");
       const timer = setTimeout(() => {
         handlePlayAudio();
       }, AUTO_PLAY_DELAY);
 
-      return () => clearTimeout(timer);
+      return () => {
+        console.log("🧹 Cleaning up audio timer");
+        clearTimeout(timer);
+      };
     }
-  }, [state, handlePlayAudio]);
+  }, [isPlayingAudio, currentPage, handlePlayAudio]);
 
   return {
     // State

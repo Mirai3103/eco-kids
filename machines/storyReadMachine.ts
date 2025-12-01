@@ -170,8 +170,23 @@ export const storyReadMachine = setup({
     hasNextPage: ({ context }) => {
       return context.currentPage < context.storySegments.length - 1;
     },
-    isAutoPlayEnabled: ({ context }) => {
-      return context.isAutoPlay && !context.isMuted;
+    shouldPlayAudio: ({ context }) => {
+      // Audio tự động phát nếu không mute (bất kể isAutoPlay)
+      const enabled = !context.isMuted;
+      console.log("🎮 Guard: shouldPlayAudio", {
+        isMuted: context.isMuted,
+        result: enabled,
+      });
+      return enabled;
+    },
+    shouldAutoFlip: ({ context }) => {
+      // Auto-flip page chỉ khi isAutoPlay = true
+      const enabled = context.isAutoPlay;
+      console.log("🎮 Guard: shouldAutoFlip", {
+        isAutoPlay: context.isAutoPlay,
+        result: enabled,
+      });
+      return enabled;
     },
     shouldLogProgress: ({ context }) => {
       return !!context.userId;
@@ -276,13 +291,18 @@ export const storyReadMachine = setup({
           },
         },
         checkingAutoPlay: {
+          entry: () => {
+            console.log("🔍 Checking if should play audio...");
+          },
           always: [
             {
               target: "playingAudio",
-              guard: "isAutoPlayEnabled",
+              guard: "shouldPlayAudio",
+              actions: () => console.log("✅ Not muted → playingAudio"),
             },
             {
               target: "idle",
+              actions: () => console.log("🔇 Muted → idle"),
             },
           ],
         },
@@ -298,6 +318,9 @@ export const storyReadMachine = setup({
                 target: "idle",
               },
             ],
+            PAGE_FLIPPED: {
+              target: "pageFlipped",
+            },
           },
         },
       },

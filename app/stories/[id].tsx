@@ -19,13 +19,13 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import useSession from "@/hooks/useSession";
 import { recalculateVector } from "@/lib/egde";
 import useOfflineStory from "@/lib/offline";
 import { getStoryByIdQueryOptions } from "@/lib/queries/story.query";
 import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
-import { useUserStore } from "@/stores/user.store";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Network from "expo-network";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -729,10 +729,10 @@ const StoryContent = () => {
               <Action3DButton
                 icon={<Feather name="check-circle" size={36} color="white" />}
                 label="Đã tải"
-                onPress={() => { }}
+                onPress={() => router.push("/manage-downloads")}
                 color="#10B981"
                 darkerColor="#047857"
-                disabled={true}
+                disabled={false}
                 delay={300}
               />
             )}
@@ -769,47 +769,60 @@ export default function StoryDetailsScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const [isFavorite, setIsFavorite] = useState(false);
-  React.useEffect(() => {
-    async function checkFavorite() {
-      const { data, error } = await supabase
-        .from("favorite_stories")
-        .select("*")
-        .eq("story_id", storyId)
-        .eq("user_id", user!.id)
-        .single();
-      if (data) {
-        setIsFavorite(true);
-      }
+  const { session } = useSession();
+  const userId = session?.user.id;
+  console.log("userId", userId);
+  async function checkFavorite() {
+    const { data, error } = await supabase
+      .from("favorite_stories")
+      .select("*")
+      .eq("story_id", storyId)
+      .eq("user_id", userId!)
+    console.log("checkFavorite", data, error);
+    if (data?.[0]) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
     }
+  }
+  React.useEffect(() => {
+  
     checkFavorite();
   }, [storyId]);
 
   const handleBack = () => {
     router.back();
   };
-  const { user } = useUserStore();
+
+  const  queryClient = useQueryClient();
   const handleFavoriteToggle = async () => {
     setIsFavorite(!isFavorite);
-    const { data, error } = await supabase
+    const { data: datas, error } = await supabase
       .from("favorite_stories")
       .select("*")
       .eq("story_id", storyId)
-      .eq("user_id", user!.id)
-      .single();
+      .eq("user_id", userId!)
+    const data = datas?.[0];
+    console.log("data", error,data,storyId, userId);
     if (data) {
       console.log("Deleted favorite story");
       await supabase
         .from("favorite_stories")
         .delete()
         .eq("story_id", storyId)
-        .eq("user_id", user!.id);
+        .eq("user_id", userId!);
     } else {
-      await supabase.from("favorite_stories").insert({
-        story_id: storyId,
-        user_id: user!.id,
-      });
+       const { data: data, error: error } = await supabase.from("favorite_stories").insert({
+          story_id: storyId,
+          user_id: userId!,
+          created_at: new Date().toISOString(),
+        })
+        console.log("data", data, error);
+     
     }
-    recalculateVector({ userId: user!.id });
+    queryClient.invalidateQueries({ queryKey: ["favoriteStories"] });
+    checkFavorite();
+    recalculateVector({ userId: userId! });
   };
 
   // In a real app, fetch story data based on storyId
