@@ -6,6 +6,8 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useCircularReveal } from "@/contexts/CircularRevealContext";
 import { getMessageContent, useAi } from "@/hooks/useAi";
+import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
+import useTTS from "@/hooks/useTTS";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -94,6 +96,7 @@ const ChatBubble = ({
   isUser: boolean;
   index: number;
 }) => {
+  if(message.trim() === "") return null;
   return (
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
@@ -151,9 +154,22 @@ const ChatBubble = ({
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { messages, status, sendMessage } = useAi();
+  const { playTTSOffline } = useTTS();
+  const { messages, status, sendMessage } = useAi({
+    onLLMGenerated(message) {
+      playTTSOffline(message, "vi-VN");
+    },
+  });
+  const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
+    onSpeechStart() {
+      console.log("Mic recording started");
+    },
+    onSpeechResults(e) {
+      const recognizedText = e.value[e.value.length - 1];
+      sendMessage(recognizedText);
+    },
+  });
   const [inputText, setInputText] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const { completeReveal, isAnimating } = useCircularReveal();
@@ -183,8 +199,14 @@ export default function ChatScreen() {
   };
 
   const handleMicPress = () => {
-    setIsRecording(!isRecording);
-    // TODO: Implement voice recording
+    if (isRecording) {
+      console.log("Mic recording stopped");
+      stopRecognize();
+    } else {
+      console.log("Mic recording started");
+      if (status === "streaming" || status === "submitted") return;
+      startRecognize("vi-VN");
+    }
   };
 
   const handlePressIn = () => {

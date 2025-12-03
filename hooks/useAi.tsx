@@ -2,10 +2,11 @@ import {
   navigate_to_story_tool,
   similarity_search_tool,
 } from "@/lib/semilarity_search";
+import { IMessage, useChatStore } from "@/stores/chat.store";
 import { createDeepSeek } from "@ai-sdk/deepseek";
-import { generateText, stepCountIs, ToolContent } from "ai";
+import { generateText, stepCountIs } from "ai";
 import Constants from "expo-constants";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
 
 const deepseek = createDeepSeek({
   apiKey: Constants.expoConfig?.extra?.deepseekApiKey,
@@ -14,12 +15,7 @@ const deepseek = createDeepSeek({
 const model = deepseek("deepseek-chat");
 
 type Status = "submitted" | "streaming" | "ready" | "error";
-type Role = "system" | "user" | "assistant" | "tool";
 
- interface IMessage {
-  role: Role;
-  content: string | ToolContent | { type: "text"; text: string } | { type: "text"; text: string }[] ;
-}
 export function getMessageContent(message: any) {
    if (typeof message.content === "string") {
     return message.content;
@@ -39,6 +35,7 @@ type UseAiReturn = {
   setMessages: (
     messages: IMessage[] | ((messages: IMessage[]) => IMessage[])
   ) => void;
+  clearMessages: () => void;
 };
 
 interface IUseAiOptions {
@@ -69,15 +66,15 @@ Nhiệm vụ của bạn là trò chuyện cho trẻ từ 3 đến 5 tuổi về
 6. Nếu bé hỏi điều không có trong dữ liệu:  
    Nói nhẹ nhàng: "Tới chưa biết điều này, mình cùng tìm hiểu sau nhé!"
 7. Tuyệt đối không nói về: chính trị, tôn giáo, người lớn, hay nội dung tiêu cực.
+8. Khi bé hỏi về 1 chủ đề ví dụ "tại sao phải tiết kiệm nước" cố gắng dùng tool similarity_search_tool để tìm các câu chuyện tương tự trong cơ sở dữ liệu để minh họa cho bé nhưng đừng spoil câu chuyện, hãy hướng bé đọc câu chuyện đó.
 
 🎯 Mục tiêu:  
 Giúp trẻ hiểu, yêu và bảo vệ môi trường thông qua những câu chuyện và câu trả lời ngắn gọn, vui vẻ, an toàn.`;
-
 export const useAi = (options: IUseAiOptions = {}): UseAiReturn => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const { messages, addMessage, addMessages, setMessages, clearMessages } = useChatStore();
   const mesagesRef = useRef<IMessage[]>([]);
-  const [status, setStatus] = useState<Status>("ready");
-  const [error, setError] = useState<Error | undefined>(undefined);
+  const [status, setStatus] = React.useState<Status>("ready");
+  const [error, setError] = React.useState<Error | undefined>(undefined);
   const controllerRef = useRef<AbortController | null>(null);
   const { onLLMGenerated } = options;
   React.useEffect(() => {
@@ -141,16 +138,7 @@ export const useAi = (options: IUseAiOptions = {}): UseAiReturn => {
         console.log(response.messages.length > 0, "response.messages");
 
         if (response.messages && response.messages.length > 0) {
-          setMessages((prev) => [
-            ...prev,
-            userMessage,
-            ...(response.messages as any),
-          ]);
-          // mesagesRef.current = [
-          //   ...mesagesRef.current,
-          //   userMessage,
-          //   ...(response.messages as any),
-          // ];
+          addMessages([userMessage, ...(response.messages as any)]);
         }
 
         // Callback with final text
@@ -171,7 +159,7 @@ export const useAi = (options: IUseAiOptions = {}): UseAiReturn => {
         setError(err);
       }
     },
-    [status, onLLMGenerated]
+    [status, onLLMGenerated, addMessages]
   );
 
   return {
@@ -181,5 +169,6 @@ export const useAi = (options: IUseAiOptions = {}): UseAiReturn => {
     sendMessage,
     stop,
     setMessages,
+    clearMessages,
   };
 };

@@ -32,9 +32,11 @@ import Constants from "expo-constants";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
+import { ToastAndroid } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 const isProduction = Constants.expoConfig?.extra?.isProduction;
+ToastAndroid.show("isProduction: " + isProduction, ToastAndroid.LONG);
 if (isProduction) {
   Sentry.init({
     dsn: "https://94a5775dcbc7c7f8a38c0717d22be979@o4510369999486976.ingest.us.sentry.io/4510370002239488",

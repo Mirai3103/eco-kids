@@ -23,7 +23,6 @@ export const isOnline = async () => {
   const state = await Network.getNetworkStateAsync();
   return state.isConnected;
 };
-
 const useOfflineStory = (storyId: string) => {
   const { prefetchAudio } = useTTS();
   const { defaultGender, defaultLanguage } = useSettingStore();
@@ -55,15 +54,6 @@ const useOfflineStory = (storyId: string) => {
       .single();
     const storyList = await AsyncStorage.getItem("storyList");
     await ExpoImage.prefetch(storyData?.cover_image_url || "", "disk");
-
-    if (storyList) {
-      const storyListData = JSON.parse(storyList);
-      storyListData.push(storyData);
-      await AsyncStorage.setItem("storyList", JSON.stringify(storyListData));
-    } else {
-      await AsyncStorage.setItem("storyList", JSON.stringify([storyData]));
-    }
-
     const { data: storySegments } = await supabase
       .from("story_segments")
       .select("*, audio_segments(*)")
@@ -85,6 +75,13 @@ const useOfflineStory = (storyId: string) => {
       }).catch((error) => {
         console.log('prefetchAudio error', error);
       });
+    }
+    if (storyList) {
+      const storyListData = JSON.parse(storyList);
+      storyListData.push(storyData);
+      await AsyncStorage.setItem("storyList", JSON.stringify(storyListData));
+    } else {
+      await AsyncStorage.setItem("storyList", JSON.stringify([storyData]));
     }
     await AsyncStorage.setItem(
       `story_segments_${storyId}`,

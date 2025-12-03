@@ -557,7 +557,7 @@ const StoryContent = () => {
           </View> */}
 
           {/* Metadata Information */}
-          <View
+          {/* <View
             style={{
               backgroundColor: "rgba(255, 255, 255, 0.6)",
               borderRadius: 16,
@@ -568,7 +568,6 @@ const StoryContent = () => {
             }}
           >
             <VStack space="sm">
-              {/* Author */}
               <HStack space="xs">
                 <Text
                   style={{
@@ -590,7 +589,6 @@ const StoryContent = () => {
                 </Text>
               </HStack>
 
-              {/* Age Group */}
               <HStack space="xs">
                 <Text
                   style={{
@@ -612,7 +610,6 @@ const StoryContent = () => {
                 </Text>
               </HStack>
 
-              {/* Duration */}
               <HStack space="xs">
                 <Text
                   style={{
@@ -633,8 +630,6 @@ const StoryContent = () => {
                   10 phút
                 </Text>
               </HStack>
-
-              {/* Views Count */}
               {story?.views_count && (
                 <HStack space="xs">
                   <Text
@@ -658,7 +653,6 @@ const StoryContent = () => {
                 </HStack>
               )}
 
-              {/* Tags from database */}
               {story?.tags && story.tags.length > 0 && (
                 <HStack space="xs">
                   <Text
@@ -683,7 +677,7 @@ const StoryContent = () => {
                 </HStack>
               )}
             </VStack>
-          </View>
+          </View> */}
         </VStack>
 
         {/* Enhanced 3D Action Buttons */}

@@ -1,7 +1,15 @@
+import * as Sentry from "@sentry/react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Animated, Dimensions, Pressable, StatusBar, View } from "react-native";
+import {
+  Alert,
+  Animated,
+  Dimensions,
+  Pressable,
+  StatusBar,
+  View
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
 import { Center } from "@/components/ui/center";
@@ -12,7 +20,10 @@ import { VStack } from "@/components/ui/vstack";
 import useSession from "@/hooks/useSession";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/FontAwesome";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -233,7 +244,11 @@ const SkipButton = ({ onPress }: { onPress: () => void }) => {
 };
 
 // Main Component with entrance animations
-const LoginContent = ({onLoginWithGoogle}: {onLoginWithGoogle: () => void}) => {
+const LoginContent = ({
+  onLoginWithGoogle,
+}: {
+  onLoginWithGoogle: () => void;
+}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const router = useRouter();
@@ -279,12 +294,12 @@ const LoginContent = ({onLoginWithGoogle}: {onLoginWithGoogle: () => void}) => {
 
         {/* Central Logo */}
         <View className="items-center my-2">
-            <Image
-              source={require("@/assets/images/eco_kids_logo2.png")}
-              alt="EcoKids Logo"
-              resizeMode="cover"
-              className="h-80 w-80"
-            />
+          <Image
+            source={require("@/assets/images/eco_kids_logo2.png")}
+            alt="EcoKids Logo"
+            resizeMode="cover"
+            className="h-80 w-80"
+          />
         </View>
 
         {/* Subheading */}
@@ -303,11 +318,11 @@ const LoginContent = ({onLoginWithGoogle}: {onLoginWithGoogle: () => void}) => {
 
         {/* Action Buttons */}
         <VStack space="lg" className="w-full">
-          <SkipButton
+          {/* <SkipButton
             onPress={() => {
               loginAsGuest();
             }}
-          />
+          /> */}
           <View>
             <GoogleButton onPress={onLoginWithGoogle} />
           </View>
@@ -340,10 +355,10 @@ export default function LoginScreen() {
           data: { session },
         } = await supabase.auth.getSession();
         if (session) {
-          router.replace('/(tabs)');
+          router.replace("/(tabs)");
         }
       } catch (error) {
-        console.error('Error checking auth status:', error);
+        console.error("Error checking auth status:", error);
       } finally {
         setIsInitializing(false);
       }
@@ -351,7 +366,7 @@ export default function LoginScreen() {
     GoogleSignin.configure({
       webClientId: GoogleClientId,
       offlineAccess: true,
-      scopes: ['profile', 'email'],
+      scopes: ["profile", "email"],
     });
 
     // Check if user is already signed in
@@ -366,51 +381,53 @@ export default function LoginScreen() {
 
       // Get user info from Google
       const userInfo = await GoogleSignin.signIn();
-      console.log('userInfo', userInfo);
+      console.log("userInfo", userInfo);
 
       if (userInfo.data?.idToken) {
-        console.log('userInfo.data?.idToken', userInfo.data?.idToken);
+        console.log("userInfo.data?.idToken", userInfo.data?.idToken);
         // Sign in with Supabase using Google ID token
         const { data, error } = await supabase.auth.signInWithIdToken({
-          provider: 'google',
+          provider: "google",
           token: userInfo.data?.idToken,
         });
 
         if (error) {
+          Sentry.captureException(error);
           throw error;
         }
 
         if (data.user) {
           // Navigate to main app
-          router.replace('/(tabs)');
+          router.replace("/(tabs)");
         }
       } else {
-        throw new Error('No ID token received from Google');
+        throw new Error("No ID token received from Google");
       }
     } catch (error: any) {
-      console.error('Google Sign-In Error:', error);
+      Sentry.captureException(error);
+      console.error("Google Sign-In Error:", error);
 
-      let errorMessage = 'Đã có lỗi xảy ra khi đăng nhập';
+      let errorMessage = "Đã có lỗi xảy ra khi đăng nhập";
 
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        errorMessage = 'Đăng nhập đã bị hủy';
+        errorMessage = "Đăng nhập đã bị hủy";
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        errorMessage = 'Đang trong quá trình đăng nhập';
+        errorMessage = "Đang trong quá trình đăng nhập";
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        errorMessage = 'Google Play Services không khả dụng';
+        errorMessage = "Google Play Services không khả dụng";
       }
 
-      Alert.alert('Lỗi đăng nhập', errorMessage);
+      Alert.alert("Lỗi đăng nhập", errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
- const {session, isLoading: isLoadingSession} =useSession()
+  const { session, isLoading: isLoadingSession } = useSession();
   const router = useRouter();
   React.useEffect(() => {
-    if(isLoadingSession) return;
-    if(session) {
+    if (isLoadingSession) return;
+    if (session) {
       router.replace("/(tabs)");
     }
   }, [session, isLoadingSession]);
