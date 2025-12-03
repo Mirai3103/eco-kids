@@ -3,7 +3,7 @@
     "name": "EcoKids",
     "slug": "EcoKids",
     "version": "0.1.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/ecokids-icon.png",
     "scheme": "ecokids",
     "userInterfaceStyle": "automatic",
@@ -13,6 +13,7 @@
       "bundleIdentifier": "edu.sgu.ecokids"
     },
     "android": {
+      "screenOrientation": "unspecified",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ecokids-icon.png",
         "backgroundColor": "#CAFEC3"
@@ -44,11 +45,17 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true,
+          "isAccessMediaLocationEnabled": false,
           "granularPermissions": [
             "audio",
             "photo"
           ]
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
         }
       ],
       [

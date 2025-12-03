@@ -14,18 +14,15 @@ import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   FlatList,
   ScrollView,
   StatusBar,
   TextInput,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const { width: screenWidth } = Dimensions.get("window");
-const cardWidth = (screenWidth - 48) / 2; // 2 columns with padding
 
 // 3D Filter Button Component
 const FilterButton3D = ({
@@ -110,9 +107,11 @@ const FilterButton3D = ({
 const SearchStoryCard = ({
   story,
   onPress,
+  cardWidth,
 }: {
   story: Story;
   onPress: () => void;
+  cardWidth: number;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -242,8 +241,15 @@ const EmptyState = ({ searchQuery }: { searchQuery: string }) => {
 };
 
 // Loading Skeleton for Grid
-const LoadingSkeleton = () => {
+const LoadingSkeleton = ({
+  cardWidth,
+  numColumns = 2,
+}: {
+  cardWidth: number;
+  numColumns?: number;
+}) => {
   const fadeAnim = useRef(new Animated.Value(0.3)).current;
+  const skeletonCount = numColumns * 3; // 3 rows
 
   React.useEffect(() => {
     Animated.loop(
@@ -266,7 +272,7 @@ const LoadingSkeleton = () => {
     <View
       style={{ paddingHorizontal: 8, flexDirection: "row", flexWrap: "wrap" }}
     >
-      {[1, 2, 3, 4, 5, 6].map((i) => (
+      {Array.from({ length: skeletonCount }).map((_, i) => (
         <Animated.View
           key={i}
           style={{
@@ -285,6 +291,7 @@ const LoadingSkeleton = () => {
 
 export default function SearchScreen() {
   const router = useRouter();
+  const { width: screenWidth } = useWindowDimensions();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedTopicId, setSelectedTopicId] = useState<string | undefined>(
@@ -292,6 +299,17 @@ export default function SearchScreen() {
   );
   const searchInputRef = useRef<TextInput>(null);
   const searchBarScale = useRef(new Animated.Value(1)).current;
+
+  // Calculate number of columns based on screen width
+  const getNumColumns = () => {
+    if (screenWidth >= 1024) return 4; // Tablet landscape
+    if (screenWidth >= 768) return 3; // Tablet portrait
+    if (screenWidth >= 600) return 3; // Large phone landscape
+    return 2; // Default (phone portrait)
+  };
+
+  const numColumns = getNumColumns();
+  const cardWidth = (screenWidth - 16 * (numColumns + 1)) / numColumns;
 
   // Fetch topics for filter
   const { data: topics = [] } = useQuery(getAllTopicsQueryOptions());
@@ -482,17 +500,19 @@ export default function SearchScreen() {
 
         {/* Search Results */}
         {isLoading && debouncedQuery.length > 0 ? (
-          <LoadingSkeleton />
+          <LoadingSkeleton cardWidth={cardWidth} numColumns={numColumns} />
         ) : stories.length === 0 ? (
           <EmptyState searchQuery={debouncedQuery} />
         ) : (
           <FlatList
+            key={numColumns}
             data={stories}
-            numColumns={2}
+            numColumns={numColumns}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <SearchStoryCard
                 story={item}
+                cardWidth={cardWidth}
                 onPress={() => router.push(`/stories/${item.id}`)}
               />
             )}

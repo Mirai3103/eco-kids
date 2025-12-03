@@ -30,12 +30,16 @@ import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
 import Constants from "expo-constants";
 import { Stack, usePathname, useRouter } from "expo-router";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { ToastAndroid } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 const isProduction = Constants.expoConfig?.extra?.isProduction;
+
+
+
 ToastAndroid.show("isProduction: " + isProduction, ToastAndroid.LONG);
 if (isProduction) {
   Sentry.init({
@@ -82,6 +86,20 @@ const bgm = require("@/assets/audio/bgm.mp3");
   const register = useSoundStore((s) => s.register);
   const play = useSoundStore((s) => s.play);
 
+
+  useEffect(() => {
+    console.log("addOrientationChangeListener");
+    ScreenOrientation.getPlatformOrientationLockAsync().then(o =>
+      console.log("PLATFORM LOCK:", o)
+    );
+    const sub = ScreenOrientation.addOrientationChangeListener(event => {
+      console.log("Orientation changed", event.orientationInfo.orientation);
+    });
+  
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(sub);
+    };
+  }, []);
   useEffect(() => {
     init();
     register({

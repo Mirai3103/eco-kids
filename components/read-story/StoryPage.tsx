@@ -1,11 +1,8 @@
-import { Center } from "@/components/ui/center";
 import { Text } from "@/components/ui/text";
 import { StorySegment } from "@/types";
 import { Image as ExpoImage } from "expo-image";
 import React, { useMemo } from "react";
-import { Dimensions, ImageStyle, TextStyle, View, ViewStyle } from "react-native";
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+import { ImageStyle, TextStyle, View, ViewStyle, useWindowDimensions } from "react-native";
 
 interface StoryPageProps {
     segment: StorySegment;
@@ -14,6 +11,9 @@ interface StoryPageProps {
 
 export const StoryPage = React.memo<StoryPageProps>(
     ({ segment, isVietnamese = true }) => {
+        const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+        const isLandscape = screenWidth > screenHeight;
+
         const containerStyle: ViewStyle = useMemo(
             () => ({
                 flex: 1,
@@ -31,23 +31,23 @@ export const StoryPage = React.memo<StoryPageProps>(
 
         const imageStyle: ImageStyle = useMemo(
             () => ({
-                width: screenWidth - 40,
-                height: screenHeight * 0.55,
+                width: isLandscape ? screenWidth * 0.45 : screenWidth - 40,
+                height: isLandscape ? screenHeight * 0.7 : screenHeight * 0.55,
                 borderRadius: 12,
             }),
-            []
+            [isLandscape, screenWidth, screenHeight]
         );
 
         const textStyle: TextStyle = useMemo(
             () => ({
                 color: "#1B4B07",
-                fontSize: 18,
-                lineHeight: 28,
+                fontSize: isLandscape ? 16 : 18,
+                lineHeight: isLandscape ? 24 : 28,
                 textAlign: "center" as const,
                 fontFamily: "NunitoSans_600SemiBold",
                 marginBottom: 16,
             }),
-            []
+            [isLandscape]
         );
 
         const displayText = useMemo(() => {
@@ -58,10 +58,24 @@ export const StoryPage = React.memo<StoryPageProps>(
 
         return (
             <View style={containerStyle}>
-                <View style={{ flex: 1, padding: 20, justifyContent: "space-between" }}>
+                <View 
+                    style={{ 
+                        flex: 1, 
+                        padding: 20, 
+                        flexDirection: isLandscape ? 'row' : 'column',
+                        justifyContent: 'space-between',
+                        alignItems: isLandscape ? 'center' : 'stretch',
+                    }}
+                >
                     {/* Image Section */}
                     {segment.image_url && (
-                        <Center style={{ flex: 1, marginBottom: 20 }}>
+                        <View style={{ 
+                            flex: isLandscape ? 1 : undefined,
+                            marginBottom: isLandscape ? 0 : 20,
+                            marginRight: isLandscape ? 20 : 0,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
                             <ExpoImage
                                 source={{ uri: segment.image_url }}
                                 style={imageStyle}
@@ -69,11 +83,15 @@ export const StoryPage = React.memo<StoryPageProps>(
                                 contentFit="cover"
                                 cachePolicy="memory-disk"
                             />
-                        </Center>
+                        </View>
                     )}
 
                     {/* Text Content Section */}
-                    <View style={{ paddingBottom: 40 }}>
+                    <View style={{ 
+                        flex: isLandscape ? 1 : undefined,
+                        paddingBottom: isLandscape ? 0 : 40,
+                        justifyContent: 'center',
+                    }}>
                         <Text style={textStyle}>{displayText}</Text>
                     </View>
                 </View>

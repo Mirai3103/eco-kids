@@ -5,11 +5,11 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   Pressable,
   ScrollView,
   StatusBar,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
@@ -27,8 +27,6 @@ import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Network from "expo-network";
-
-const { width: screenWidth } = Dimensions.get("window");
 
 // Sample story data (would come from API based on ID)
 
@@ -404,6 +402,9 @@ const DecorativeCircle = ({
 
 // Main Content Component with entrance animations
 const StoryContent = () => {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const isLandscape = screenWidth > screenHeight;
+  
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -464,6 +465,156 @@ const StoryContent = () => {
         isLoaded={!isLoading}
       />
     );
+
+  // Image Block Component
+  const ImageBlock = (
+    <Animated.View
+      style={{
+        transform: [{ scale: imageScaleAnim }],
+        flex: isLandscape ? 1 : undefined,
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: "white",
+          borderRadius: 24,
+          padding: 12,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.25,
+          shadowRadius: 20,
+          elevation: 15,
+          width: isLandscape ? "100%" : screenWidth - 48,
+          alignSelf: "center",
+        }}
+      >
+        <ExpoImage
+          source={{
+            uri: story!.cover_image_url!,
+          }}
+          style={{
+            width: "100%",
+            height: isLandscape ? 300 : 280,
+            borderRadius: 16,
+          }}
+          alt="Story Cover"
+          contentFit="cover"
+          cachePolicy={"memory-disk"}
+        />
+      </View>
+    </Animated.View>
+  );
+
+  // Content Block Component
+  const ContentBlock = (
+    <VStack 
+      space="lg" 
+      className="items-center" 
+      style={{ 
+        flex: isLandscape ? 1 : undefined,
+        justifyContent: isLandscape ? "center" : undefined,
+      }}
+    >
+      {/* Story Title */}
+      <Text
+        size="3xl"
+        style={{
+          color: "#1B4B07",
+          textAlign: "center",
+          lineHeight: isLandscape ? 36 : 44,
+          marginBottom: 12,
+          fontSize: isLandscape ? 28 : 32,
+          textShadowColor: "rgba(255, 255, 255, 0.8)",
+          textShadowOffset: { width: 0, height: 2 },
+          textShadowRadius: 4,
+          paddingHorizontal: 16,
+        }}
+        className="font-heading"
+      >
+        {story?.title}
+      </Text>
+
+      {/* Enhanced 3D Action Buttons */}
+      <View style={{ marginTop: isLandscape ? 12 : 20 }}>
+        <HStack 
+          space={isLandscape ? "md" : "xl"} 
+          className="w-full justify-center items-center"
+          style={{ flexWrap: isLandscape ? "wrap" : "nowrap" }}
+        >
+          <Action3DButton
+            icon={<Feather name="book-open" size={isLandscape ? 32 : 40} color="white" />}
+            label={networkState.isConnected ? "Đọc" : "Đọc offline"}
+            onPress={handleReadPress}
+            color={theme.palette.primary[400]}
+            darkerColor={theme.palette.primary[600]}
+            progress={readProgress}
+            showProgress={true}
+            disabled={!networkState.isConnected && status !== "completed"}
+            delay={0}
+          />
+
+          {status === "idle" && (
+            <Action3DButton
+              icon={<Feather name="download" size={isLandscape ? 28 : 36} color="white" />}
+              label="Tải xuống"
+              onPress={handleDownloadPress}
+              color="#3B82F6"
+              darkerColor="#1E40AF"
+              disabled={!networkState.isConnected}
+              delay={300}
+            />
+          )}
+
+          {status === "downloading" && (
+            <Action3DButton
+              icon={<SpinningLoader />}
+              label="Đang tải..."
+              onPress={() => { }}
+              color="#9CA3AF"
+              darkerColor="#6B7280"
+              disabled={true}
+              delay={300}
+            />
+          )}
+
+          {status === "completed" && (
+            <Action3DButton
+              icon={<Feather name="check-circle" size={isLandscape ? 28 : 36} color="white" />}
+              label="Đã tải"
+              onPress={() => router.push("/manage-downloads")}
+              color="#10B981"
+              darkerColor="#047857"
+              disabled={false}
+              delay={300}
+            />
+          )}
+
+          {status === "error" && (
+            <Action3DButton
+              icon={<Feather name="alert-circle" size={isLandscape ? 28 : 36} color="white" />}
+              label="Thử lại"
+              onPress={handleDownloadPress}
+              color="#EF4444"
+              darkerColor="#B91C1C"
+              disabled={!networkState.isConnected}
+              delay={300}
+            />
+          )}
+
+          <Action3DButton
+            icon={<FontAwesome6 name="brain" size={isLandscape ? 28 : 36} color="white" />}
+            label="Quiz"
+            onPress={handleQuizPress}
+            color={theme.palette.secondary[500]}
+            darkerColor={theme.palette.secondary[700]}
+            disabled={!networkState.isConnected}
+            delay={600}
+          />
+        </HStack>
+      </View>
+    </VStack>
+  );
+
   return (
     <Animated.View
       style={{
@@ -471,290 +622,19 @@ const StoryContent = () => {
         transform: [{ translateY: slideAnim }],
       }}
     >
-      <VStack space="2xl" className="px-6">
-        {/* Image Block with Animation */}
-        <Animated.View
-          style={{
-            transform: [{ scale: imageScaleAnim }],
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              borderRadius: 24,
-              padding: 12,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 12 },
-              shadowOpacity: 0.25,
-              shadowRadius: 20,
-              elevation: 15,
-              width: screenWidth - 48,
-              alignSelf: "center",
-            }}
-          >
-            <ExpoImage
-              source={{
-                uri: story!.cover_image_url!,
-              }}
-              style={{
-                width: "100%",
-                height: 280,
-                borderRadius: 16,
-              }}
-              alt="Story Cover"
-              contentFit="cover"
-              cachePolicy={"memory-disk"}
-            />
-          </View>
-        </Animated.View>
-
-        {/* Info Block */}
-        <VStack space="lg" className="items-center">
-          {/* Story Title */}
-          <Text
-            size="3xl"
-            style={{
-              color: "#1B4B07",
-              textAlign: "center",
-              lineHeight: 44,
-              marginBottom: 12,
-              fontSize: 32,
-              textShadowColor: "rgba(255, 255, 255, 0.8)",
-              textShadowOffset: { width: 0, height: 2 },
-              textShadowRadius: 4,
-              paddingHorizontal: 16,
-            }}
-            className="font-heading"
-          >
-            {story?.title}
-          </Text>
-
-          {/* Story Synopsis */}
-          {/* <View
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.7)",
-              borderRadius: 20,
-              padding: 16,
-              marginHorizontal: 16,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
-            }}
-          >
-            <Text
-              style={{
-                color: "#2D3748",
-                fontSize: 16,
-                lineHeight: 26,
-                textAlign: "center",
-                fontFamily: "NunitoSans_400Regular",
-              }}
-            >
-              {story?.description}
-            </Text>
-          </View> */}
-
-          {/* Metadata Information */}
-          {/* <View
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.6)",
-              borderRadius: 16,
-              padding: 16,
-              marginHorizontal: 16,
-              marginTop: 12,
-              width: screenWidth - 64,
-            }}
-          >
-            <VStack space="sm">
-              <HStack space="xs">
-                <Text
-                  style={{
-                    color: "#1B4B07",
-                    fontSize: 15,
-                    fontFamily: "NunitoSans_700Bold",
-                  }}
-                >
-                  Tác giả:
-                </Text>
-                <Text
-                  style={{
-                    color: "#4A5568",
-                    fontSize: 15,
-                    fontFamily: "NunitoSans_400Regular",
-                  }}
-                >
-                  Eco Kids Team
-                </Text>
-              </HStack>
-
-              <HStack space="xs">
-                <Text
-                  style={{
-                    color: "#1B4B07",
-                    fontSize: 15,
-                    fontFamily: "NunitoSans_700Bold",
-                  }}
-                >
-                  Độ tuổi:
-                </Text>
-                <Text
-                  style={{
-                    color: "#4A5568",
-                    fontSize: 15,
-                    fontFamily: "NunitoSans_400Regular",
-                  }}
-                >
-                  5-8 tuổi
-                </Text>
-              </HStack>
-
-              <HStack space="xs">
-                <Text
-                  style={{
-                    color: "#1B4B07",
-                    fontSize: 15,
-                    fontFamily: "NunitoSans_700Bold",
-                  }}
-                >
-                  Thời lượng:
-                </Text>
-                <Text
-                  style={{
-                    color: "#4A5568",
-                    fontSize: 15,
-                    fontFamily: "NunitoSans_400Regular",
-                  }}
-                >
-                  10 phút
-                </Text>
-              </HStack>
-              {story?.views_count && (
-                <HStack space="xs">
-                  <Text
-                    style={{
-                      color: "#1B4B07",
-                      fontSize: 15,
-                      fontFamily: "NunitoSans_700Bold",
-                    }}
-                  >
-                    Lượt xem:
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#4A5568",
-                      fontSize: 15,
-                      fontFamily: "NunitoSans_400Regular",
-                    }}
-                  >
-                    {story.views_count}
-                  </Text>
-                </HStack>
-              )}
-
-              {story?.tags && story.tags.length > 0 && (
-                <HStack space="xs">
-                  <Text
-                    style={{
-                      color: "#1B4B07",
-                      fontSize: 15,
-                      fontFamily: "NunitoSans_700Bold",
-                    }}
-                  >
-                    Thể loại:
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#4A5568",
-                      fontSize: 15,
-                      fontFamily: "NunitoSans_400Regular",
-                      flex: 1,
-                    }}
-                  >
-                    {story.tags.join(", ")}
-                  </Text>
-                </HStack>
-              )}
-            </VStack>
-          </View> */}
+      {isLandscape ? (
+        // Layout 2 cột cho màn hình ngang
+        <HStack space="xl" className="px-6" style={{ alignItems: "center" }}>
+          {ImageBlock}
+          {ContentBlock}
+        </HStack>
+      ) : (
+        // Layout dọc cho màn hình dọc
+        <VStack space="2xl" className="px-6">
+          {ImageBlock}
+          {ContentBlock}
         </VStack>
-
-        {/* Enhanced 3D Action Buttons */}
-        <View style={{ marginTop: 20 }}>
-          <HStack space="xl" className="w-full justify-center items-center">
-            <Action3DButton
-              icon={<Feather name="book-open" size={40} color="white" />}
-              label={networkState.isConnected ? "Đọc" : "Đọc offline"}
-              onPress={handleReadPress}
-              color={theme.palette.primary[400]}
-              darkerColor={theme.palette.primary[600]}
-              progress={readProgress}
-              showProgress={true}
-              disabled={!networkState.isConnected && status !== "completed"}
-              delay={0}
-            />
-
-            {status === "idle" && (
-              <Action3DButton
-                icon={<Feather name="download" size={36} color="white" />}
-                label="Tải xuống"
-                onPress={handleDownloadPress}
-                color="#3B82F6"
-                darkerColor="#1E40AF"
-                disabled={!networkState.isConnected}
-                delay={300}
-              />
-            )}
-
-            {status === "downloading" && (
-              <Action3DButton
-                icon={<SpinningLoader />}
-                label="Đang tải..."
-                onPress={() => { }}
-                color="#9CA3AF"
-                darkerColor="#6B7280"
-                disabled={true}
-                delay={300}
-              />
-            )}
-
-            {status === "completed" && (
-              <Action3DButton
-                icon={<Feather name="check-circle" size={36} color="white" />}
-                label="Đã tải"
-                onPress={() => router.push("/manage-downloads")}
-                color="#10B981"
-                darkerColor="#047857"
-                disabled={false}
-                delay={300}
-              />
-            )}
-
-            {status === "error" && (
-              <Action3DButton
-                icon={<Feather name="alert-circle" size={36} color="white" />}
-                label="Thử lại"
-                onPress={handleDownloadPress}
-                color="#EF4444"
-                darkerColor="#B91C1C"
-                disabled={!networkState.isConnected}
-                delay={300}
-              />
-            )}
-
-            <Action3DButton
-              icon={<FontAwesome6 name="brain" size={36} color="white" />}
-              label="Quiz"
-              onPress={handleQuizPress}
-              color={theme.palette.secondary[500]}
-              darkerColor={theme.palette.secondary[700]}
-              disabled={!networkState.isConnected}
-              delay={600}
-            />
-          </HStack>
-        </View>
-      </VStack>
+      )}
     </Animated.View>
   );
 };

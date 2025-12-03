@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/text";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Animated, Pressable, View } from "react-native";
+import { Animated, Pressable, View, useWindowDimensions } from "react-native";
 import { Menu3DButton } from "./Menu3DButton";
 
 interface StoryMenuProps {
@@ -32,7 +32,48 @@ export const StoryMenu = React.memo<StoryMenuProps>(
         isAutoPlay,
         handleRestart,
     }) => {
+        const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+        const isLandscape = screenWidth > screenHeight;
+
         if (!isMenuVisible) return null;
+
+        const menuButtons = [
+            {
+                key: 'home',
+                icon: <Ionicons name="home" size={28} color="white" />,
+                onPress: handleMenuBack,
+                color: "#EF4444",
+                shadowColor: "#DC2626",
+            },
+            {
+                key: 'language',
+                icon: <Text style={{ fontSize: 24 }}>{isVietnamese ? "🇻🇳" : "🇬🇧"}</Text>,
+                onPress: handleToggleLanguage,
+                color: "#3B82F6",
+                shadowColor: "#2563EB",
+            },
+            {
+                key: 'mute',
+                icon: <Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={28} color="white" />,
+                onPress: toggleMute,
+                color: isMuted ? "#F59E0B" : "#10B981",
+                shadowColor: isMuted ? "#D97706" : "#059669",
+            },
+            {
+                key: 'autoplay',
+                icon: <Ionicons name={isAutoPlay ? "pause" : "play"} size={28} color="white" />,
+                onPress: handleToggleAutoPlay,
+                color: isAutoPlay ? "#EF4444" : "#22C55E",
+                shadowColor: isAutoPlay ? "#DC2626" : "#16A34A",
+            },
+            {
+                key: 'restart',
+                icon: <Ionicons name="refresh" size={28} color="white" />,
+                onPress: handleRestart,
+                color: "#8B5CF6",
+                shadowColor: "#7C3AED",
+            },
+        ];
 
         return (
             <>
@@ -54,12 +95,12 @@ export const StoryMenu = React.memo<StoryMenuProps>(
                 <Animated.View
                     style={{
                         position: "absolute",
-                        top: 110,
-                        right: 20,
+                        top: isLandscape ? 20 : 110,
+                        ...(isLandscape ? { left: 20, right: 20 } : { right: 20 }),
                         backgroundColor: "white",
                         borderRadius: 24,
-                        paddingVertical: 16,
-                        paddingHorizontal: 20,
+                        paddingVertical: isLandscape ? 12 : 16,
+                        paddingHorizontal: isLandscape ? 16 : 20,
                         shadowColor: "#000",
                         shadowOffset: { width: 0, height: 8 },
                         shadowOpacity: 0.2,
@@ -67,7 +108,10 @@ export const StoryMenu = React.memo<StoryMenuProps>(
                         elevation: 16,
                         zIndex: 1001,
                         opacity: menuAnimation,
-                        gap: 6,
+                        flexDirection: isLandscape ? 'row' : 'column',
+                        gap: isLandscape ? 12 : 6,
+                        alignItems: 'center',
+                        justifyContent: isLandscape ? 'center' : undefined,
                         transform: [
                             {
                                 translateY: menuAnimation.interpolate({
@@ -84,106 +128,24 @@ export const StoryMenu = React.memo<StoryMenuProps>(
                         ],
                     }}
                 >
-                    {/* Home Button */}
-                    <View
-                        style={{
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Menu3DButton
-                            icon={<Ionicons name="home" size={28} color="white" />}
-                            onPress={handleMenuBack}
-                            color="#EF4444"
-                            shadowColor="#DC2626"
-                            size={50}
-                        />
-                    </View>
-
-                    {/* Language Toggle */}
-                    <View
-                        style={{
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Menu3DButton
-                            icon={
-                                <Text style={{ fontSize: 24 }}>
-                                    {isVietnamese ? "🇻🇳" : "🇬🇧"}
-                                </Text>
-                            }
-                            onPress={handleToggleLanguage}
-                            color="#3B82F6"
-                            shadowColor="#2563EB"
-                            size={50}
-                        />
-                    </View>
-
-                    {/* Mute Toggle */}
-                    <View
-                        style={{
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Menu3DButton
-                            icon={
-                                <Ionicons
-                                    name={isMuted ? "volume-mute" : "volume-high"}
-                                    size={28}
-                                    color="white"
-                                />
-                            }
-                            onPress={toggleMute}
-                            color={isMuted ? "#F59E0B" : "#10B981"}
-                            shadowColor={isMuted ? "#D97706" : "#059669"}
-                            size={50}
-                        />
-                    </View>
-
-                    {/* Auto Play Toggle */}
-                    <View
-                        style={{
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Menu3DButton
-                            icon={
-                                <Ionicons
-                                    name={isAutoPlay ? "pause" : "play"}
-                                    size={28}
-                                    color="white"
-                                />
-                            }
-                            onPress={handleToggleAutoPlay}
-                            color={isAutoPlay ? "#EF4444" : "#22C55E"}
-                            shadowColor={isAutoPlay ? "#DC2626" : "#16A34A"}
-                            size={50}
-                        />
-                    </View>
-
-                    {/* Restart Button */}
-                    <View
-                        style={{
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Menu3DButton
-                            icon={<Ionicons name="refresh" size={28} color="white" />}
-                            onPress={handleRestart}
-                            color="#8B5CF6"
-                            shadowColor="#7C3AED"
-                            size={50}
-                        />
-                    </View>
+                    {menuButtons.map((button) => (
+                        <View
+                            key={button.key}
+                            style={{
+                                paddingVertical: isLandscape ? 0 : 4,
+                                paddingHorizontal: isLandscape ? 4 : 8,
+                                alignItems: "center",
+                            }}
+                        >
+                            <Menu3DButton
+                                icon={button.icon}
+                                onPress={button.onPress}
+                                color={button.color}
+                                shadowColor={button.shadowColor}
+                                size={50}
+                            />
+                        </View>
+                    ))}
                 </Animated.View>
             </>
         );

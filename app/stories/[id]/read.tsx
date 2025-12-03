@@ -4,10 +4,10 @@ import { useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
 import {
   Animated,
-  Dimensions,
   Pressable,
   StatusBar,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,12 +20,10 @@ import { Text } from "@/components/ui/text";
 // Hooks
 import { useStoryRead } from "@/hooks/useStoryRead";
 
-// Constants
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const {
     currentPage,

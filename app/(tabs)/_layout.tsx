@@ -7,15 +7,14 @@ import { Image as ExpoImage } from "expo-image";
 import { Tabs, useRouter } from "expo-router";
 import { MotiView } from "moti";
 import React, { useRef } from "react";
-import { Dimensions, Pressable, View } from "react-native";
-
-const { width: screenWidth } = Dimensions.get("window");
+import { Pressable, View, useWindowDimensions } from "react-native";
 
 // Floating Assistant Button Component
 const FloatingAssistantButton = () => {
   const router = useRouter();
   const { triggerReveal } = useCircularReveal();
   const buttonRef = useRef<View>(null);
+  const { width: screenWidth } = useWindowDimensions();
 
   const handlePress = () => {
     buttonRef.current?.measureInWindow((x, y, width, height) => {
@@ -121,6 +120,8 @@ const FloatingAssistantButton = () => {
 
 // Custom Bottom Navigation Component for EcoKids
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
+  const { width: screenWidth } = useWindowDimensions();
+  
   const tabs = [
     {
       icon: "home",

@@ -2,10 +2,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useRef } from "react";
 import {
   Animated,
-  Dimensions,
   ScrollView,
   StatusBar,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // GlueStack UI Components
@@ -24,7 +24,6 @@ import * as Sentry from "@sentry/react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { SplashScreen, useRouter } from "expo-router";
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 // 3D Button Component
 const Button3D = ({
   title,
@@ -180,11 +179,13 @@ const StoryCard = ({
   size = "small",
   withButton = false,
   onPress,
+  width,
 }: {
   story: Story;
   size?: "small" | "large";
   withButton?: boolean;
   onPress?: () => void;
+  width?: number;
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -219,7 +220,7 @@ const StoryCard = ({
     ]).start();
   };
 
-  const cardWidth = size === "large" ? screenWidth - 32 : 140;
+  const cardWidth = width || (size === "large" ? 300 : 140);
   const cardHeight = size === "large" ? 300 : 160;
 
   const rotate = rotateAnim.interpolate({
@@ -291,6 +292,9 @@ const StoryCard = ({
 export default function EcoKidsHomeScreen() {
   const router = useRouter();
   const session = useSession();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const isLandscape = screenWidth > screenHeight;
+  
   const {
     data: topics = [],
     isLoading,
@@ -388,15 +392,44 @@ export default function EcoKidsHomeScreen() {
             >
               Đề xuất cho bé
             </Text>
-            {stories.map((story) => (
-              <StoryCard
-                key={story.id}
-                withButton
-                story={story}
-                size="large"
-                onPress={() => router.push(`/stories/${story.id}`)}
-              />
-            ))}
+            {isLandscape ? (
+              // Layout 2 cột cho màn hình ngang
+              <View>
+                {Array.from({ length: Math.ceil(stories.length / 2) }).map(
+                  (_, rowIndex) => (
+                    <HStack key={rowIndex} space="md" className="mb-4">
+                      {stories
+                        .slice(rowIndex * 2, rowIndex * 2 + 2)
+                        .map((story) => (
+                          <View key={story.id} style={{ flex: 1 }}>
+                            <StoryCard
+                              withButton
+                              story={story}
+                              size="large"
+                              width={(screenWidth - 48) / 2}
+                              onPress={() => router.push(`/stories/${story.id}`)}
+                            />
+                          </View>
+                        ))}
+                    </HStack>
+                  )
+                )}
+              </View>
+            ) : (
+              // Layout 1 cột cho màn hình dọc
+              <>
+                {stories.map((story) => (
+                  <StoryCard
+                    key={story.id}
+                    withButton
+                    story={story}
+                    size="large"
+                    width={screenWidth - 32}
+                    onPress={() => router.push(`/stories/${story.id}`)}
+                  />
+                ))}
+              </>
+            )}
             <Center className="mt-8">
               <Button3D
                 title="Khám phá thêm"

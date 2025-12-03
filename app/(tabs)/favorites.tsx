@@ -400,36 +400,7 @@ export default function FavoritesScreen() {
       />
 
       <SafeAreaView className="flex-1">
-        {/* Header */}
-        <HStack className="justify-between items-center px-6 py-4 mb-4">
-          <View style={{ width: 40 }} />
-          <HStack className="items-center" space="sm">
-            <Text style={{ fontSize: 28 }}>💖</Text>
-            <Heading
-              size="xl"
-              style={{
-                color: "#1B4B07",
-                fontFamily: "Baloo2_700Bold",
-              }}
-            >
-              Truyện yêu thích
-            </Heading>
-          </HStack>
-          <Pressable
-            onPress={() => console.log("Search favorites")}
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              borderRadius: 20,
-              width: 40,
-              height: 40,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Ionicons name="search" size={20} color="#1B4B07" />
-          </Pressable>
-        </HStack>
-
+  
         {/* Stats Bar */}
         {(favoriteStories?.length || 0) > 0 && (
           <View

@@ -4,11 +4,11 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   Pressable,
   ScrollView,
   StatusBar,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,9 +23,6 @@ import theme from "@/lib/theme";
 import { Story } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-const cardWidth = (screenWidth - 48) / 2; // 2 columns with padding
 
 // Sample topic data - this would come from route params or API
 
@@ -121,10 +118,12 @@ const StoryCard = ({
   story,
   index,
   onPress,
+  cardWidth,
 }: {
   story: Story
   index: number;
   onPress: () => void;
+  cardWidth: number;
 }) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
@@ -298,60 +297,52 @@ const StoryCard = ({
 const MasonryGrid = ({
   data,
   onStoryPress,
+  numColumns = 2,
+  cardWidth,
 }: {
   data: Story[];
   onStoryPress: (story: Story) => void;
+  numColumns?: number;
+  cardWidth: number;
 }) => {
-  const [leftColumn, setLeftColumn] = useState<Story[]>([]);
-  const [rightColumn, setRightColumn] = useState<Story[]>([]);
+  const [columns, setColumns] = useState<Story[][]>([]);
 
   useEffect(() => {
     // Distribute items across columns for masonry effect
-    const left: Story[] = [];
-    const right: Story[] = [];
-    let leftHeight = 0;
-    let rightHeight = 0;
+    const cols: Story[][] = Array.from({ length: numColumns }, () => []);
+    const colHeights: number[] = Array.from({ length: numColumns }, () => 0);
 
     data.forEach((story) => {
-      if (leftHeight <= rightHeight) {
-        left.push(story);
-        leftHeight += 200 + 32; // height + margin
-      } else {
-        right.push(story);
-        rightHeight += 200 + 32;
-      }
+      // Find the shortest column
+      const shortestColIndex = colHeights.indexOf(Math.min(...colHeights));
+      cols[shortestColIndex].push(story);
+      colHeights[shortestColIndex] += 200 + 32; // height + margin
     });
 
-    setLeftColumn(left);
-    setRightColumn(right);
-  }, [data]);
+    setColumns(cols);
+  }, [data, numColumns]);
 
   return (
     <HStack className="px-4 items-start" space="sm">
-      <VStack className="flex-1">
-        {leftColumn.map((story, index) => (
-          <StoryCard
-            key={story.id}
-            story={story}
-            index={index * 2}
-            onPress={() => onStoryPress(story)}
-          />
-        ))}
-      </VStack>
-      <VStack className="flex-1">
-        {rightColumn.map((story, index) => (
-          <StoryCard
-            key={story.id}
-            story={story}
-            index={index * 2 + 1}
-            onPress={() => onStoryPress(story)}
-          />
-        ))}
-      </VStack>
+      {columns.map((column, colIndex) => (
+        <VStack key={colIndex} className="flex-1">
+          {column.map((story, index) => (
+            <StoryCard
+              key={story.id}
+              story={story}
+              index={colIndex + index * numColumns}
+              onPress={() => onStoryPress(story)}
+              cardWidth={cardWidth}
+            />
+          ))}
+        </VStack>
+      ))}
     </HStack>
   );
 };
 export default function TopicStoryScreen() {
+  const { width: screenWidth } = useWindowDimensions();
+  
   const handleBack = () => {
     router.back();
   };
@@ -359,6 +350,17 @@ export default function TopicStoryScreen() {
   const handleStoryPress = (story: Story) => {
     router.push(`/stories/${story.id}`);
   };
+  
+  // Calculate number of columns based on screen width
+  const getNumColumns = () => {
+    if (screenWidth >= 1024) return 4; // Tablet landscape
+    if (screenWidth >= 768) return 3; // Tablet portrait
+    if (screenWidth >= 600) return 3; // Large phone landscape
+    return 2; // Default (phone portrait)
+  };
+
+  const numColumns = getNumColumns();
+  const cardWidth = (screenWidth - 32 - (numColumns - 1) * 8) / numColumns; // 32px padding, 8px gap
   
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: topic,isLoading:isLoadingTopic } = useQuery(getTopicByIdQueryOptions(id));
@@ -545,7 +547,12 @@ export default function TopicStoryScreen() {
           contentContainerStyle={{ paddingBottom: 120 }}
         >
           <VStack>
-            <MasonryGrid data={stories || []} onStoryPress={handleStoryPress} />
+            <MasonryGrid 
+              data={stories || []} 
+              onStoryPress={handleStoryPress}
+              numColumns={numColumns}
+              cardWidth={cardWidth}
+            />
           </VStack>
         </ScrollView>
       </SafeAreaView>
