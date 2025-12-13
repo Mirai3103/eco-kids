@@ -17,6 +17,7 @@ export type Question = Database["public"]["Tables"]["questions"]["Row"]
 export type Answer = Database["public"]["Tables"]["answers"]["Row"]
 export type Quiz = Question & {
   answers: Answer[];
+  image_url: string;
 }
 type DBFavoriteStory = Database["public"]["Tables"]["favorite_stories"]["Row"]
 export type FavoriteStory = DBFavoriteStory & {

@@ -574,7 +574,7 @@ const QuestionCard = ({
               source={{ uri: imageUrl }}
               style={{
                 width: screenWidth - 80,
-                height: 180,
+                height: 220,
                 borderRadius: 16,
               }}
               alt={`Question ${questionNumber}`}
@@ -1287,7 +1287,7 @@ export default function Quiz() {
               {/* Question Card */}
               <QuestionCard
                 question={currentQuiz.content!}
-                imageUrl={""}
+                imageUrl={currentQuiz.image_url}
                 audioUrl={""}
                 questionNumber={currentQuestion + 1}
                 totalQuestions={quizData.length}

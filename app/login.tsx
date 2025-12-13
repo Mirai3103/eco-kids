@@ -347,6 +347,7 @@ export default function LoginScreen() {
   ];
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const {setUser} = useUserStore()
   useEffect(() => {
     // Configure Google Sign-In
     const checkAuthStatus = async () => {
@@ -398,6 +399,14 @@ export default function LoginScreen() {
 
         if (data.user) {
           // Navigate to main app
+          setUser({
+            id: data.user.id,
+            avatar: data.user.user_metadata.avatar_url,
+            name: data.user.user_metadata.full_name,
+            birthdday: data.user.user_metadata.birthday,
+            points: data.user.user_metadata.points || 0,
+            isGuest: false,
+          })
           router.replace("/(tabs)");
         }
       } else {

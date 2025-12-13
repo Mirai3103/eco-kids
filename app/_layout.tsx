@@ -1,8 +1,5 @@
-import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
-if (typeof globalThis.structuredClone === "undefined") {
-  globalThis.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
-}
 
 import { CircularRevealOverlay } from "@/components/CircularRevealOverlay";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -34,8 +31,9 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { ToastAndroid } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import "react-native-reanimated";
+if (typeof globalThis.structuredClone === "undefined") {
+  globalThis.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
+}
 const isProduction = Constants.expoConfig?.extra?.isProduction;
 
 
@@ -161,7 +159,7 @@ const bgm = require("@/assets/audio/bgm.mp3");
           });
         });
     }
-  }, [session, isLoading]);
+  }, [session, isLoading, pathname, router, setUser]);
   if (!balooLoaded || !nunitoLoaded) {
     Sentry.captureMessage("Fonts not loaded");
     return null;
