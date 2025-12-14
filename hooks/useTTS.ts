@@ -118,6 +118,12 @@ export default function useTTS() {
     },
     [player]
   );
+  const playFastTTS = React.useCallback(
+    async (text: string, onFinish?: () => void) => {
+       const audioUrl = `${Constants.expoConfig?.extra?.supabaseUrl}/functions/v1/tts-fast?text=${text}&voiceId=5t6jb0zrz2vdJqomDzJI`;
+       playAudio(audioUrl, onFinish);
+    }, [playAudio]
+  );
 
   const playTTSOffline = React.useCallback(
     async (
@@ -161,5 +167,6 @@ export default function useTTS() {
     player,
     stopAll,
     prefetchAudio,
+    playFastTTS,
   };
 }

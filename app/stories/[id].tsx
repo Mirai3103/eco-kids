@@ -538,7 +538,7 @@ const StoryContent = () => {
       <View style={{ marginTop: isLandscape ? 12 : 20 }}>
         <HStack 
           space={isLandscape ? "md" : "xl"} 
-          className="w-full justify-center items-center"
+          className="w-full justify-start flex items-center "
           style={{ flexWrap: isLandscape ? "wrap" : "nowrap" }}
         >
           <Action3DButton
@@ -645,14 +645,13 @@ export default function StoryDetailsScreen() {
   const [isFavorite, setIsFavorite] = useState(false);
   const { session } = useSession();
   const userId = session?.user.id;
-  console.log("userId", userId);
   async function checkFavorite() {
+
     const { data, error } = await supabase
       .from("favorite_stories")
       .select("*")
       .eq("story_id", storyId)
       .eq("user_id", userId!)
-    console.log("checkFavorite", data, error);
     if (data?.[0]) {
       setIsFavorite(true);
     } else {
@@ -660,9 +659,9 @@ export default function StoryDetailsScreen() {
     }
   }
   React.useEffect(() => {
-  
+    if (!userId || !storyId) return;
     checkFavorite();
-  }, [storyId]);
+  }, [storyId, userId]);
 
   const handleBack = () => {
     router.back();
@@ -677,7 +676,6 @@ export default function StoryDetailsScreen() {
       .eq("story_id", storyId)
       .eq("user_id", userId!)
     const data = datas?.[0];
-    console.log("data", error,data,storyId, userId);
     if (data) {
       console.log("Deleted favorite story");
       await supabase
@@ -691,7 +689,6 @@ export default function StoryDetailsScreen() {
           user_id: userId!,
           created_at: new Date().toISOString(),
         })
-        console.log("data", data, error);
      
     }
     queryClient.invalidateQueries({ queryKey: ["favoriteStories"] });

@@ -122,6 +122,10 @@ const bgm = require("@/assets/audio/bgm.mp3");
       router.replace("/login");
       return;
     }
+    if (session && pathname === "/login") {
+      router.replace("/");
+      return;
+    }
     Sentry.captureMessage("Session loaded" + JSON.stringify(session));
     if (session) {
       Sentry.setUser({

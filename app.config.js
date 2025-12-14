@@ -9,6 +9,7 @@ export default ({ config }) => ({
     geminiApiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
     mistralApiKey: process.env.EXPO_PUBLIC_MISTRAL_API_KEY,
     deepseekApiKey: process.env.EXPO_PUBLIC_DEEPSEEK_API_KEY,
+    elevenlabsApiKey: process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY,
     isProduction: process.env.NODE_ENV === 'production',
   },
   plugins: [...config.plugins],

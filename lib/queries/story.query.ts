@@ -7,25 +7,36 @@ import {
 } from "../offline";
 import { supabase } from "../supabase";
 
+export type StoryWithFavorite = Story & { isFavorite: boolean }
+
 export const getAllStoriesQueryByTopicIdOptions = (
-  topicId: string
-): UseQueryOptions<
-  unknown,
-  Error,
-  Story[] | undefined,
-  ["stories", string]
-> => ({
-  queryKey: ["stories", topicId],
+  topicId: string,
+  userId?: string
+) => ({
+  queryKey: ["stories", topicId, userId],
   queryFn: async () => {
-    console.log("fetching all stories data............");
-    return await supabase
+    const q = supabase
       .from("stories")
-      .select("*")
+      .select(`
+        *,
+        favorite_stories!left(story_id)
+      `)
       .eq("topic_id", topicId)
-      .then((res) => res.data);
+
+    // chỉ filter theo user nếu có userId
+    const { data, error } = userId
+      ? await q.eq("favorite_stories.user_id", userId)
+      : await q
+
+    if (error) throw error
+    return (data ?? []).map((s: any) => ({
+      ...s,
+      isFavorite: Array.isArray(s.favorite_stories) && s.favorite_stories.length > 0,
+    })) as StoryWithFavorite[]
   },
-  select: (data) => data as Story[] | undefined,
-});
+  select: (data: StoryWithFavorite[]) => data,
+})
+
 export const getStoryByIdQueryOptions = (
   id: string
 ): UseQueryOptions<unknown, Error, Story | undefined, ["story", string]> => ({

@@ -17,6 +17,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import useSession from "@/hooks/useSession";
 import { getAllStoriesQueryByTopicIdOptions } from "@/lib/queries/story.query";
 import { getTopicByIdQueryOptions } from "@/lib/queries/topic.query";
 import theme from "@/lib/theme";
@@ -120,7 +121,7 @@ const StoryCard = ({
   onPress,
   cardWidth,
 }: {
-  story: Story
+  story: Story & { isFavorite: boolean }
   index: number;
   onPress: () => void;
   cardWidth: number;
@@ -129,7 +130,9 @@ const StoryCard = ({
   const pressAnim = useRef(new Animated.Value(1)).current;
   const [liked, setLiked] = useState(false);
   const [tiltAngle] = useState(getRandomTilt());
-
+  React.useEffect(() => {
+    setLiked(story.isFavorite);
+  }, [story.isFavorite]);
   useEffect(() => {
     // Staggered entrance animation
     Animated.spring(scaleAnim, {
@@ -329,7 +332,7 @@ const MasonryGrid = ({
           {column.map((story, index) => (
             <StoryCard
               key={story.id}
-              story={story}
+              story={story as any}
               index={colIndex + index * numColumns}
               onPress={() => onStoryPress(story)}
               cardWidth={cardWidth}
@@ -361,10 +364,11 @@ export default function TopicStoryScreen() {
 
   const numColumns = getNumColumns();
   const cardWidth = (screenWidth - 32 - (numColumns - 1) * 8) / numColumns; // 32px padding, 8px gap
-  
+  const { session } = useSession();
+  const userId = session?.user.id;
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: topic,isLoading:isLoadingTopic } = useQuery(getTopicByIdQueryOptions(id));
-  const { data: stories,isLoading:isLoadingStories } = useQuery(getAllStoriesQueryByTopicIdOptions(id));
+  const { data: stories,isLoading:isLoadingStories } = useQuery(getAllStoriesQueryByTopicIdOptions(id,userId));
   const decorationEmojis = topic?.meta_data.decorationEmojis || [];
   const randomDecorationEmoji = useCallback(() => {
     return decorationEmojis[

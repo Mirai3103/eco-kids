@@ -154,10 +154,10 @@ const ChatBubble = ({
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { playTTSOffline } = useTTS();
+  const { playTTSOffline ,playTTSOnline, playFastTTS} = useTTS();
   const { messages, status, sendMessage } = useAi({
     onLLMGenerated(message) {
-      playTTSOffline(message, "vi-VN");
+      playFastTTS(message);
     },
   });
   const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
