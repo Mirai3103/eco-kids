@@ -77,6 +77,7 @@ export const useAi = (options: IUseAiOptions = {}): UseAiReturn => {
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const controllerRef = useRef<AbortController | null>(null);
   const { onLLMGenerated } = options;
+  // const { forceStop,playFastTTS,clearCache } = useTTSQueue();
   React.useEffect(() => {
     mesagesRef.current = [...messages];
   }, [messages]);

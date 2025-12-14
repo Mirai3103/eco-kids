@@ -168,5 +168,6 @@ export default function useTTS() {
     stopAll,
     prefetchAudio,
     playFastTTS,
+    voices,
   };
 }
