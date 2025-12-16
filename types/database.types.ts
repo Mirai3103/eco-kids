@@ -42,18 +42,21 @@ export type Database = {
         Row: {
           content: string | null
           id: string
+          image_url: string | null
           is_correct: boolean | null
           question_id: string | null
         }
         Insert: {
           content?: string | null
           id: string
+          image_url?: string | null
           is_correct?: boolean | null
           question_id?: string | null
         }
         Update: {
           content?: string | null
           id?: string
+          image_url?: string | null
           is_correct?: boolean | null
           question_id?: string | null
         }
@@ -232,16 +235,25 @@ export type Database = {
         Row: {
           content: string | null
           id: string
+          image_url: string | null
+          index: number | null
+          point: number | null
           story_id: string | null
         }
         Insert: {
           content?: string | null
           id: string
+          image_url?: string | null
+          index?: number | null
+          point?: number | null
           story_id?: string | null
         }
         Update: {
           content?: string | null
           id?: string
+          image_url?: string | null
+          index?: number | null
+          point?: number | null
           story_id?: string | null
         }
         Relationships: [

@@ -231,3 +231,124 @@ export const searchStoriesInfinite = async ({
     nextPage: data.length === limit ? pageParam + 1 : undefined,
   };
 };
+
+export type ReadingHistoryStatus = 'completed' | 'reading' | 'not_quiz';
+
+export interface ReadingHistoryItem {
+  id: string;
+  story_id: string;
+  user_id: string;
+  progress: number;
+  read_at: string;
+  segment_id: string | null;
+  stories: Story;
+  status: ReadingHistoryStatus;
+  hasQuiz: boolean;
+  quizCompleted: boolean;
+}
+
+export const getReadingHistoryInfinite = async ({
+  userId,
+  pageParam = 0,
+  limit = 10,
+  filterStatus,
+}: {
+  userId: string;
+  pageParam?: number;
+  limit?: number;
+  filterStatus?: ReadingHistoryStatus;
+}) => {
+  // Lấy lịch sử đọc với thông tin truyện và kết quả quiz
+  const { data: historyData, error } = await supabase
+    .from("reading_history")
+    .select(`
+      *,
+      stories (
+        id,
+        title,
+        cover_image_url,
+        tags,
+        topic_id
+      )
+    `)
+    .eq("user_id", userId)
+    .order("read_at", { ascending: false })
+    .range(pageParam * limit, (pageParam + 1) * limit - 1);
+
+  if (error) throw error;
+
+  // Lấy thông tin story_segments và quiz_results để tính status
+  const storyIds = [...new Set(historyData?.map(h => h.story_id) || [])];
+  
+  const [segmentsRes, quizResultsRes, questionsRes] = await Promise.all([
+    supabase
+      .from("story_segments")
+      .select("story_id")
+      .in("story_id", storyIds),
+    supabase
+      .from("quiz_results")
+      .select("story_id, correct_count, total_questions")
+      .eq("user_id", userId)
+      .in("story_id", storyIds),
+    supabase
+      .from("questions")
+      .select("story_id")
+      .in("story_id", storyIds)
+  ]);
+
+  // Tạo map để tra cứu nhanh
+  const segmentCountMap = new Map<string, number>();
+  segmentsRes.data?.forEach(seg => {
+    if (seg.story_id) {
+      segmentCountMap.set(seg.story_id, (segmentCountMap.get(seg.story_id) || 0) + 1);
+    }
+  });
+
+  const quizResultsMap = new Map<string, any>();
+  quizResultsRes.data?.forEach(qr => {
+    if (qr.story_id) {
+      quizResultsMap.set(qr.story_id, qr);
+    }
+  });
+
+  const hasQuizMap = new Map<string, boolean>();
+  questionsRes.data?.forEach(q => {
+    if (q.story_id) {
+      hasQuizMap.set(q.story_id, true);
+    }
+  });
+
+  // Xử lý và gắn status cho mỗi history item
+  const processedData: ReadingHistoryItem[] = (historyData || []).map((history: any) => {
+    const progress = history.progress || 0;
+    const hasQuiz = hasQuizMap.get(history.story_id) || false;
+    const quizResult = quizResultsMap.get(history.story_id);
+    const quizCompleted = !!quizResult;
+    
+    let status: ReadingHistoryStatus;
+    if (progress < 1) {
+      status = 'reading';
+    } else if (hasQuiz && !quizCompleted) {
+      status = 'not_quiz';
+    } else {
+      status = 'completed';
+    }
+
+    return {
+      ...history,
+      status,
+      hasQuiz,
+      quizCompleted,
+    };
+  });
+
+  // Filter theo status nếu có
+  const filteredData = filterStatus
+    ? processedData.filter(item => item.status === filterStatus)
+    : processedData;
+
+  return {
+    data: filteredData,
+    nextPage: historyData && historyData.length === limit ? pageParam + 1 : undefined,
+  };
+};

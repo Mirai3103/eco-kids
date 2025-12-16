@@ -90,21 +90,8 @@ const badges = [
   },
 ];
 
-// Recent rewards data
-const recentRewards = [
-  { id: 1, title: "Sticker cá voi", image: "🐋", bgColor: "#E3F2FD" },
-  { id: 2, title: "Hình nền rừng", image: "🌲", bgColor: "#E8F5E8" },
-  { id: 3, title: "Âm thanh thiên nhiên", image: "🎵", bgColor: "#F3E5F5" },
-  { id: 4, title: "Badge đặc biệt", image: "🏆", bgColor: "#FFF3E0" },
-];
-
-// Favorite story data
-const favoriteStory = {
-  id: 1,
-  title: "Cuộc phiêu lưu của chú ong nhỏ",
-  image: "🌸",
-  bgColor: "#CAFEC3",
-};
+// Background colors for rewards
+const rewardBgColors = ["#E3F2FD", "#E8F5E8", "#F3E5F5", "#FFF3E0", "#FFE0E0", "#E0F7FA"];
 
 // Stat Card Component
 const StatCard = ({
@@ -269,7 +256,13 @@ const BadgeItem = ({
 };
 
 // Reward Card Component
-const RewardCard = ({ reward }: { reward: (typeof recentRewards)[0] }) => {
+const RewardCard = ({ 
+  reward, 
+  index 
+}: { 
+  reward: any;
+  index: number;
+}) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -288,12 +281,14 @@ const RewardCard = ({ reward }: { reward: (typeof recentRewards)[0] }) => {
     }).start();
   };
 
+  const bgColor = rewardBgColors[index % rewardBgColors.length];
+
   return (
     <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <View
           style={{
-            backgroundColor: reward.bgColor,
+            backgroundColor: bgColor,
             borderRadius: 16,
             padding: 16,
             width: 120,
@@ -307,7 +302,12 @@ const RewardCard = ({ reward }: { reward: (typeof recentRewards)[0] }) => {
           }}
         >
           <VStack space="xs" className="items-center justify-center flex-1">
-            <Text style={{ fontSize: 32, lineHeight: 40 }}>{reward.image}</Text>
+            <ExpoImage
+              source={{ uri: reward?.rewards?.image_url }}
+              style={{ width: 40, height: 40 }}
+              contentFit="contain"
+              alt={reward?.rewards?.name || "Reward"}
+            />
             <Text
               style={{
                 color: "#1B4B07",
@@ -316,8 +316,9 @@ const RewardCard = ({ reward }: { reward: (typeof recentRewards)[0] }) => {
                 textAlign: "center",
                 lineHeight: 12,
               }}
+              numberOfLines={2}
             >
-              {reward.title}
+              {reward?.rewards?.name || "Phần thưởng"}
             </Text>
           </VStack>
         </View>
@@ -326,8 +327,14 @@ const RewardCard = ({ reward }: { reward: (typeof recentRewards)[0] }) => {
   );
 };
 
-// Favorite Story Card Component
-const FavoriteStoryCard = ({ story }: { story: typeof favoriteStory }) => {
+// Reading History Card Component
+const ReadingHistoryCard = ({ 
+  history,
+  onPress
+}: { 
+  history: any;
+  onPress?: () => void;
+}) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -346,83 +353,96 @@ const FavoriteStoryCard = ({ story }: { story: typeof favoriteStory }) => {
     }).start();
   };
 
+  // Format thời gian đọc
+  const formatReadTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days > 0) return `${days} ngày trước`;
+    if (hours > 0) return `${hours} giờ trước`;
+    return "Vừa xong";
+  };
+
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress}>
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <View
+        <HStack
+          space="md"
+          className="items-center"
           style={{
-            backgroundColor: story.bgColor,
-            borderRadius: 20,
-            padding: 20,
+            backgroundColor: "white",
+            borderRadius: 16,
+            padding: 12,
             marginHorizontal: 16,
+            marginBottom: 12,
             shadowColor: "#000",
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.15,
-            shadowRadius: 10,
-            elevation: 8,
-            position: "relative",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 8,
+            elevation: 3,
           }}
         >
-          {/* Favorite Ribbon */}
-          <View
+          <ExpoImage
+            source={{ uri: history?.stories?.cover_image_url }}
             style={{
-              position: "absolute",
-              top: -5,
-              right: 20,
-              backgroundColor: "#D72654",
-              paddingHorizontal: 12,
-              paddingVertical: 6,
+              width: 60,
+              height: 60,
               borderRadius: 12,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-              elevation: 4,
             }}
-          >
-            <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>
-              Yêu thích nhất
-            </Text>
-          </View>
-
-          <HStack space="md" className="items-center">
-            <View
+            contentFit="cover"
+            alt={history?.stories?.title || "Story"}
+          />
+          <VStack space="xs" className="flex-1">
+            <Text
               style={{
-                backgroundColor: "white",
-                borderRadius: 12,
-                padding: 16,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 2,
+                color: "#1B4B07",
+                fontSize: 15,
+                fontWeight: "bold",
+                fontFamily: "Baloo2_700Bold",
               }}
+              numberOfLines={2}
             >
-              <Text style={{ fontSize: 48 }}>{story.image}</Text>
-            </View>
-            <VStack space="xs" className="flex-1">
+              {history?.stories?.title || "Truyện"}
+            </Text>
+            <HStack space="xs" className="items-center">
+              <Ionicons name="time-outline" size={14} color="#6B7280" />
               <Text
                 style={{
-                  color: "#1B4B07",
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  lineHeight: 20,
-                }}
-              >
-                {story.title}
-              </Text>
-              <Text
-                style={{
-                  color: "#399018",
+                  color: "#6B7280",
                   fontSize: 12,
                   fontWeight: "500",
                 }}
               >
-                Đã đọc 5 lần
+                {formatReadTime(history?.read_at)}
               </Text>
-            </VStack>
-          </HStack>
-        </View>
+            </HStack>
+            {history?.progress !== undefined && (
+              <View
+                style={{
+                  width: "100%",
+                  height: 4,
+                  backgroundColor: "#E5E7EB",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  marginTop: 4,
+                }}
+              >
+                <View
+                  style={{
+                    width: `${history.progress * 100}%`,
+                    height: "100%",
+                    backgroundColor: "#4CAF50",
+                    borderRadius: 2,
+                  }}
+                />
+              </View>
+            )}
+          </VStack>
+          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+        </HStack>
       </Animated.View>
     </Pressable>
   );
@@ -459,6 +479,46 @@ export default function UserProfileScreen() {
       return data?.map((reward) => reward.rewards) || [];
     },
     enabled: !!user!.id,
+  });
+
+  // Query lấy phần thưởng gần đây
+  const { data: recentRewardsData } = useQuery({
+    queryKey: ["recent-rewards", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_rewards")
+        .select("*, rewards(*)")
+        .eq("user_id", user!.id)
+        .order("claimed_at", { ascending: false })
+        .limit(4);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Query lấy lịch sử đọc gần đây
+  const { data: recentReadingHistory } = useQuery({
+    queryKey: ["recent-reading-history", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reading_history")
+        .select(`
+          *,
+          stories (
+            id,
+            title,
+            cover_image_url,
+            tags
+          )
+        `)
+        .eq("user_id", user!.id)
+        .order("read_at", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
   });
 
   const updateAvatarMutation = useMutation({
@@ -788,31 +848,72 @@ export default function UserProfileScreen() {
           {/* Badges Section */}
 
           {/* Recent Rewards Section */}
-          <VStack space="md" className="mb-8">
-            <Heading
-              size="lg"
-              style={{
-                color: "#1B4B07",
-                fontWeight: "bold",
-                paddingHorizontal: 24,
-                fontFamily: "Baloo2_700Bold",
-              }}
-            >
-              Phần thưởng gần đây
-            </Heading>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 24 }}
-              style={{ paddingBottom: 10 }}
-            >
-              {recentRewards.map((reward) => (
-                <RewardCard key={reward.id} reward={reward} />
-              ))}
-            </ScrollView>
-          </VStack>
+          {recentRewardsData && recentRewardsData.length > 0 && (
+            <VStack space="md" className="mb-8">
+              <Heading
+                size="lg"
+                style={{
+                  color: "#1B4B07",
+                  fontWeight: "bold",
+                  paddingHorizontal: 24,
+                  fontFamily: "Baloo2_700Bold",
+                }}
+              >
+                Phần thưởng gần đây
+              </Heading>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 24 }}
+                style={{ paddingBottom: 10 }}
+              >
+                {recentRewardsData.map((reward, index) => (
+                  <RewardCard key={reward.id} reward={reward} index={index} />
+                ))}
+              </ScrollView>
+            </VStack>
+          )}
 
-          {/* Favorite Story Section */}
+          {/* Reading History Section */}
+          {recentReadingHistory && recentReadingHistory.length > 0 && (
+            <VStack space="md" className="mb-8">
+              <HStack className="justify-between items-center px-6">
+                <Heading
+                  size="lg"
+                  style={{
+                    color: "#1B4B07",
+                    fontWeight: "bold",
+                    fontFamily: "Baloo2_700Bold",
+                  }}
+                >
+                  Lịch sử đọc gần đây
+                </Heading>
+                <Pressable onPress={() => router.push("/history")}>
+                  <HStack space="xs" className="items-center">
+                    <Text
+                      style={{
+                        color: "#399018",
+                        fontSize: 14,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Xem tất cả
+                    </Text>
+                    <Ionicons name="chevron-forward" size={16} color="#399018" />
+                  </HStack>
+                </Pressable>
+              </HStack>
+              <VStack space="xs">
+                {recentReadingHistory.map((history) => (
+                  <ReadingHistoryCard 
+                    key={history.id} 
+                    history={history}
+                    onPress={() => router.push(`/stories/${history.story_id}`)}
+                  />
+                ))}
+              </VStack>
+            </VStack>
+          )}
         </ScrollView>
       </SafeAreaView>
 

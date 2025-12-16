@@ -2,10 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
-import Tts from "react-native-tts";
 
 import {
-  Alert,
   Animated,
   Dimensions,
   Pressable,
@@ -17,6 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // GlueStack UI Components
+import { ConfirmModal } from "@/components/ConfirmModal";
 import { HStack } from "@/components/ui/hstack";
 import { SelectionModal } from "@/components/ui/SelectionModal";
 import { Text } from "@/components/ui/text";
@@ -277,32 +276,23 @@ export default function SettingsScreen() {
   // Modal states
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [genderModalVisible, setGenderModalVisible] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
-  const handleLogout = async () => {
-    Tts.speak("Hello, world!");
-    Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng?", [
-      {
-        text: "Hủy",
-        style: "cancel",
-      },
-      {
-        text: "Đăng xuất",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            // Sign out from Supabase
-            await supabase.auth.signOut();
-            // Clear user store
-            logout();
-            // Navigate to login
-            router.replace("/login");
-          } catch (error) {
-            console.error("Logout error:", error);
-            Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
-          }
-        },
-      },
-    ]);
+  const handleLogout = () => {
+    setLogoutModalVisible(true);
+  };
+
+  const confirmLogout = async () => {
+    try {
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      // Clear user store
+      logout();
+      // Navigate to login
+      router.replace("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
@@ -475,8 +465,8 @@ export default function SettingsScreen() {
           onClose={() => setLanguageModalVisible(false)}
           title="Chọn ngôn ngữ mặc định"
           options={[
-            { label: "Tiếng Việt", value: "vi", icon: "flag-outline", color: "#EF4444" },
-            { label: "Tiếng Anh", value: "en", icon: "flag-outline", color: "#3B82F6" },
+            { label: "Tiếng Việt", value: "vi", emoji: "🇻🇳", color: "#EF4444" },
+            { label: "Tiếng Anh", value: "en", emoji: "🇺🇸", color: "#3B82F6" },
           ]}
           onSelect={setDefaultLanguage}
           selectedValue={defaultLanguage}
@@ -492,6 +482,19 @@ export default function SettingsScreen() {
           ]}
           onSelect={setDefaultGender}
           selectedValue={defaultGender}
+        />
+
+        <ConfirmModal
+          visible={logoutModalVisible}
+          onClose={() => setLogoutModalVisible(false)}
+          onConfirm={confirmLogout}
+          title="Bạn có chắc chắn muốn đăng xuất không?"
+          confirmText="Xác nhận"
+          cancelText="Hủy"
+          confirmColor="#399918"
+          cancelColor="#E53E3E"
+          icon="log-out-outline"
+          iconColor="#F59E0B"
         />
       </SafeAreaView>
     </View>

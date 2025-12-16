@@ -1,11 +1,11 @@
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
-import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useCircularReveal } from "@/contexts/CircularRevealContext";
 import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
+import useTTSQueue from "@/hooks/useTTSQueue";
 import { generate } from "@/lib/flow";
 import { db } from "@/stores/db";
 import { useIdStore } from "@/stores/id.store";
@@ -164,26 +164,90 @@ export default function ChatScreen() {
       where: eq(messages.conversationId, chatId),
     })
   );
+  const { playFastTTS } = useTTSQueue();
+
   const abortController = useRef<AbortController>(new AbortController());
   const [status, setStatus] = useState<
     "streaming" | "submitted" | "ready" | "error"
   >("ready");
+  const [testText, setTestText] = useState("");
+
+  const streamBuffer = useRef("");
+  const lastPlayedSentence = useRef("");
 
   const handleSendMessage = useCallback(
     async (message: string) => {
       abortController.current.abort();
       abortController.current = new AbortController();
+
+      // Reset buffer khi bắt đầu stream mới
+      streamBuffer.current = "";
+      lastPlayedSentence.current = "";
+
+      function onChunk(chunk: string) {
+        setTestText((prev) => prev + chunk);
+
+        // Thêm chunk vào buffer
+        streamBuffer.current += chunk;
+
+        // Tìm câu hoàn chỉnh (kết thúc bằng .!?)
+        const sentenceRegex = /[^.!?]*[.!?]+/g;
+        const sentences = streamBuffer.current.match(sentenceRegex);
+
+        if (sentences && sentences.length > 0) {
+          // Lấy câu cuối cùng hoàn chỉnh
+          const completeSentence = sentences[sentences.length - 1].trim();
+
+          // Chỉ phát nếu câu này chưa được phát
+          if (
+            completeSentence &&
+            completeSentence !== lastPlayedSentence.current
+          ) {
+            lastPlayedSentence.current = completeSentence;
+
+            // Phát audio cho câu này
+            playFastTTS(completeSentence).catch((err) => {
+              console.error("TTS error:", err);
+            });
+
+            // Xóa các câu đã phát khỏi buffer, giữ lại phần chưa hoàn chỉnh
+            const lastSentenceEnd =
+              streamBuffer.current.lastIndexOf(completeSentence) +
+              completeSentence.length;
+            streamBuffer.current =
+              streamBuffer.current.substring(lastSentenceEnd);
+          }
+        }
+      }
+
       try {
         setStatus("streaming");
-        await generate(message, chatId, abortController.current.signal);
+        await generate(
+          message,
+          chatId,
+          abortController.current.signal,
+          onChunk
+        );
+
+        // Sau khi stream xong, phát phần còn lại (nếu có)
+        if (
+          streamBuffer.current.trim() &&
+          streamBuffer.current.trim() !== lastPlayedSentence.current
+        ) {
+          await playFastTTS(streamBuffer.current.trim());
+        }
       } catch (error) {
         console.log(error);
+        setTestText("");
         setStatus("error");
       } finally {
         setStatus("ready");
+        setTestText("");
+        streamBuffer.current = "";
+        lastPlayedSentence.current = "";
       }
     },
-    [chatId]
+    [chatId, playFastTTS]
   );
   const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
     onSpeechStart() {
@@ -386,32 +450,33 @@ export default function ChatScreen() {
                     />
                   ))}
                 {status === "streaming" && (
-                  <HStack className="justify-start px-4">
-                    <ExpoImage
-                      source={require("@/assets/images/assistant_icon.png")}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 18,
-                        marginRight: 8,
-                      }}
-                      contentFit="contain"
-                    />
-                    <View
-                      style={{
-                        backgroundColor: "white",
-                        borderRadius: 20,
-                        padding: 16,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 4,
-                        elevation: 3,
-                      }}
-                    >
-                      <Spinner size="small" color="#399918" />
-                    </View>
-                  </HStack>
+                  // <HStack className="justify-start px-4">
+                  //   <ExpoImage
+                  //     source={require("@/assets/images/assistant_icon.png")}
+                  //     style={{
+                  //       width: 36,
+                  //       height: 36,
+                  //       borderRadius: 18,
+                  //       marginRight: 8,
+                  //     }}
+                  //     contentFit="contain"
+                  //   />
+                  //   <View
+                  //     style={{
+                  //       backgroundColor: "white",
+                  //       borderRadius: 20,
+                  //       padding: 16,
+                  //       shadowColor: "#000",
+                  //       shadowOffset: { width: 0, height: 2 },
+                  //       shadowOpacity: 0.1,
+                  //       shadowRadius: 4,
+                  //       elevation: 3,
+                  //     }}
+                  //   >
+                  //     <Spinner size="small" color="#399918" />
+                  //   </View>
+                  // </HStack>
+                  <ChatBubble message={testText} isUser={false} index={0} />
                 )}
               </VStack>
             )}
@@ -440,6 +505,7 @@ export default function ChatScreen() {
                   onPress={handleMicPress}
                   onPressIn={handlePressIn}
                   onPressOut={handlePressOut}
+                  disabled={status !== "ready"}
                   color={isRecording ? "#D72654" : "#399918"}
                   shadowColor={isRecording ? "#a01a3f" : "#2a800d"}
                 >
@@ -482,7 +548,7 @@ export default function ChatScreen() {
                 onPress={handleSend}
                 color="#399918"
                 shadowColor="#2a800d"
-                disabled={!inputText.trim() || status === "streaming"}
+                disabled={!inputText.trim() || status !== "ready"}
               >
                 <Ionicons name="send" size={20} color="white" />
               </Button3D>

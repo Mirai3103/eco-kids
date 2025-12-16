@@ -1,14 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Pressable,
-    ScrollView,
-    StatusBar,
-    View,
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -18,98 +21,12 @@ import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { getReadingHistoryInfinite, ReadingHistoryItem } from '@/lib/queries/story.query';
+import { useUserStore } from '@/stores/user.store';
 import { Image as ExpoImage } from 'expo-image';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = (screenWidth - 48) / 2; // 2 columns with padding
-
-// Mock data for reading history
-const mockHistoryStories = [
-  {
-    id: 1,
-    title: 'Cuộc phiêu lưu của chú ong nhỏ',
-    cover_image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300',
-    topic: 'Động vật',
-    status: 'completed', // completed, reading, not_quiz
-    progress: 100,
-    readDate: '2024-01-15',
-    hasQuiz: true,
-    quizCompleted: true,
-    readTime: '12 phút',
-  },
-  {
-    id: 2,
-    title: 'Rùa biển và nhựa thải',
-    cover_image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300',
-    topic: 'Môi trường',
-    status: 'reading',
-    progress: 65,
-    readDate: '2024-01-14',
-    hasQuiz: true,
-    quizCompleted: false,
-    readTime: '8 phút',
-  },
-  {
-    id: 3,
-    title: 'Cây xanh kỳ diệu',
-    cover_image_url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300',
-    topic: 'Rừng xanh',
-    status: 'not_quiz',
-    progress: 100,
-    readDate: '2024-01-13',
-    hasQuiz: true,
-    quizCompleted: false,
-    readTime: '15 phút',
-  },
-  {
-    id: 4,
-    title: 'Gấu trúc và tre xanh',
-    cover_image_url: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=400&h=300',
-    topic: 'Động vật',
-    status: 'completed',
-    progress: 100,
-    readDate: '2024-01-12',
-    hasQuiz: true,
-    quizCompleted: true,
-    readTime: '10 phút',
-  },
-  {
-    id: 5,
-    title: 'Chim cánh cụt bé nhỏ',
-    cover_image_url: 'https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?w=400&h=300',
-    topic: 'Động vật',
-    status: 'reading',
-    progress: 30,
-    readDate: '2024-01-11',
-    hasQuiz: true,
-    quizCompleted: false,
-    readTime: '5 phút',
-  },
-  {
-    id: 6,
-    title: 'Vườn hoa nhiều màu',
-    cover_image_url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300',
-    topic: 'Thiên nhiên',
-    status: 'not_quiz',
-    progress: 100,
-    readDate: '2024-01-10',
-    hasQuiz: true,
-    quizCompleted: false,
-    readTime: '18 phút',
-  },
-  {
-    id: 7,
-    title: 'Ong làm mật',
-    cover_image_url: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=300',
-    topic: 'Động vật',
-    status: 'completed',
-    progress: 100,
-    readDate: '2024-01-09',
-    hasQuiz: false,
-    quizCompleted: false,
-    readTime: '7 phút',
-  },
-];
 
 type TabType = 'all' | 'reading' | 'not_quiz';
 
@@ -333,7 +250,7 @@ const HistoryStoryCard = ({
   index,
   onPress,
 }: {
-  story: typeof mockHistoryStories[0];
+  story: ReadingHistoryItem;
   index: number;
   onPress: () => void;
 }) => {
@@ -428,7 +345,7 @@ const HistoryStoryCard = ({
               }}
             >
               <ExpoImage
-                source={{ uri: story.cover_image_url }}
+                source={{ uri: story.stories?.cover_image_url ?? '' }}
                 className="w-full h-full rounded-lg"
                 contentFit="cover"
                 alt="story-image"
@@ -461,29 +378,6 @@ const HistoryStoryCard = ({
               >
                 <Ionicons name={statusInfo.icon as any} size={16} color="white" />
               </View>
-
-              {/* Reading Time Badge */}
-              <View
-                style={{
-                  position: "absolute",
-                  bottom: 8,
-                  left: 8,
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  borderRadius: 12,
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                }}
-              >
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 10,
-                    fontFamily: 'NunitoSans_600SemiBold',
-                  }}
-                >
-                  {story.readTime}
-                </Text>
-              </View>
             </View>
           </View>
 
@@ -498,14 +392,15 @@ const HistoryStoryCard = ({
                 fontFamily: "NunitoSans_700Bold"
               }}
               className="line-clamp-2"
+              numberOfLines={2}
             >
-              {story.title}
+              {story.stories?.title}
             </Text>
 
             {/* Progress Bar for reading stories */}
             {story.status === 'reading' && (
               <VStack space="xs">
-                <ProgressBar progress={story.progress} />
+                <ProgressBar progress={Math.round((story.progress || 0) * 100)} />
                 <Text
                   style={{
                     color: '#666',
@@ -514,7 +409,7 @@ const HistoryStoryCard = ({
                     fontFamily: 'NunitoSans_600SemiBold',
                   }}
                 >
-                  Đã đọc {story.progress}%
+                  Đã đọc {Math.round((story.progress || 0) * 100)}%
                 </Text>
               </VStack>
             )}
@@ -524,7 +419,7 @@ const HistoryStoryCard = ({
               {story.status === 'reading' ? (
                 <Button3D
                   title="Đọc tiếp"
-                  onPress={() => console.log('Continue reading')}
+                  onPress={onPress}
                   icon="play"
                   color="#399918"
                   shadowColor="#2a800d"
@@ -532,7 +427,7 @@ const HistoryStoryCard = ({
               ) : story.status === 'not_quiz' ? (
                 <Button3D
                   title="Làm Quiz"
-                  onPress={() => console.log('Take quiz')}
+                  onPress={onPress}
                   icon="help-circle"
                   color="#FF9800"
                   shadowColor="#F57C00"
@@ -540,7 +435,7 @@ const HistoryStoryCard = ({
               ) : (
                 <Button3D
                   title="Đọc lại"
-                  onPress={() => console.log('Read again')}
+                  onPress={onPress}
                   icon="refresh"
                   color="#2196F3"
                   shadowColor="#1976D2"
@@ -559,16 +454,16 @@ const MasonryGrid = ({
   data,
   onStoryPress,
 }: {
-  data: typeof mockHistoryStories;
-  onStoryPress: (story: typeof mockHistoryStories[0]) => void;
+  data: ReadingHistoryItem[];
+  onStoryPress: (story: ReadingHistoryItem) => void;
 }) => {
-  const [leftColumn, setLeftColumn] = useState<typeof mockHistoryStories>([]);
-  const [rightColumn, setRightColumn] = useState<typeof mockHistoryStories>([]);
+  const [leftColumn, setLeftColumn] = useState<ReadingHistoryItem[]>([]);
+  const [rightColumn, setRightColumn] = useState<ReadingHistoryItem[]>([]);
 
   useEffect(() => {
     // Distribute items across columns for masonry effect
-    const left: typeof mockHistoryStories = [];
-    const right: typeof mockHistoryStories = [];
+    const left: ReadingHistoryItem[] = [];
+    const right: ReadingHistoryItem[] = [];
     let leftHeight = 0;
     let rightHeight = 0;
 
@@ -613,7 +508,7 @@ const MasonryGrid = ({
 };
 
 // Empty State Component
-const EmptyState = ({ activeTab }: { activeTab: TabType }) => {
+const EmptyState = ({ activeTab, onExplore }: { activeTab: TabType; onExplore: () => void }) => {
   const bounceAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -642,19 +537,16 @@ const EmptyState = ({ activeTab }: { activeTab: TabType }) => {
     switch (activeTab) {
       case 'reading':
         return {
-          emoji: '📖⏳',
           title: 'Chưa có truyện đang đọc',
           subtitle: 'Hãy bắt đầu đọc một câu chuyện mới nhé!',
         };
       case 'not_quiz':
         return {
-          emoji: '🤔📝',
           title: 'Chưa có truyện cần làm quiz',
           subtitle: 'Đọc xong truyện và thử sức với các câu hỏi thú vị!',
         };
       default:
         return {
-          emoji: '📚✨',
           title: 'Chưa có lịch sử đọc',
           subtitle: 'Hãy khám phá và đọc những câu chuyện thú vị!',
         };
@@ -664,12 +556,8 @@ const EmptyState = ({ activeTab }: { activeTab: TabType }) => {
   const content = getEmptyStateContent();
 
   return (
-    <Center className="flex-1 px-8" style={{ marginTop: 100 }}>
-      <Animated.View style={{ transform: [{ translateY }] }}>
-        <Text style={{ fontSize: 80, textAlign: 'center', marginBottom: 20 }}>
-          {content.emoji}
-        </Text>
-      </Animated.View>
+    <Center className="flex-1 px-8" style={{ marginTop: 20 }}>
+   
       
       <VStack space="md" className="items-center">
         <Heading 
@@ -699,7 +587,7 @@ const EmptyState = ({ activeTab }: { activeTab: TabType }) => {
         <View style={{ marginTop: 20 }}>
           <Button3D
             title="Khám phá truyện"
-            onPress={() => console.log('Explore stories')}
+            onPress={onExplore}
             size="large"
             icon="search"
             color="#399918"
@@ -713,54 +601,68 @@ const EmptyState = ({ activeTab }: { activeTab: TabType }) => {
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const { user } = useUserStore();
   const [activeTab, setActiveTab] = useState<TabType>('all');
-  const [filteredStories, setFilteredStories] = useState(mockHistoryStories);
 
-  // Filter stories based on active tab
-  useEffect(() => {
-    let filtered = mockHistoryStories;
-    
-    switch (activeTab) {
-      case 'reading':
-        filtered = mockHistoryStories.filter(story => story.status === 'reading');
-        break;
-      case 'not_quiz':
-        filtered = mockHistoryStories.filter(story => 
-          story.status === 'not_quiz' || (story.hasQuiz && !story.quizCompleted && story.status === 'completed')
-        );
-        break;
-      default:
-        filtered = mockHistoryStories;
-        break;
-    }
-    
-    setFilteredStories(filtered);
-  }, [activeTab]);
+  // Query lịch sử đọc với infinite loading
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useInfiniteQuery({
+    queryKey: ['reading-history', user?.id, activeTab],
+    queryFn: ({ pageParam = 0 }) =>
+      getReadingHistoryInfinite({
+        userId: user!.id,
+        pageParam,
+        limit: 10,
+        filterStatus: activeTab === 'all' ? undefined : activeTab,
+      }),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    enabled: !!user?.id,
+    initialPageParam: 0,
+  });
+
+  // Flatten data từ các pages
+  const allStories = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data) || [];
+  }, [data]);
+
+  // Get counts - chỉ lấy từ page đầu tiên để estimate
+  const counts = useMemo(() => {
+    const firstPage = data?.pages[0]?.data || [];
+    return {
+      all: allStories.length,
+      reading: allStories.filter(s => s.status === 'reading').length,
+      not_quiz: allStories.filter(s => s.status === 'not_quiz').length,
+    };
+  }, [allStories]);
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleStoryPress = (story: typeof mockHistoryStories[0]) => {
-    console.log('Open story:', story.title);
-    // router.push(`/stories/${story.id}`);
+  const handleStoryPress = (story: ReadingHistoryItem) => {
+    router.push(`/stories/${story.story_id}`);
   };
 
-  // Get counts for each tab
-  const getCounts = () => {
-    const reading = mockHistoryStories.filter(story => story.status === 'reading').length;
-    const notQuiz = mockHistoryStories.filter(story => 
-      story.status === 'not_quiz' || (story.hasQuiz && !story.quizCompleted && story.status === 'completed')
-    ).length;
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 20;
     
-    return {
-      all: mockHistoryStories.length,
-      reading,
-      not_quiz: notQuiz,
-    };
+    if (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    ) {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }
   };
-
-  const counts = getCounts();
 
   return (
     <View className="flex-1">
@@ -801,7 +703,6 @@ export default function HistoryScreen() {
           </Pressable>
 
           <HStack className="items-center" space="sm">
-            <Text style={{ fontSize: 28 }}>📚</Text>
             <Heading 
               size="xl" 
               style={{ 
@@ -846,15 +747,39 @@ export default function HistoryScreen() {
         </ScrollView>
 
         {/* Content */}
-        {filteredStories.length === 0 ? (
-          <EmptyState activeTab={activeTab} />
+        {isLoading ? (
+          <Center className="flex-1">
+            <ActivityIndicator size="large" color="#399918" />
+            <Text style={{ marginTop: 12, color: '#666', fontFamily: 'NunitoSans_600SemiBold' }}>
+              Đang tải lịch sử...
+            </Text>
+          </Center>
+        ) : allStories.length === 0 ? (
+          <EmptyState activeTab={activeTab} onExplore={() => router.push('/(tabs)/user')} />
         ) : (
           <ScrollView
             className="flex-1"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 120, paddingTop: 10 }}
+            onScroll={handleScroll}
+            scrollEventThrottle={400}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={refetch}
+                tintColor="#399918"
+                colors={['#399918']}
+              />
+            }
           >
-            <MasonryGrid data={filteredStories} onStoryPress={handleStoryPress} />
+            <MasonryGrid data={allStories} onStoryPress={handleStoryPress} />
+            
+            {/* Loading indicator khi fetch next page */}
+            {isFetchingNextPage && (
+              <Center className="py-4">
+                <ActivityIndicator size="small" color="#399918" />
+              </Center>
+            )}
           </ScrollView>
         )}
       </SafeAreaView>

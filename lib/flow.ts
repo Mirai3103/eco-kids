@@ -1,4 +1,3 @@
-
 import {
   navigate_to_story_tool,
   similarity_search_tool,
@@ -6,7 +5,7 @@ import {
 import { db } from "@/stores/db";
 import { messages } from "@/stores/sqlite.schema";
 import { createDeepSeek } from "@ai-sdk/deepseek";
-import { ModelMessage, streamText } from "ai";
+import { ModelMessage, stepCountIs, streamText } from "ai";
 import { asc, eq } from "drizzle-orm";
 import Constants from "expo-constants";
 import * as crypto from "expo-crypto";
@@ -54,16 +53,15 @@ export const debugFetch = makeDebugFetch(
 const deepseek = createDeepSeek({
   apiKey: Constants.expoConfig?.extra?.deepseekApiKey,
   fetch: expoFetch as unknown as typeof globalThis.fetch,
-
 });
-
 
 const model = deepseek("deepseek-chat");
 
 export async function generate(
   input: string,
   chatId: string,
-  abortSignal: AbortSignal
+  abortSignal: AbortSignal,
+  onChunk?: (chunk: string) => void
 ) {
   const history = await db.query.messages.findMany({
     where: eq(messages.conversationId, chatId),
@@ -72,7 +70,6 @@ export async function generate(
   const payload: ModelMessage[] = history.map(
     (message) => JSON.parse(message.message) as ModelMessage
   );
-  console.log(payload, "payload",input,chatId);
   await db.insert(messages).values({
     conversationId: chatId,
     createdAt: new Date().getTime(),
@@ -81,8 +78,8 @@ export async function generate(
     role: "user",
     textContent: input,
   });
- 
-  const {textStream,response} = streamText({
+
+  const { textStream, response } = streamText({
     model,
     // abortSignal,
     tools: {
@@ -91,24 +88,26 @@ export async function generate(
     },
     system: SYSTEM_PROMPT,
     messages: [...payload, { role: "user", content: input }],
-    
-    onFinish:async ({response}) => {
+    stopWhen: stepCountIs(10),
+    onFinish: async ({ response }) => {
       let time = new Date().getTime();
       for (const message of response.messages) {
         let textContent = "";
-        if (typeof message.content !='string') {
-          textContent = message.content.filter((part: any) => part.type === "text").map((part: any) => part.text).join("\n");
+        if (typeof message.content != "string") {
+          textContent = message.content
+            .filter((part: any) => part.type === "text")
+            .map((part: any) => part.text)
+            .join("\n");
         } else {
           textContent = message.content;
         }
-        console.log(message, "message");
         await db.insert(messages).values({
           conversationId: chatId,
           createdAt: time++,
           id: crypto.randomUUID(),
           message: JSON.stringify({
             role: message.role || "assistant",
-            content: textContent,
+            content: message.content,
           }),
           role: message.role || "assistant",
           textContent: textContent || "",
@@ -116,10 +115,8 @@ export async function generate(
       }
     },
   });
-  response.then(async (response) => {
-    console.log(response, "response");
-  });
+ 
   for await (const textPart of textStream) {
-    console.log(textPart);
+    onChunk?.(textPart);
   }
 }
