@@ -5,15 +5,19 @@ import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useCircularReveal } from "@/contexts/CircularRevealContext";
-import { getMessageContent, useAi } from "@/hooks/useAi";
 import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
-import useTTS from "@/hooks/useTTS";
+import { generate } from "@/lib/flow";
+import { db } from "@/stores/db";
+import { useIdStore } from "@/stores/id.store";
+import { messages } from "@/stores/sqlite.schema";
 import { Ionicons } from "@expo/vector-icons";
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { MotiView } from "moti";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   KeyboardAvoidingView,
@@ -96,7 +100,7 @@ const ChatBubble = ({
   isUser: boolean;
   index: number;
 }) => {
-  if(message.trim() === "") return null;
+  if (message.trim() === "") return null;
   return (
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
@@ -154,19 +158,40 @@ const ChatBubble = ({
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { playTTSOffline ,playTTSOnline, playFastTTS} = useTTS();
-  const { messages, status, sendMessage } = useAi({
-    onLLMGenerated(message) {
-      playFastTTS(message);
+  const chatId = useIdStore((state) => state.id);
+  const { data: messagesData } = useLiveQuery(
+    db.query.messages.findMany({
+      where: eq(messages.conversationId, chatId),
+    })
+  );
+  const abortController = useRef<AbortController>(new AbortController());
+  const [status, setStatus] = useState<
+    "streaming" | "submitted" | "ready" | "error"
+  >("ready");
+
+  const handleSendMessage = useCallback(
+    async (message: string) => {
+      abortController.current.abort();
+      abortController.current = new AbortController();
+      try {
+        setStatus("streaming");
+        await generate(message, chatId, abortController.current.signal);
+      } catch (error) {
+        console.log(error);
+        setStatus("error");
+      } finally {
+        setStatus("ready");
+      }
     },
-  });
+    [chatId]
+  );
   const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
     onSpeechStart() {
       console.log("Mic recording started");
     },
     onSpeechResults(e) {
       const recognizedText = e.value[e.value.length - 1];
-      sendMessage(recognizedText);
+      handleSendMessage(recognizedText);
     },
   });
   const [inputText, setInputText] = useState("");
@@ -189,11 +214,11 @@ export default function ChatScreen() {
   // Auto scroll to bottom when new message arrives
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+  }, [messagesData]);
 
   const handleSend = async () => {
     if (inputText.trim() && status !== "streaming") {
-      await sendMessage(inputText);
+      handleSendMessage(inputText);
       setInputText("");
     }
   };
@@ -224,7 +249,6 @@ export default function ChatScreen() {
       useNativeDriver: true,
     }).start();
   };
-
 
   return (
     <View className="flex-1">
@@ -310,7 +334,7 @@ export default function ChatScreen() {
             contentContainerStyle={{ paddingTop: 16, paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
-            {messages.length === 0 ? (
+            {messagesData?.length === 0 ? (
               <Center className="flex-1 px-4 mt-20">
                 <MotiView
                   from={{ scale: 0, opacity: 0 }}
@@ -351,16 +375,12 @@ export default function ChatScreen() {
               </Center>
             ) : (
               <VStack>
-                {messages
-                  .filter(
-                    (msg) => msg.role === "user" || msg.role === "assistant"
-                  )
-                  .map((msg:any, index) => (
+                {messagesData
+                  ?.filter((msg) => !!msg.textContent)
+                  ?.map((msg: typeof messages.$inferSelect, index) => (
                     <ChatBubble
-                      key={index}
-                      message={
-                        getMessageContent(msg) as string
-                      }
+                      key={msg.id}
+                      message={msg.textContent as string}
                       isUser={msg.role === "user"}
                       index={index}
                     />

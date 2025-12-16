@@ -1,6 +1,3 @@
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import "react-native-reanimated";
-
 import { CircularRevealOverlay } from "@/components/CircularRevealOverlay";
 import LoadingScreen from "@/components/LoadingScreen";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
@@ -10,8 +7,8 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import useSession from "@/hooks/useSession";
 import ReactQueryProvider from "@/lib/react-query";
 import { supabase } from "@/lib/supabase";
-import { useUserStore } from "@/stores/user.store";
 import { useSoundStore } from "@/stores/useSoundStore";
+import { useUserStore } from "@/stores/user.store";
 import {
   Baloo2_600SemiBold,
   Baloo2_700Bold,
@@ -31,12 +28,18 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { ToastAndroid } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import "react-native-reanimated";
+import '../lib/poly-fill';
+
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+
+import { db } from "@/stores/db";
+import migrations from "../drizzle/migrations";
 if (typeof globalThis.structuredClone === "undefined") {
   globalThis.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
 }
 const isProduction = Constants.expoConfig?.extra?.isProduction;
-
-
 
 ToastAndroid.show("isProduction: " + isProduction, ToastAndroid.LONG);
 if (isProduction) {
@@ -65,6 +68,15 @@ if (isProduction) {
 
 const bgm = require("@/assets/audio/bgm.mp3");
  function RootLayout() {
+  const { success, error } = useMigrations(db, migrations);
+  useEffect(() => {
+    if (success) {
+      Sentry.captureMessage("Migrations successful");
+    }
+    if (error) {
+      Sentry.captureException(error);
+    }
+  }, [success, error]);
   const colorScheme = useColorScheme();
   const [balooLoaded] = useBalooFonts({
     Baloo2_600SemiBold,

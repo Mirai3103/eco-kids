@@ -1,7 +1,7 @@
 import {
   navigate_to_story_tool,
   similarity_search_tool,
-} from "@/lib/semilarity_search";
+} from "@/lib/semilarity_search_vecel";
 import { IMessage, useChatStore } from "@/stores/chat.store";
 import { createDeepSeek } from "@ai-sdk/deepseek";
 import { generateText, stepCountIs } from "ai";

@@ -1,11 +1,12 @@
 import { createMistral } from "@ai-sdk/mistral";
-import { embed } from "ai";
+import { embed, tool } from "ai";
 // import Constants from "expo-constants";
-import { tool } from "ai";
 import Constants from "expo-constants";
-import { router } from "expo-router";
 import { z } from "zod/v4";
 import { supabase } from "./supabase";
+
+
+import { router } from "expo-router";
 
 const mistral = createMistral({
   apiKey: Constants.expoConfig?.extra?.mistralApiKey,
@@ -49,3 +50,4 @@ export const navigate_to_story_tool = tool({
     };
   },
 });
+
