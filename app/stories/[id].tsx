@@ -855,9 +855,9 @@ export default function StoryDetailsScreen() {
   const storyId = params.id as string;
   const [isFavorite, setIsFavorite] = useState(false);
   const { session } = useSession();
-  const userId = session?.user.id;
+  const userId = session?.user?.id;
   async function checkFavorite() {
-
+    if (!userId || !storyId) return;
     const { data, error } = await supabase
       .from("favorite_stories")
       .select("*")

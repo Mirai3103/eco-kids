@@ -346,7 +346,7 @@ const EmptyState = () => {
 export default function FavoritesScreen() {
   const router = useRouter();
   const { session } = useSession();
-  const userId = session?.user.id;
+  const userId = session?.user?.id;
   // const [favoriteStories, setFavoriteStories] = useState();
   const {
     data: favoriteStories,
@@ -361,6 +361,7 @@ export default function FavoritesScreen() {
         .select("*, stories(*, topics(*))")
         .eq("user_id", userId!)
         .then((res) => res.data as FavoriteStory[]),
+      enabled: !!userId,
   });
   console.log("favoriteStories", favoriteStories,userId);
   console.log("error", error);

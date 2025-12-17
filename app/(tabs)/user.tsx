@@ -472,13 +472,13 @@ export default function UserProfileScreen() {
       const { data, error } = await supabase
         .from("user_rewards")
         .select("*, rewards(*)")
-        .eq("user_id", user!.id);
+        .eq("user_id", user?.id || "");
       return data;
     },
     select: (data) => {
       return data?.map((reward) => reward.rewards) || [];
     },
-    enabled: !!user!.id,
+    enabled: !!user?.id,
   });
 
   // Query lấy phần thưởng gần đây
@@ -512,7 +512,7 @@ export default function UserProfileScreen() {
             tags
           )
         `)
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id || "")
         .order("read_at", { ascending: false })
         .limit(5);
       if (error) throw error;
@@ -526,7 +526,7 @@ export default function UserProfileScreen() {
       const { data, error } = await supabase
         .from("users")
         .update({ avatar_url: avatar })
-        .eq("id", user!.id)
+        .eq("id", user?.id || "")
         .select()
         .single();
       if (error) throw error;
@@ -547,12 +547,12 @@ export default function UserProfileScreen() {
       const { data, error } = await supabase
         .from("reading_history")
         .select("*")
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id || "")
         .order("read_at", { ascending: false });
       return data;
     },
     select: (data) => data?.length || 0,
-    enabled: !!user!.id,
+    enabled: !!user?.id,
   });
 
   const totalReadCount = readingHistory || 0;

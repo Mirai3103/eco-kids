@@ -285,11 +285,14 @@ export default function SettingsScreen() {
   const confirmLogout = async () => {
     try {
       // Sign out from Supabase
+      
       await supabase.auth.signOut();
       // Clear user store
+
       logout();
-      // Navigate to login
       router.replace("/login");
+
+      // Navigate to login
     } catch (error) {
       console.error("Logout error:", error);
     }

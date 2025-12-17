@@ -31,7 +31,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const [state, send] = useMachine(storyReadMachine, {
     input: {
       storyId,
-      userId: session.session?.user.id,
+      userId: session.session?.user?.id,
       isVietnamese: defaultLanguage === "vi",
       gender: initialGender,
       isAutoPlay: isDefaultAutoPlay,

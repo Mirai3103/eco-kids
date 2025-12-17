@@ -307,7 +307,7 @@ export default function EcoKidsHomeScreen() {
     error: storiesError,
   } = useQuery(
     getAllRecommendedStoriesQueryOptions(
-      session.session?.user.id,
+      session.session?.user?.id,
       lastReadStoryId || undefined,
       5
     )

@@ -35,6 +35,7 @@ export const getAllStoriesQueryByTopicIdOptions = (
     })) as StoryWithFavorite[]
   },
   select: (data: StoryWithFavorite[]) => data,
+  enabled: !!userId,
 })
 
 export const getStoryByIdQueryOptions = (

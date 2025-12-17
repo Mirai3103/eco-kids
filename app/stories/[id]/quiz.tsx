@@ -1130,9 +1130,10 @@ export default function Quiz() {
   const [lastCorrectAnswer, setLastCorrectAnswer] = useState(false);
   const { data: quizData, isLoading } = useQuery(getQuizByStoryIdQueryOptions(storyId));
   const {session} = useSession();
-  const userId = session?.user.id;
+  const userId = session?.user?.id;
   const {updateUserPoints} = useUserStore();
   const handleAnswerCorrect =async (questionId: string) => {
+    if (!userId || !questionId) return;
     await supabase.rpc('receive_point_from_question',{
       p_point: POINT_PER_QUESTION,
       p_question_id: questionId,
