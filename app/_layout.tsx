@@ -89,11 +89,12 @@ const bgm = require("@/assets/audio/bgm.mp3");
   const { session, isLoading } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const { setUser, user } = useUserStore();
+  const { setUser, user, isOfflineMode } = useUserStore();
   const init = useSoundStore((s) => s.init);
   const unload = useSoundStore((s) => s.unloadAll);
   const register = useSoundStore((s) => s.register);
   const play = useSoundStore((s) => s.play);
+  console.log(session?.user?.id, isLoading, isOfflineMode);
 
 
  
@@ -149,26 +150,30 @@ const bgm = require("@/assets/audio/bgm.mp3");
       
       setUser(initialUserData);
 
-      // Fetch additional user data from database
-      supabase
-        .from("users")
-        .select("*")
-        .eq("id", session.user.id)
-        .single()
-        .then((res) => {
-          if (res.data) {
-            setUser({
-              ...initialUserData,
-              avatar: res.data.avatar_url || initialUserData.avatar,
-              points: res.data.points || 0,
-            });
-          }
-          if (res.error) {
-            console.error("Error fetching user data:", res.error);
-          }
-        });
+      // Fetch additional user data from database (only when online)
+      if (!isOfflineMode) {
+        supabase
+          .from("users")
+          .select("*")
+          .eq("id", session.user.id)
+          .single()
+          .then((res) => {
+            if (res.data) {
+              setUser({
+                ...initialUserData,
+                avatar: res.data.avatar_url || initialUserData.avatar,
+                points: res.data.points || 0,
+              });
+            }
+            if (res.error) {
+              console.error("Error fetching user data:", res.error);
+            }
+          });
+      } else {
+        console.log("📴 Offline mode - skipping user data fetch from database");
+      }
     }
-  }, [session, isLoading, pathname]);
+  }, [session, isLoading, pathname, isOfflineMode]);
   if (!balooLoaded || !nunitoLoaded) {
     Sentry.captureMessage("Fonts not loaded");
     return null;

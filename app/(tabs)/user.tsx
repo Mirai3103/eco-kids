@@ -451,7 +451,7 @@ const ReadingHistoryCard = ({
 export default function UserProfileScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, logout, updateUserAvatar } = useUserStore();
+  const { user, logout, updateUserAvatar, isOfflineMode } = useUserStore();
   const [avatarModalVisible, setAvatarModalVisible] = React.useState(false);
   const [safeModalVisible, setSafeModalVisible] = React.useState(false);
 
@@ -608,16 +608,32 @@ export default function UserProfileScreen() {
         {/* Header with Settings */}
         <HStack className="justify-between items-center px-6 py-4">
           <View style={{ width: 40 }} />
-          <Heading
-            size="xl"
-            style={{
-              color: "#1B4B07",
-              fontWeight: "bold",
-              fontFamily: "Baloo2_700Bold",
-            }}
-          >
-            Hồ sơ của tôi
-          </Heading>
+          <VStack space="xs" className="items-center">
+            <Heading
+              size="xl"
+              style={{
+                color: "#1B4B07",
+                fontWeight: "bold",
+                fontFamily: "Baloo2_700Bold",
+              }}
+            >
+              Hồ sơ của tôi
+            </Heading>
+            {isOfflineMode && (
+              <HStack space="xs" className="items-center">
+                <Ionicons name="cloud-offline" size={14} color="#FF6B6B" />
+                <Text
+                  style={{
+                    color: "#FF6B6B",
+                    fontSize: 12,
+                    fontWeight: "600",
+                  }}
+                >
+                  Chế độ offline
+                </Text>
+              </HStack>
+            )}
+          </VStack>
           <Pressable
             onPress={handleSettingsPress}
             style={{

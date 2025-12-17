@@ -9,12 +9,10 @@ export default function useSession() {
   const session = useUserStore((state) => state.session);
   const isLoading = useUserStore((state) => state.isLoadingSession);
   const initSession = useUserStore((state) => state.initSession);
-
   useEffect(() => {
     // Initialize session only once when the hook is first used
-    if (isLoading && !session) {
-      initSession();
-    }
+      initSession()
+   
   }, []);
 
   return { session, isLoading };
