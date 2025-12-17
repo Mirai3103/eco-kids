@@ -2,7 +2,8 @@ import * as Crypto from "expo-crypto";
 import { create } from "zustand";
 interface IdStore {
   id: string;
-    resetId: () => void;
+  resetId: () => void;
+  setId: (id: string) => void;
 }
 
 export const useIdStore = create<IdStore>()((set,get) => ({

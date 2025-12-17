@@ -159,10 +159,11 @@ const ChatBubble = ({
 export default function ChatScreen() {
   const router = useRouter();
   const chatId = useIdStore((state) => state.id);
+  const resetId = useIdStore((state) => state.resetId);
   const { data: messagesData } = useLiveQuery(
     db.query.messages.findMany({
       where: eq(messages.conversationId, chatId),
-    })
+    }),[chatId]
   );
   const { playFastTTS } = useTTSQueue();
 
@@ -313,6 +314,9 @@ export default function ChatScreen() {
       useNativeDriver: true,
     }).start();
   };
+  const handleRefresh = () => {
+    resetId();
+  }
 
   return (
     <View className="flex-1">
@@ -345,7 +349,7 @@ export default function ChatScreen() {
               borderBottomRightRadius: 20,
             }}
           >
-            <Pressable onPress={() => router.back()}>
+            <Pressable onPress={() => router.push("/(tabs)")}>
               <View
                 style={{
                   backgroundColor: "#F0F0F0",
@@ -386,9 +390,23 @@ export default function ChatScreen() {
                   Trợ lý AI của bé
                 </Text>
               </VStack>
+           
             </HStack>
 
-            <View style={{ width: 40 }} />
+            <Pressable onPress={handleRefresh}>
+              <View
+                style={{
+                  backgroundColor: "#F0F0F0",
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="refresh-outline" size={24} color="#399918" />
+              </View>
+            </Pressable>
           </HStack>
 
           {/* Messages Area */}

@@ -401,6 +401,13 @@ export default function SettingsScreen() {
           {/* Content & Reading */}
           <SectionHeader title="Nội dung & Đọc truyện" />
           <SettingsItem
+            icon="chatbubbles-outline"
+            title="Lịch sử chat"
+            subtitle="Xem lại các cuộc trò chuyện"
+            onPress={() => { router.push("/chat-history") }}
+            color="#8B5CF6"
+          />
+          <SettingsItem
             icon="download-outline"
             title="Tải xuống"
             subtitle="Quản lý truyện đã tải về"

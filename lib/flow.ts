@@ -3,7 +3,7 @@ import {
   similarity_search_tool,
 } from "@/lib/semilarity_search_vecel";
 import { db } from "@/stores/db";
-import { messages } from "@/stores/sqlite.schema";
+import { conversations, messages } from "@/stores/sqlite.schema";
 import { createDeepSeek } from "@ai-sdk/deepseek";
 import { ModelMessage, stepCountIs, streamText } from "ai";
 import { asc, eq } from "drizzle-orm";
@@ -56,13 +56,26 @@ const deepseek = createDeepSeek({
 });
 
 const model = deepseek("deepseek-chat");
-
+const createConversationIfNotExist = async (id: string) => {
+  const cv = await db.query.conversations.findFirst({
+    where: eq(conversations.id, id),
+  });
+  if (!cv) {
+    await db.insert(conversations).values({
+      id,
+      createdAt: new Date().getTime(),
+      updatedAt: new Date().getTime(),
+    });
+  }
+  return cv;
+};
 export async function generate(
   input: string,
   chatId: string,
   abortSignal: AbortSignal,
   onChunk?: (chunk: string) => void
 ) {
+  const timeStart = Date.now();
   const history = await db.query.messages.findMany({
     where: eq(messages.conversationId, chatId),
     orderBy: [asc(messages.createdAt)],
@@ -70,7 +83,8 @@ export async function generate(
   const payload: ModelMessage[] = history.map(
     (message) => JSON.parse(message.message) as ModelMessage
   );
-  await db.insert(messages).values({
+  await createConversationIfNotExist(chatId);
+ await db.insert(messages).values({
     conversationId: chatId,
     createdAt: new Date().getTime(),
     id: crypto.randomUUID(),
@@ -115,8 +129,13 @@ export async function generate(
       }
     },
   });
- 
+  let isFirstChunk = true;
   for await (const textPart of textStream) {
+    if (isFirstChunk) {
+      isFirstChunk = false;
+      const timeEnd = Date.now();
+      console.log(`generate executed in ${timeEnd - timeStart}ms`);
+    }
     onChunk?.(textPart);
   }
 }

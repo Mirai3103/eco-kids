@@ -7,6 +7,7 @@ import { supabase } from "./supabase";
 
 
 import { router } from "expo-router";
+import { ToastAndroid } from "react-native";
 
 const mistral = createMistral({
   apiKey: Constants.expoConfig?.extra?.mistralApiKey,
@@ -31,11 +32,18 @@ export const similarity_search_tool = tool({
     query: z.string().describe("The query to search for"),
     top_k: z.number().describe("The number of results to return"),
   }),
-  execute: async ({ query, top_k }) => ({
-    query,
-    top_k,
-    results: await similarity_search(query, top_k),
-  }),
+  execute: async ({ query, top_k }) =>{
+    const timeStart = Date.now();
+    const results= await similarity_search(query, top_k);
+    const timeEnd = Date.now();
+    console.log(`similarity_search_tool executed in ${timeEnd - timeStart}ms`);
+    ToastAndroid.show(`similarity_search_tool executed in ${timeEnd - timeStart}ms`, ToastAndroid.SHORT);
+    return  ({
+      query,
+      top_k,
+      results,
+    })
+  },
 });
 export const navigate_to_story_tool = tool({
   description: "Navigate to the story page",
