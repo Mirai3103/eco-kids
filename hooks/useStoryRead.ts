@@ -15,7 +15,7 @@ import { useSettingStore } from "@/stores/setting.store";
 
 const AUTO_PLAY_DELAY = 1000;
 
-export const useStoryRead = (storyId: string) => {
+export const useStoryRead = (storyId: string, selectedGender?: "male" | "female") => {
   const { setLastReadStoryId } = useReadStore();
   const { isDefaultAutoPlay, defaultLanguage, defaultGender } =
     useSettingStore();
@@ -24,13 +24,16 @@ export const useStoryRead = (storyId: string) => {
   // Session
   const session = useSession();
 
+  // Use selectedGender from query param if available, otherwise use defaultGender
+  const initialGender = selectedGender || defaultGender;
+  console.log("initialGender", initialGender);
   // Initialize state machine
   const [state, send] = useMachine(storyReadMachine, {
     input: {
       storyId,
       userId: session.session?.user.id,
       isVietnamese: defaultLanguage === "vi",
-      gender: defaultGender,
+      gender: initialGender,
       isAutoPlay: isDefaultAutoPlay,
     },
   });

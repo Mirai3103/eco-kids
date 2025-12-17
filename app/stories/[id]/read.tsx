@@ -23,6 +23,8 @@ import { useStoryRead } from "@/hooks/useStoryRead";
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
+  const selectedGender = params.gender as "male" | "female" | undefined;
+  console.log("selectedGender", selectedGender);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const {
@@ -45,7 +47,7 @@ export default function ReadStoryScreen() {
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
-  } = useStoryRead(storyId);
+  } = useStoryRead(storyId, selectedGender);
 
   const renderStoryPage = useCallback(
     (segmentData: string) => {

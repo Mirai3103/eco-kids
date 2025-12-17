@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Modal,
   Pressable,
   ScrollView,
   StatusBar,
@@ -400,6 +401,204 @@ const DecorativeCircle = ({
   );
 };
 
+// Gender Selection Modal Component
+const GenderSelectionModal = ({
+  visible,
+  onClose,
+  onSelectGender,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onSelectGender: (gender: "male" | "female") => void;
+}) => {
+  const [selectedGender, setSelectedGender] = useState<"male" | "female" | null>(null);
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      scaleAnim.setValue(0);
+    }
+  }, [visible]);
+
+  const handleConfirm = () => {
+    if (selectedGender) {
+      onSelectGender(selectedGender);
+      onClose();
+    }
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable 
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={onClose}
+      >
+        <Animated.View
+          style={{
+            transform: [{ scale: scaleAnim }],
+          }}
+        >
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              borderRadius: 24,
+              padding: 32,
+              width: 340,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 10,
+            }}
+          >
+            {/* Close button */}
+            <Pressable
+              onPress={onClose}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: "#F3F4F6",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 10,
+              }}
+            >
+              <Ionicons name="close" size={20} color="#6B7280" />
+            </Pressable>
+
+            {/* Title */}
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "bold",
+                color: "#1B4B07",
+                textAlign: "center",
+                marginBottom: 32,
+                fontFamily: "Baloo2_700Bold",
+              }}
+            >
+              Bắt đầu với giọng đọc...
+            </Text>
+
+            {/* Gender Options */}
+            <HStack space="md" className="justify-center mb-6">
+              {/* Female Option */}
+              <Pressable
+                onPress={() => setSelectedGender("female")}
+                style={{
+                  width: 130,
+                  padding: 16,
+                  borderRadius: 16,
+                  backgroundColor: selectedGender === "female" ? "#E8F5E8" : "#F9FAFB",
+                  borderWidth: 3,
+                  borderColor: selectedGender === "female" ? theme.palette.primary[400] : "#E5E7EB",
+                  alignItems: "center",
+                }}
+              >
+                <ExpoImage
+                  source={require("@/assets/images/girl.png")}
+                  style={{ width: 80, height: 80, marginBottom: 12 }}
+                  contentFit="contain"
+                />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: "#1B4B07",
+                    fontFamily: "NunitoSans_700Bold",
+                  }}
+                >
+                  Giọng nữ
+                </Text>
+              </Pressable>
+
+              {/* Male Option */}
+              <Pressable
+                onPress={() => setSelectedGender("male")}
+                style={{
+                  width: 130,
+                  padding: 16,
+                  borderRadius: 16,
+                  backgroundColor: selectedGender === "male" ? "#E8F5E8" : "#F9FAFB",
+                  borderWidth: 3,
+                  borderColor: selectedGender === "male" ? theme.palette.primary[400] : "#E5E7EB",
+                  alignItems: "center",
+                }}
+              >
+                <ExpoImage
+                  source={require("@/assets/images/boy.png")}
+                  style={{ width: 80, height: 80, marginBottom: 12 }}
+                  contentFit="contain"
+                />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: "#1B4B07",
+                    fontFamily: "NunitoSans_700Bold",
+                  }}
+                >
+                  Giọng nam
+                </Text>
+              </Pressable>
+            </HStack>
+
+            {/* Start Button */}
+            <Pressable
+              onPress={handleConfirm}
+              disabled={!selectedGender}
+              style={{
+                backgroundColor: selectedGender ? theme.palette.primary[400] : "#D1D5DB",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: selectedGender ? 0.2 : 0.1,
+                shadowRadius: 8,
+                elevation: selectedGender ? 4 : 2,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: "white",
+                  fontFamily: "Baloo2_700Bold",
+                }}
+              >
+                Bắt đầu
+              </Text>
+            </Pressable>
+          </Pressable>
+        </Animated.View>
+      </Pressable>
+    </Modal>
+  );
+};
+
 // Main Content Component with entrance animations
 const StoryContent = () => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -409,6 +608,7 @@ const StoryContent = () => {
   const slideAnim = useRef(new Animated.Value(30)).current;
   const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
   const [readProgress, setReadProgress] = useState(65); // Example progress
+  const [showGenderModal, setShowGenderModal] = useState(false);
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const { data: story, isLoading } = useQuery(
@@ -444,7 +644,11 @@ const StoryContent = () => {
     if (!networkState.isConnected && status !== "completed") {
       return;
     }
-    router.push(`/stories/${storyId}/read`);
+    setShowGenderModal(true);
+  };
+
+  const handleGenderSelect = (gender: "male" | "female") => {
+    router.push(`/stories/${storyId}/read?gender=${gender}`);
   };
 
   const handleQuizPress = () => {
@@ -616,26 +820,33 @@ const StoryContent = () => {
   );
 
   return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-      }}
-    >
-      {isLandscape ? (
-        // Layout 2 cột cho màn hình ngang
-        <HStack space="xl" className="px-6" style={{ alignItems: "center" }}>
-          {ImageBlock}
-          {ContentBlock}
-        </HStack>
-      ) : (
-        // Layout dọc cho màn hình dọc
-        <VStack space="2xl" className="px-6">
-          {ImageBlock}
-          {ContentBlock}
-        </VStack>
-      )}
-    </Animated.View>
+    <>
+      <GenderSelectionModal
+        visible={showGenderModal}
+        onClose={() => setShowGenderModal(false)}
+        onSelectGender={handleGenderSelect}
+      />
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }}
+      >
+        {isLandscape ? (
+          // Layout 2 cột cho màn hình ngang
+          <HStack space="xl" className="px-6" style={{ alignItems: "center" }}>
+            {ImageBlock}
+            {ContentBlock}
+          </HStack>
+        ) : (
+          // Layout dọc cho màn hình dọc
+          <VStack space="2xl" className="px-6">
+            {ImageBlock}
+            {ContentBlock}
+          </VStack>
+        )}
+      </Animated.View>
+    </>
   );
 };
 
