@@ -252,7 +252,6 @@ export default function ChatScreen() {
   );
   const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
     onSpeechStart() {
-      console.log("Mic recording started");
     },
     onSpeechResults(e) {
       const recognizedText = e.value[e.value.length - 1];
@@ -290,10 +289,8 @@ export default function ChatScreen() {
 
   const handleMicPress = () => {
     if (isRecording) {
-      console.log("Mic recording stopped");
       stopRecognize();
     } else {
-      console.log("Mic recording started");
       if (status === "streaming" || status === "submitted") return;
       startRecognize("vi-VN");
     }

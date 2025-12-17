@@ -24,7 +24,6 @@ import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
 import Constants from "expo-constants";
 import { Stack, usePathname, useRouter } from "expo-router";
-import * as ScreenOrientation from "expo-screen-orientation";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { ToastAndroid } from "react-native";
@@ -90,26 +89,14 @@ const bgm = require("@/assets/audio/bgm.mp3");
   const { session, isLoading } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const { setUser } = useUserStore();
+  const { setUser, user } = useUserStore();
   const init = useSoundStore((s) => s.init);
   const unload = useSoundStore((s) => s.unloadAll);
   const register = useSoundStore((s) => s.register);
   const play = useSoundStore((s) => s.play);
 
 
-  useEffect(() => {
-    console.log("addOrientationChangeListener");
-    ScreenOrientation.getPlatformOrientationLockAsync().then(o =>
-      console.log("PLATFORM LOCK:", o)
-    );
-    const sub = ScreenOrientation.addOrientationChangeListener(event => {
-      console.log("Orientation changed", event.orientationInfo.orientation);
-    });
-  
-    return () => {
-      ScreenOrientation.removeOrientationChangeListener(sub);
-    };
-  }, []);
+ 
   useEffect(() => {
     init();
     register({
@@ -127,55 +114,61 @@ const bgm = require("@/assets/audio/bgm.mp3");
     };
   }, []);
   React.useEffect(() => {
-    console.log("session", session);
-    console.log("isLoading", isLoading);
+    // Wait for session to load before doing anything
     if (isLoading) return;
-    if (!session && pathname !== "/login") {
+
+    // Handle authentication routing
+    if (!session?.user?.id && pathname !== "/login") {
       router.replace("/login");
       return;
     }
-    if (session && pathname === "/login") {
+
+    if (session?.user?.id && pathname === "/login") {
       router.replace("/");
       return;
     }
-    Sentry.captureMessage("Session loaded" + JSON.stringify(session));
-    if (session) {
+
+    // Initialize user data when session is available and user is not set yet
+    if (session?.user && (!user || user.id !== session.user.id)) {
       Sentry.setUser({
         id: session.user.id,
         email: session.user.email,
         name: session.user.user_metadata.name,
       });
-      setUser({
-        avatar: session.user.user_metadata.avatar_url.replace(
+
+      // Set initial user data from session
+      const initialUserData = {
+        avatar: session.user.user_metadata.avatar_url?.replace(
           /=s\d+-c/,
           "=s256-c"
-        ),
+        ) || session.user.user_metadata.avatar_url,
         name: session.user.user_metadata.name,
         id: session.user.id,
         isGuest: false,
-      });
-      console.log("setUser", session.user.id);
+      };
+      
+      setUser(initialUserData);
+
+      // Fetch additional user data from database
       supabase
         .from("users")
         .select("*")
         .eq("id", session.user.id)
         .single()
         .then((res) => {
-          setUser({
-            avatar:
-              res.data?.avatar_url ||
-              session.user.user_metadata.avatar_url.replace(
-                /=s\d+-c/,
-                "=s256-c"
-              ),
-            name: session.user.user_metadata.name,
-            id: session.user.id,
-            isGuest: false,
-            points: res.data?.points || 0,
-          });
+          if (res.data) {
+            setUser({
+              ...initialUserData,
+              avatar: res.data.avatar_url || initialUserData.avatar,
+              points: res.data.points || 0,
+            });
+          }
+          if (res.error) {
+            console.error("Error fetching user data:", res.error);
+          }
         });
     }
-  }, [session, isLoading, pathname, router, setUser]);
+  }, [session, isLoading, pathname]);
   if (!balooLoaded || !nunitoLoaded) {
     Sentry.captureMessage("Fonts not loaded");
     return null;

@@ -1,25 +1,21 @@
-import { supabase } from "@/lib/supabase";
-import * as Sentry from '@sentry/react-native';
-import { Session } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import { useUserStore } from "@/stores/user.store";
+import { useEffect } from "react";
+
+/**
+ * Hook to access global session state from user store
+ * This ensures all components share the same session state
+ */
 export default function useSession() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const session = useUserStore((state) => state.session);
+  const isLoading = useUserStore((state) => state.isLoadingSession);
+  const initSession = useUserStore((state) => state.initSession);
 
   useEffect(() => {
-    async function getSession() {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-      Sentry.captureMessage("Session loaded" + JSON.stringify(session));
-      if (error) {
-        Sentry.captureException(error);
-      }
-      setSession(session);
-      setIsLoading(false);
+    // Initialize session only once when the hook is first used
+    if (isLoading && !session) {
+      initSession();
     }
-    getSession();
   }, []);
+
   return { session, isLoading };
 }

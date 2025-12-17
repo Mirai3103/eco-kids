@@ -17,7 +17,6 @@ import { Heading } from "@/components/ui/heading";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import useSession from "@/hooks/useSession";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
 import {
@@ -26,7 +25,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/FontAwesome";
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth } = Dimensions.get("window");
 // Floating Element Component
 const FloatingElement = ({
   emoji,
@@ -346,32 +345,16 @@ export default function LoginScreen() {
     { emoji: "🌸", position: { x: 40, y: 650 }, duration: 4800 },
   ];
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const {setUser} = useUserStore()
+  const { setUser, setSession } = useUserStore();
+  const router = useRouter();
+  
   useEffect(() => {
     // Configure Google Sign-In
-    const checkAuthStatus = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session) {
-          router.replace("/(tabs)");
-        }
-      } catch (error) {
-        console.error("Error checking auth status:", error);
-      } finally {
-        setIsInitializing(false);
-      }
-    };
     GoogleSignin.configure({
       webClientId: GoogleClientId,
       offlineAccess: true,
       scopes: ["profile", "email"],
     });
-
-    // Check if user is already signed in
-    checkAuthStatus();
   }, []);
   const signInWithGoogle = async () => {
     try {
@@ -382,10 +365,8 @@ export default function LoginScreen() {
 
       // Get user info from Google
       const userInfo = await GoogleSignin.signIn();
-      console.log("userInfo", userInfo);
 
       if (userInfo.data?.idToken) {
-        console.log("userInfo.data?.idToken", userInfo.data?.idToken);
         // Sign in with Supabase using Google ID token
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: "google",
@@ -397,8 +378,11 @@ export default function LoginScreen() {
           throw error;
         }
 
-        if (data.user) {
-          // Navigate to main app
+        if (data.user && data.session) {
+          // Update session in store - this will trigger auth state change globally
+          setSession(data.session);
+          
+          // Set user data
           setUser({
             id: data.user.id,
             avatar: data.user.user_metadata.avatar_url,
@@ -406,8 +390,9 @@ export default function LoginScreen() {
             birthdday: data.user.user_metadata.birthday,
             points: data.user.user_metadata.points || 0,
             isGuest: false,
-          })
-          router.replace("/(tabs)");
+          });
+          
+          // Navigation is automatically handled by _layout.tsx when session changes
         }
       } else {
         throw new Error("No ID token received from Google");
@@ -431,15 +416,6 @@ export default function LoginScreen() {
       setIsLoading(false);
     }
   };
-
-  const { session, isLoading: isLoadingSession } = useSession();
-  const router = useRouter();
-  React.useEffect(() => {
-    if (isLoadingSession) return;
-    if (session) {
-      router.replace("/(tabs)");
-    }
-  }, [session, isLoadingSession]);
 
   return (
     <View className="flex-1">
