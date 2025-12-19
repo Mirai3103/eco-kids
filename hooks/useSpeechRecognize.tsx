@@ -55,11 +55,20 @@ export const useSpeechRecognize = (
     };
   }, []);
 
-  const startRecognize = useCallback(async (locale: string = "en-US") => {
+  const startRecognize = useCallback(async (locale: string = "vi-VN") => {
     try {
       setError(null);
       setSpeechResults([]);
-      await Voice.start(locale);
+      await Voice.start(locale, {
+        EXTRA_MAX_RESULTS: 8,
+
+        // Cho bé ngập ngừng chút không bị kết thúc sớm
+        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 12000,
+        EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
+        EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
+        "android.speech.extra.DICTATION_MODE": true,
+        "android.speech.extra.LANGUAGE_MODEL": "free_form",
+      });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to start recognition"

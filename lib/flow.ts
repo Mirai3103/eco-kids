@@ -12,44 +12,7 @@ import * as crypto from "expo-crypto";
 import { fetch as expoFetch } from "expo/fetch";
 import { SYSTEM_PROMPT } from "./prompt";
 
-export function makeDebugFetch(
-  baseFetch: typeof globalThis.fetch,
-  opts?: { label?: string }
-): typeof globalThis.fetch {
-  const label = opts?.label ?? "AI_FETCH";
 
-  return (async (input: any, init?: RequestInit) => {
-    const url = typeof input === "string" ? input : input?.url;
-    const method = init?.method ?? "GET";
-
-    // Log request (đừng log apiKey)
-    console.log(`[${label}] -> ${method} ${url}`);
-    if (init?.headers) console.log(`[${label}] req headers:`, init.headers);
-
-    const t0 = Date.now();
-    const res = await baseFetch(input as any, init as any);
-    const dt = Date.now() - t0;
-
-    console.log(
-      `[${label}] <- ${res.status} ${res.statusText} (${dt}ms) ${method} ${url}`
-    );
-    console.log(`[${label}] res headers:`, {
-      "content-type": res.headers.get("content-type"),
-      "content-encoding": res.headers.get("content-encoding"),
-      "transfer-encoding": res.headers.get("transfer-encoding"),
-      "content-length": res.headers.get("content-length"),
-    });
-
-    // Không đọc body => stream vẫn nguyên vẹn
-    return res;
-  }) as any;
-}
-
-// dùng:
-export const debugFetch = makeDebugFetch(
-  expoFetch as unknown as typeof globalThis.fetch,
-  { label: "DEEPSEEK" }
-);
 const deepseek = createDeepSeek({
   apiKey: Constants.expoConfig?.extra?.deepseekApiKey,
   fetch: expoFetch as unknown as typeof globalThis.fetch,

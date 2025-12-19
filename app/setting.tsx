@@ -268,6 +268,8 @@ export default function SettingsScreen() {
     setIsDefaultAutoPlay,
     setDefaultLanguage,
     setDefaultGender,
+    toggleImproveASR,
+    isImproveASR,
   } = useSettingStore();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -371,6 +373,21 @@ export default function SettingsScreen() {
             }
             color="#EF4444"
           />
+          <SettingsItem
+            icon="chatbubbles-outline"
+            title="Cãi thiện ASR"
+            subtitle="Cải thiện nhận diện giọng nói của trẻ"
+            showArrow={false}
+            rightContent={
+              <Switch
+                value={isImproveASR}
+                onValueChange={toggleImproveASR}
+                trackColor={{ false: "#E5E7EB", true: "#399918" }}
+                thumbColor={isImproveASR ? "#ffffff" : "#f4f3f4"}
+              />
+            }
+            color="#8B5CF6"
+       />
           <SettingsItem
             icon="play-outline"
             title="Tự động phát"

@@ -6,9 +6,11 @@ import { VStack } from "@/components/ui/vstack";
 import { useCircularReveal } from "@/contexts/CircularRevealContext";
 import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
 import useTTSQueue from "@/hooks/useTTSQueue";
+import { fixSpelling } from "@/lib/fix_speeling";
 import { generate } from "@/lib/flow";
 import { db } from "@/stores/db";
 import { useIdStore } from "@/stores/id.store";
+import { useSettingStore } from "@/stores/setting.store";
 import { messages } from "@/stores/sqlite.schema";
 import { Ionicons } from "@expo/vector-icons";
 import { eq } from "drizzle-orm";
@@ -163,7 +165,8 @@ export default function ChatScreen() {
   const { data: messagesData } = useLiveQuery(
     db.query.messages.findMany({
       where: eq(messages.conversationId, chatId),
-    }),[chatId]
+    }),
+    [chatId]
   );
   const { playFastTTS } = useTTSQueue();
 
@@ -250,12 +253,24 @@ export default function ChatScreen() {
     },
     [chatId, playFastTTS]
   );
+  const { isImproveASR } = useSettingStore();
   const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
-    onSpeechStart() {
-    },
+    onSpeechStart() {},
     onSpeechResults(e) {
-      const recognizedText = e.value[e.value.length - 1];
-      handleSendMessage(recognizedText);
+      if (!isImproveASR) {
+        const recognizedText = e.value[0];
+        handleSendMessage(recognizedText);
+        return;
+      }
+      fixSpelling(
+        e.value,
+        messagesData
+          ?.filter((msg) => msg.textContent)
+          .map((msg) => `${msg.role}: ${msg.textContent}`)
+          .join("\n")
+      ).then((fixedText) => {
+        handleSendMessage(fixedText);
+      });
     },
   });
   const [inputText, setInputText] = useState("");
@@ -313,7 +328,7 @@ export default function ChatScreen() {
   };
   const handleRefresh = () => {
     resetId();
-  }
+  };
 
   return (
     <View className="flex-1">
@@ -387,7 +402,6 @@ export default function ChatScreen() {
                   Trợ lý AI của bé
                 </Text>
               </VStack>
-           
             </HStack>
 
             <Pressable onPress={handleRefresh}>

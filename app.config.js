@@ -10,6 +10,7 @@ export default ({ config }) => ({
     mistralApiKey: process.env.EXPO_PUBLIC_MISTRAL_API_KEY,
     deepseekApiKey: process.env.EXPO_PUBLIC_DEEPSEEK_API_KEY,
     elevenlabsApiKey: process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY,
+    googleApiKey: process.env.EXPO_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY,
     isProduction: process.env.NODE_ENV === 'production',
   },
   plugins: [...config.plugins],
