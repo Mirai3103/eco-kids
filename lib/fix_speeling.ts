@@ -1,8 +1,10 @@
+import { model } from "@/hooks/useAi";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { generateObject, generateText } from "ai";
 import Constants from "expo-constants";
 import { fetch as expoFetch } from "expo/fetch";
 import { z } from "zod/v4";
+import { supabase } from "./supabase";
 
 const google = createGoogleGenerativeAI({
   apiKey: Constants.expoConfig?.extra?.googleApiKey,
@@ -36,4 +38,24 @@ export const fixSpelling = async (candidates: string[], context: string) => {
     return candidates[0];
   }
   return response.text;
+};
+
+export const fixSpellingWithConfidence = async (candidates: string[], context: string) => {
+  const response = await generateObject({
+    model: model,
+    prompt: prompt(candidates, context),
+    temperature: 0.7,
+    schema: returnSchema,
+  });
+  supabase.from("fix_spelling_logs").insert({
+    raw_candidate_top: candidates[0],
+    corrected_text: response.object.text,
+    confidence_score: response.object.confidence,
+    created_at: new Date().toISOString(),
+    id: crypto.randomUUID(),
+  });
+  if (response.object.confidence < 0.6) {
+    return "Hãy yêu cầu bé nói lại.";
+  }
+  return response.object.text;
 };

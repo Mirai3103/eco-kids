@@ -196,6 +196,41 @@ export type Database = {
           },
         ]
       }
+      fix_spelling_logs: {
+        Row: {
+          confidence_score: number | null
+          corrected_text: string
+          created_at: string | null
+          id: string
+          raw_candidate_top: string
+          story_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          corrected_text: string
+          created_at?: string | null
+          id: string
+          raw_candidate_top: string
+          story_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          corrected_text?: string
+          created_at?: string | null
+          id?: string
+          raw_candidate_top?: string
+          story_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_story"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       point_logs: {
         Row: {
           action: string | null
@@ -505,41 +540,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "story_segments_story_id_fkey"
-            columns: ["story_id"]
-            isOneToOne: false
-            referencedRelation: "stories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      story_transcriptions: {
-        Row: {
-          confidence_score: number | null
-          corrected_text: string
-          created_at: string | null
-          id: string
-          raw_candidate_top: string
-          story_id: string | null
-        }
-        Insert: {
-          confidence_score?: number | null
-          corrected_text: string
-          created_at?: string | null
-          id: string
-          raw_candidate_top: string
-          story_id?: string | null
-        }
-        Update: {
-          confidence_score?: number | null
-          corrected_text?: string
-          created_at?: string | null
-          id?: string
-          raw_candidate_top?: string
-          story_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_story"
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
