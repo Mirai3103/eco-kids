@@ -199,6 +199,7 @@ export type Database = {
       fix_spelling_logs: {
         Row: {
           confidence_score: number | null
+          context: string | null
           corrected_text: string
           created_at: string | null
           id: string
@@ -207,6 +208,7 @@ export type Database = {
         }
         Insert: {
           confidence_score?: number | null
+          context?: string | null
           corrected_text: string
           created_at?: string | null
           id: string
@@ -215,6 +217,7 @@ export type Database = {
         }
         Update: {
           confidence_score?: number | null
+          context?: string | null
           corrected_text?: string
           created_at?: string | null
           id?: string

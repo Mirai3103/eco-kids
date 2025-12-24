@@ -40,7 +40,8 @@ export const fixSpelling = async (candidates: string[], context: string) => {
   return response.text;
 };
 
-export const fixSpellingWithConfidence = async (candidates: string[], context: string) => {
+export const fixSpellingWithConfidence = async (candidates: string[], context: string, storyId?: string) => {
+  // todo: full text search raw_candidate_top to few shot candidates
   const response = await generateObject({
     model: model,
     prompt: prompt(candidates, context),
@@ -53,6 +54,8 @@ export const fixSpellingWithConfidence = async (candidates: string[], context: s
     confidence_score: response.object.confidence,
     created_at: new Date().toISOString(),
     id: crypto.randomUUID(),
+    story_id: storyId,
+    context: context,
   });
   if (response.object.confidence < 0.6) {
     return "Hãy yêu cầu bé nói lại.";
