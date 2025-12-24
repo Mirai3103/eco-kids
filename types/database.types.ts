@@ -204,6 +204,7 @@ export type Database = {
           created_at: string | null
           id: string
           raw_candidate_top: string
+          raw_unaccent: string | null
           story_id: string | null
         }
         Insert: {
@@ -213,6 +214,7 @@ export type Database = {
           created_at?: string | null
           id: string
           raw_candidate_top: string
+          raw_unaccent?: string | null
           story_id?: string | null
         }
         Update: {
@@ -222,6 +224,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           raw_candidate_top?: string
+          raw_unaccent?: string | null
           story_id?: string | null
         }
         Relationships: [
@@ -695,6 +698,9 @@ export type Database = {
         Args: { p_point: number; p_question_id: string; p_user_id: string }
         Returns: boolean
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      unaccent: { Args: { "": string }; Returns: string }
       update_user_recommend_vector: {
         Args: { p_user_id: string }
         Returns: undefined

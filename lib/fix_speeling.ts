@@ -62,3 +62,15 @@ export const fixSpellingWithConfidence = async (candidates: string[], context: s
   }
   return response.object.text;
 };
+
+// select
+//   raw_candidate_top,
+//   corrected_text,
+//   similarity(
+//     raw_unaccent,
+//     unaccent(lower($1))
+//   ) as score
+// from fix_spelling_logs
+// where story_id = $2
+// order by score desc
+// limit 10;
