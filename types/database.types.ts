@@ -512,6 +512,41 @@ export type Database = {
           },
         ]
       }
+      story_transcriptions: {
+        Row: {
+          confidence_score: number | null
+          corrected_text: string
+          created_at: string | null
+          id: string
+          raw_candidate_top: string
+          story_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          corrected_text: string
+          created_at?: string | null
+          id: string
+          raw_candidate_top: string
+          story_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          corrected_text?: string
+          created_at?: string | null
+          id?: string
+          raw_candidate_top?: string
+          story_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_story"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       topics: {
         Row: {
           description: string | null
