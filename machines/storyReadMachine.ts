@@ -12,6 +12,7 @@ export type StoryReadContext = {
   isAutoPlay: boolean;
   isMuted: boolean;
   isMenuVisible: boolean;
+  isCompletionModalVisible: boolean;
   storySegments: StorySegment[];
   imageUrls: string[];
   audioUrls: string[];
@@ -30,6 +31,8 @@ export type StoryReadEvents =
   | { type: "AUDIO_FINISHED" }
   | { type: "IMAGES_LOADED" }
   | { type: "RETRY" }
+  | { type: "SHOW_COMPLETION_MODAL" }
+  | { type: "CLOSE_COMPLETION_MODAL" }
 
 export const storyReadMachine = setup({
   types: {
@@ -107,6 +110,12 @@ export const storyReadMachine = setup({
     closeMenu: assign({
       isMenuVisible: false,
     }),
+    showCompletionModal: assign({
+      isCompletionModalVisible: true,
+    }),
+    closeCompletionModal: assign({
+      isCompletionModalVisible: false,
+    }),
     toggleLanguage: assign({
       isVietnamese: ({ context }) => !context.isVietnamese,
     }),
@@ -170,6 +179,9 @@ export const storyReadMachine = setup({
     hasNextPage: ({ context }) => {
       return context.currentPage < context.storySegments.length - 1;
     },
+    isLastPage: ({ context }) => {
+      return context.currentPage === context.storySegments.length - 1;
+    },
     shouldPlayAudio: ({ context }) => {
       // Audio tự động phát nếu không mute (bất kể isAutoPlay)
       const enabled = !context.isMuted;
@@ -207,6 +219,7 @@ export const storyReadMachine = setup({
     isAutoPlay: (input?.isAutoPlay as boolean) ?? true,
     isMuted: false,
     isMenuVisible: false,
+    isCompletionModalVisible: false,
     storySegments: [],
     imageUrls: [],
     audioUrls: [],
@@ -315,9 +328,26 @@ export const storyReadMachine = setup({
                 // Will be handled by hook to flip page
               },
               {
+                target: "storyCompleted",
+                guard: { type: "isLastPage" },
+              },
+              {
                 target: "idle",
               },
             ],
+            PAGE_FLIPPED: {
+              target: "pageFlipped",
+            },
+          },
+        },
+        storyCompleted: {
+          after: {
+            5000: {
+              actions: "showCompletionModal",
+              target: "idle",
+            },
+          },
+          on: {
             PAGE_FLIPPED: {
               target: "pageFlipped",
             },
@@ -331,6 +361,12 @@ export const storyReadMachine = setup({
         CLOSE_MENU: {
           actions: "closeMenu",
         },
+        SHOW_COMPLETION_MODAL: {
+          actions: "showCompletionModal",
+        },
+        CLOSE_COMPLETION_MODAL: {
+          actions: "closeCompletionModal",
+        },
         TOGGLE_LANGUAGE: {
           actions: ["toggleLanguage", "closeMenu", "updateAudioUrls"],
         },
@@ -341,7 +377,7 @@ export const storyReadMachine = setup({
           actions: ["toggleMute", "closeMenu"],
         },
         RESTART: {
-          actions: ["restart", "closeMenu"],
+          actions: ["restart", "closeMenu", "closeCompletionModal"],
         },
         BACK: {
           target: "finished",

@@ -1,9 +1,12 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import PageFlipper from "@laffy1309/react-native-page-flipper";
-import { useLocalSearchParams } from "expo-router";
-import React, { useCallback } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import LottieView from "lottie-react-native";
+import React, { useCallback, useRef } from "react";
 import {
   Animated,
+  Modal,
   Pressable,
   StatusBar,
   View,
@@ -18,15 +21,229 @@ import { StoryPage } from "@/components/read-story/StoryPage";
 import { Text } from "@/components/ui/text";
 
 // Hooks
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
 import { useStoryRead } from "@/hooks/useStoryRead";
 import { supabase } from "@/lib/supabase";
 import { useAudioTimeStore } from "@/stores/audio-time.store";
+import { Ionicons } from "@expo/vector-icons";
+
+// Completion Modal Component
+const CompletionModal = ({
+  visible,
+  onQuiz,
+  onStay,
+}: {
+  visible: boolean;
+  onQuiz: () => void;
+  onStay: () => void;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      scaleAnim.setValue(0);
+    }
+  }, [visible]);
+
+  const Action3DButton = ({
+    icon,
+    label,
+    onPress,
+    color,
+    darkerColor,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+    onPress: () => void;
+    color: string;
+    darkerColor: string;
+  }) => {
+    const buttonScale = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => {
+      Animated.spring(buttonScale, {
+        toValue: 0.9,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const handlePressOut = () => {
+      Animated.spring(buttonScale, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    return (
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+          <VStack space="sm" className="items-center">
+            {/* Shadow/Bottom layer */}
+            <View style={{ position: "relative" }}>
+              <View
+                style={{
+                  position: "absolute",
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  backgroundColor: darkerColor,
+                  top: 6,
+                  left: 0,
+                }}
+              />
+
+              {/* Main Button */}
+              <View
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  backgroundColor: color,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 12,
+                  elevation: 10,
+                  borderWidth: 3,
+                  borderColor: "#fff",
+                }}
+              >
+                {icon}
+              </View>
+            </View>
+
+            {/* Label */}
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 18,
+                fontWeight: "700",
+                fontFamily: "Baloo2_700Bold",
+                textAlign: "center",
+              }}
+            >
+              {label}
+            </Text>
+          </VStack>
+        </Animated.View>
+      </Pressable>
+    );
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <View
+            style={{
+              width: 340,
+              borderRadius: 30,
+              overflow: "hidden",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 15,
+            }}
+          >
+            {/* Background gradient */}
+            <LinearGradient
+              colors={["#FFFFFF", "#F0F9FF"]}
+              style={{ padding: 32 }}
+            >
+              <VStack space="2xl" className="items-center">
+                {/* Celebration Animation */}
+                <View
+                  style={{
+                    width: 150,
+                    height: 150,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <LottieView
+                    source={require("@/assets/congrats.json")}
+                    autoPlay
+                    loop
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                </View>
+
+                {/* Title */}
+                <Text
+                  style={{
+                    fontSize: 28,
+                    fontWeight: "bold",
+                    color: "#1B4B07",
+                    textAlign: "center",
+                    fontFamily: "Baloo2_700Bold",
+                    lineHeight: 36,
+                  }}
+                >
+                  Đã đọc xong!
+                </Text>
+
+                {/* Action Buttons */}
+                <HStack space="xl" className="justify-center mt-4">
+                  <Action3DButton
+                    icon={
+                      <FontAwesome6 name="brain" size={40} color="white" />
+                    }
+                    label="Quiz"
+                    onPress={onQuiz}
+                    color="#F59E0B"
+                    darkerColor="#D97706"
+                  />
+
+                  <Action3DButton
+                    icon={<Ionicons name="refresh" size={40} color="white" />}
+                    label="Đọc lại"
+                    onPress={onStay}
+                    color="#22C55E"
+                    darkerColor="#16A34A"
+                  />
+                </HStack>
+              </VStack>
+            </LinearGradient>
+          </View>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
+};
 
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const selectedGender = params.gender as "male" | "female" | undefined;
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const router = useRouter();
 
   const {
     currentPage,
@@ -34,6 +251,7 @@ export default function ReadStoryScreen() {
     isAutoPlay,
     isMuted,
     isMenuVisible,
+    isCompletionModalVisible,
     isLoading,
     isImageLoading,
     storySegments,
@@ -51,9 +269,19 @@ export default function ReadStoryScreen() {
     isRecording,
     startRecognize,
     stopRecognize,
-
+    closeCompletionModal,
   } = useStoryRead(storyId, selectedGender);
   console.log("Render ReadStoryScreen")
+  
+  const handleQuiz = () => {
+    closeCompletionModal();
+    router.push(`/stories/${storyId}/quiz`);
+  };
+
+  const handleStay = () => {
+    closeCompletionModal();
+    handleRestart();
+  };
 
   const renderStoryPage = useCallback(
     (segmentData: string) => {
@@ -193,6 +421,13 @@ export default function ReadStoryScreen() {
         onPressMic={startRecognize}
         isRecording={isRecording}
         stopRecording={stopRecognize}
+      />
+
+      {/* Completion Modal */}
+      <CompletionModal
+        visible={isCompletionModalVisible}
+        onQuiz={handleQuiz}
+        onStay={handleStay}
       />
     </View>
   );

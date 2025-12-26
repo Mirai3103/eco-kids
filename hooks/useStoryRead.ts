@@ -61,6 +61,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     isAutoPlay,
     isMuted,
     isMenuVisible,
+    isCompletionModalVisible,
     storySegments,
     imageUrls,
     audioUrls,
@@ -233,6 +234,10 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     send({ type: "TOGGLE_AUTOPLAY" });
   }, [send]);
 
+  const closeCompletionModal = useCallback(() => {
+    send({ type: "CLOSE_COMPLETION_MODAL" });
+  }, [send]);
+
   // Auto-play effect - trigger audio when in playingAudio state
   const isPlayingAudio = state.matches({ ready: "playingAudio" });
   
@@ -261,6 +266,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     isAutoPlay,
     isMuted,
     isMenuVisible,
+    isCompletionModalVisible,
     isLoading: isLoading || isImageLoading,
     isImageLoading,
     storySegments,
@@ -281,6 +287,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
+    closeCompletionModal,
 
     // Machine state (for debugging)
     machineState: state.value,
