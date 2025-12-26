@@ -70,7 +70,7 @@ const CompletionModal = ({
 
     const handlePressIn = () => {
       Animated.spring(buttonScale, {
-        toValue: 0.9,
+        toValue: 0.95,
         useNativeDriver: true,
       }).start();
     };
@@ -84,6 +84,9 @@ const CompletionModal = ({
       }).start();
     };
 
+    const buttonSize = 100;
+    const borderRadius = buttonSize / 2;
+
     return (
       <Pressable
         onPress={onPress}
@@ -92,36 +95,29 @@ const CompletionModal = ({
       >
         <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
           <VStack space="sm" className="items-center">
-            {/* Shadow/Bottom layer */}
+            {/* Button Container with 3D effect */}
             <View style={{ position: "relative" }}>
+              {/* Shadow/Bottom layer */}
               <View
                 style={{
-                  position: "absolute",
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
                   backgroundColor: darkerColor,
-                  top: 6,
+                  width: buttonSize,
+                  height: buttonSize,
+                  borderRadius,
+                  position: "absolute",
+                  top: 5,
                   left: 0,
                 }}
               />
-
-              {/* Main Button */}
+              {/* Top layer */}
               <View
                 style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
                   backgroundColor: color,
+                  width: buttonSize,
+                  height: buttonSize,
+                  borderRadius,
                   justifyContent: "center",
                   alignItems: "center",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 12,
-                  elevation: 10,
-                  borderWidth: 3,
-                  borderColor: "#fff",
                 }}
               >
                 {icon}
@@ -133,7 +129,6 @@ const CompletionModal = ({
               style={{
                 color: "#1B4B07",
                 fontSize: 18,
-                fontWeight: "700",
                 fontFamily: "Baloo2_700Bold",
                 textAlign: "center",
               }}
