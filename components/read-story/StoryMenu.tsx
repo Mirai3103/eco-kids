@@ -16,6 +16,9 @@ interface StoryMenuProps {
     handleToggleAutoPlay: () => void;
     isAutoPlay: boolean;
     handleRestart: () => void;
+    onPressMic: () => void;
+    isRecording: boolean;
+    stopRecording: () => void;
 }
 
 export const StoryMenu = React.memo<StoryMenuProps>(
@@ -31,6 +34,9 @@ export const StoryMenu = React.memo<StoryMenuProps>(
         handleToggleAutoPlay,
         isAutoPlay,
         handleRestart,
+        onPressMic,
+        isRecording,
+        stopRecording,
     }) => {
         const { width: screenWidth, height: screenHeight } = useWindowDimensions();
         const isLandscape = screenWidth > screenHeight;
@@ -73,6 +79,13 @@ export const StoryMenu = React.memo<StoryMenuProps>(
                 color: "#8B5CF6",
                 shadowColor: "#7C3AED",
             },
+            {
+                key: 'mic',
+                icon: <Ionicons name={isRecording ? "mic-off" : "mic"} size={28} color="white" />,
+                onPress: isRecording ? stopRecording : onPressMic,
+                color: isRecording ? "#D72654" : "#399918",
+                shadowColor: isRecording ? "#a01a3f" : "#2a800d",
+            }
         ];
 
         return (

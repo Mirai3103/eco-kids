@@ -12,6 +12,7 @@ import useTTS from "@/hooks/useTTS";
 import { storyReadMachine } from "@/machines/storyReadMachine";
 import { useReadStore } from "@/stores/read.store";
 import { useSettingStore } from "@/stores/setting.store";
+import { useSpeechRecognize } from "./useSpeechRecognize";
 
 const AUTO_PLAY_DELAY = 1000;
 
@@ -19,14 +20,12 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const { setLastReadStoryId } = useReadStore();
   const { isDefaultAutoPlay, defaultLanguage, defaultGender } =
     useSettingStore();
-    console.log({ isDefaultAutoPlay, defaultLanguage, defaultGender } )
 
   // Session
   const session = useSession();
 
   // Use selectedGender from query param if available, otherwise use defaultGender
   const initialGender = selectedGender || defaultGender;
-  console.log("initialGender", initialGender);
   // Initialize state machine
   const [state, send] = useMachine(storyReadMachine, {
     input: {
@@ -47,6 +46,12 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
   // Hooks
   const { playAudio, stopAll, playTTSOnline } = useTTS();
+  const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
+    onSpeechResults(e) {
+      console.log(e.value, "speechResults");
+    },
+  })
+
 
   // Extract state values
   const {
@@ -64,15 +69,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const isLoading = state.matches("loading");
   const isInPreloadState = state.matches({ loading: "preloadingImages" });
 
-  // Debug logging
-  useEffect(() => {
-    console.log("🔍 State Machine:", state.value);
-    console.log("📊 Context:", {
-      segmentsCount: storySegments.length,
-      imagesCount: imageUrls.length,
-      audioCount: audioUrls.length,
-    });
-  }, [state.value, storySegments.length, imageUrls.length, audioUrls.length]);
+
 
   // Image preloading - only starts after segments are loaded
   const shouldStartPreload = isInPreloadState && imageUrls.length > 0;
@@ -115,7 +112,6 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   // Handlers
   const handleFlippedEnd = useCallback(
     (pageIndex: number) => {
-      console.log("📄 Page flipped to:", pageIndex);
       // Stop current audio when flipping page
       stopAll();
       send({ type: "PAGE_FLIPPED", pageIndex });
@@ -162,12 +158,10 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
         send({ type: "AUDIO_FINISHED" });
         // Auto-flip page nếu isAutoPlay = true
         if (isAutoPlay && currentPage < storySegments.length - 1) {
-          console.log("📖 Auto-flipping to next page...");
           if (pageFlipperRef.current) {
             pageFlipperRef.current.nextPage();
           }
         } else {
-          console.log("📄 Audio finished, staying on current page");
         }
       };
 
@@ -243,19 +237,21 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const isPlayingAudio = state.matches({ ready: "playingAudio" });
   
   useEffect(() => {
-    console.log("🔍 Is Playing Audio State:", isPlayingAudio, "Page:", currentPage);
     if (isPlayingAudio) {
-      console.log("🎵 Scheduling audio playback...");
       const timer = setTimeout(() => {
         handlePlayAudio();
       }, AUTO_PLAY_DELAY);
 
       return () => {
-        console.log("🧹 Cleaning up audio timer");
         clearTimeout(timer);
       };
     }
   }, [isPlayingAudio, currentPage, handlePlayAudio]);
+
+  const handlePressMic = useCallback(() => {
+    // nếu đang phát thì tạm dừng phát, chỉnh state machine về ready
+    startRecognize("vi-VN");
+  }, [startRecognize]);
 
   return {
     // State
@@ -288,5 +284,10 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
     // Machine state (for debugging)
     machineState: state.value,
+
+    // Speech Recognition
+    isRecording,
+    startRecognize: handlePressMic,
+    stopRecognize,
   };
 };

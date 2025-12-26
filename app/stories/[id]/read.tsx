@@ -19,12 +19,13 @@ import { Text } from "@/components/ui/text";
 
 // Hooks
 import { useStoryRead } from "@/hooks/useStoryRead";
+import { supabase } from "@/lib/supabase";
+import { useAudioTimeStore } from "@/stores/audio-time.store";
 
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const selectedGender = params.gender as "male" | "female" | undefined;
-  console.log("selectedGender", selectedGender);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const {
@@ -47,17 +48,53 @@ export default function ReadStoryScreen() {
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
+    isRecording,
+    startRecognize,
+    stopRecognize,
+
   } = useStoryRead(storyId, selectedGender);
+  console.log("Render ReadStoryScreen")
 
   const renderStoryPage = useCallback(
     (segmentData: string) => {
       const segment = JSON.parse(segmentData);
-      return <StoryPage segment={segment} isVietnamese={isVietnamese} />;
+      return <StoryPage segment={segment} isVietnamese={isVietnamese} gender={selectedGender!}  />;
     },
-    [isVietnamese]
+    [isVietnamese, selectedGender]
   );
 
   // Loading state
+
+
+  const currentSegment = storySegments[currentPage];
+  const setWords = useAudioTimeStore((state) => state.setWords);
+  const setSegmentId = useAudioTimeStore((state) => state.setSegmentId);
+  React.useEffect(() => {
+    if (!selectedGender || !isVietnamese || !currentSegment) {
+      return;
+    }
+    async function getTranscript() {
+      const { data, error } = await supabase
+        .from("audio_segments")
+        .select("transcript")
+        .eq("gender", selectedGender!)
+        .eq("language", isVietnamese ? "vi" : "en")
+        .eq("segment_id", currentSegment?.id)
+        .maybeSingle();
+      if (error) {
+        console.log("error nene", error, currentSegment?.id, isVietnamese, selectedGender);
+        return [];
+      }
+      const transcript = (data?.transcript as string) || "[]";
+      setSegmentId(currentSegment?.id);
+      console.log(currentSegment.vi_text, currentSegment.vi_text?.split(" ").length, "words");
+      setWords(JSON.parse(transcript));
+    }
+    getTranscript();
+    return () => {
+      setSegmentId(""); 
+    };  
+  }, [selectedGender, isVietnamese, currentSegment, setWords, setSegmentId]);
   if (isLoading || isImageLoading) {
     return <LoadingScreen isLoaded={!isLoading && !isImageLoading} />;
   }
@@ -70,8 +107,6 @@ export default function ReadStoryScreen() {
       </View>
     );
   }
-
-  const currentSegment = storySegments[currentPage];
   if (!currentSegment) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -155,6 +190,9 @@ export default function ReadStoryScreen() {
         handleToggleAutoPlay={handleToggleAutoPlay}
         isAutoPlay={isAutoPlay}
         handleRestart={handleRestart}
+        onPressMic={startRecognize}
+        isRecording={isRecording}
+        stopRecording={stopRecognize}
       />
     </View>
   );

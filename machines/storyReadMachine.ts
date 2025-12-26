@@ -29,7 +29,7 @@ export type StoryReadEvents =
   | { type: "BACK" }
   | { type: "AUDIO_FINISHED" }
   | { type: "IMAGES_LOADED" }
-  | { type: "RETRY" };
+  | { type: "RETRY" }
 
 export const storyReadMachine = setup({
   types: {

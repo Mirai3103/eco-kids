@@ -78,6 +78,7 @@ export type Database = {
           id: string
           language: string | null
           segment_id: string | null
+          transcript: Json | null
         }
         Insert: {
           audio_url?: string | null
@@ -86,6 +87,7 @@ export type Database = {
           id: string
           language?: string | null
           segment_id?: string | null
+          transcript?: Json | null
         }
         Update: {
           audio_url?: string | null
@@ -94,6 +96,7 @@ export type Database = {
           id?: string
           language?: string | null
           segment_id?: string | null
+          transcript?: Json | null
         }
         Relationships: [
           {
