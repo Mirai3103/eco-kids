@@ -12,7 +12,6 @@ import useTTS from "@/hooks/useTTS";
 import { storyReadMachine } from "@/machines/storyReadMachine";
 import { useReadStore } from "@/stores/read.store";
 import { useSettingStore } from "@/stores/setting.store";
-import { useSpeechRecognize } from "./useSpeechRecognize";
 
 const AUTO_PLAY_DELAY = 1000;
 
@@ -39,6 +38,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
   // Refs
   const pageFlipperRef = useRef<any>(null);
+  const isAutoPlayRef = useRef(state.context.isAutoPlay);
 
   // Animations
   const [menuAnimation] = useState(new Animated.Value(0));
@@ -46,11 +46,6 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
   // Hooks
   const { playAudio, stopAll, playTTSOnline } = useTTS();
-  const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
-    onSpeechResults(e) {
-      console.log(e.value, "speechResults");
-    },
-  })
 
 
   // Extract state values
@@ -70,7 +65,10 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const isLoading = state.matches("loading");
   const isInPreloadState = state.matches({ loading: "preloadingImages" });
 
-
+  // Update ref when isAutoPlay changes
+  useEffect(() => {
+    isAutoPlayRef.current = isAutoPlay;
+  }, [isAutoPlay]);
 
   // Image preloading - only starts after segments are loaded
   const shouldStartPreload = isInPreloadState && imageUrls.length > 0;
@@ -157,8 +155,8 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
       stopAll();
       const handleFinish = () => {
         send({ type: "AUDIO_FINISHED" });
-        // Auto-flip page nếu isAutoPlay = true
-        if (isAutoPlay && currentPage < storySegments.length - 1) {
+        // Auto-flip page nếu isAutoPlay = true (sử dụng ref để tránh re-create callback)
+        if (isAutoPlayRef.current && currentPage < storySegments.length - 1) {
           if (pageFlipperRef.current) {
             pageFlipperRef.current.nextPage();
           }
@@ -191,7 +189,6 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
       playTTSOnline,
       stopAll,
       gender,
-      isAutoPlay,
       send,
     ]
   );
@@ -253,10 +250,12 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     }
   }, [isPlayingAudio, currentPage, handlePlayAudio]);
 
-  const handlePressMic = useCallback(() => {
-    // nếu đang phát thì tạm dừng phát, chỉnh state machine về ready
-    startRecognize("vi-VN");
-  }, [startRecognize]);
+
+  const handleMute = useCallback(() => {
+    if (isMuted) {
+      send({ type: "TOGGLE_MUTE" });
+    }
+  }, [isMuted, send]);
 
   return {
     // State
@@ -288,13 +287,11 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     handleToggleLanguage,
     handleToggleAutoPlay,
     closeCompletionModal,
+    handleMute,
 
     // Machine state (for debugging)
     machineState: state.value,
 
     // Speech Recognition
-    isRecording,
-    startRecognize: handlePressMic,
-    stopRecognize,
   };
 };

@@ -227,12 +227,12 @@ export default function ChatScreen() {
 
       try {
         setStatus("streaming");
-        await generate(
-          message,
+        await generate({
+          input: message,
           chatId,
-          abortController.current.signal,
-          onChunk
-        );
+          abortSignal: abortController.current.signal,
+          onChunk,
+        });
 
         // Sau khi stream xong, phát phần còn lại (nếu có)
         if (
@@ -259,7 +259,7 @@ export default function ChatScreen() {
     onSpeechStart() {},
     onSpeechResults(e) {
       console.log(e.value, "speechResults");
-      if(e.value.length === 0) {
+      if (e.value.length === 0) {
         return;
       }
       if (!isImproveASR) {
@@ -275,15 +275,23 @@ export default function ChatScreen() {
           ?.filter((msg) => msg.textContent)
           .map((msg) => `${msg.role}: ${msg.textContent}`)
           .join("\n")
-      ).then((fixedText) => {
-        const endTime = Date.now();
-        const duration = endTime - startTime;
-        ToastAndroid.show(`Fix spelling duration: ${duration}ms`, ToastAndroid.SHORT);
-        handleSendMessage(fixedText);
-      }).catch((err) => {
-        console.error("Fix spelling error:", err);
-        ToastAndroid.show(`Fix spelling error: ${err.message}`, ToastAndroid.SHORT);
-      });
+      )
+        .then((fixedText) => {
+          const endTime = Date.now();
+          const duration = endTime - startTime;
+          ToastAndroid.show(
+            `Fix spelling duration: ${duration}ms`,
+            ToastAndroid.SHORT
+          );
+          handleSendMessage(fixedText);
+        })
+        .catch((err) => {
+          console.error("Fix spelling error:", err);
+          ToastAndroid.show(
+            `Fix spelling error: ${err.message}`,
+            ToastAndroid.SHORT
+          );
+        });
     },
   });
   const [inputText, setInputText] = useState("");

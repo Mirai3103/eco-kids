@@ -25,6 +25,7 @@ import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { useStoryRead } from "@/hooks/useStoryRead";
 import { supabase } from "@/lib/supabase";
+import useSupporter from "@/lib/useSupporter";
 import { useAudioTimeStore } from "@/stores/audio-time.store";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -207,9 +208,7 @@ const CompletionModal = ({
                 {/* Action Buttons */}
                 <HStack space="xl" className="justify-center mt-4">
                   <Action3DButton
-                    icon={
-                      <FontAwesome6 name="brain" size={40} color="white" />
-                    }
+                    icon={<FontAwesome6 name="brain" size={40} color="white" />}
                     label="Quiz"
                     onPress={onQuiz}
                     color="#F59E0B"
@@ -261,13 +260,17 @@ export default function ReadStoryScreen() {
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
-    isRecording,
-    startRecognize,
-    stopRecognize,
+    handleMute,
+
     closeCompletionModal,
   } = useStoryRead(storyId, selectedGender);
-  console.log("Render ReadStoryScreen")
-  
+  const { isRecording, startRecognize, stopRecognize } = useSupporter();
+  const onStartRecognize = useCallback(() => {
+    handleMute();
+    startRecognize("vi-VN");
+  }, [startRecognize, handleMute]);
+  console.log("Render ReadStoryScreen");
+
   const handleQuiz = () => {
     closeCompletionModal();
     router.push(`/stories/${storyId}/quiz`);
@@ -281,13 +284,18 @@ export default function ReadStoryScreen() {
   const renderStoryPage = useCallback(
     (segmentData: string) => {
       const segment = JSON.parse(segmentData);
-      return <StoryPage segment={segment} isVietnamese={isVietnamese} gender={selectedGender!}  />;
+      return (
+        <StoryPage
+          segment={segment}
+          isVietnamese={isVietnamese}
+          gender={selectedGender!}
+        />
+      );
     },
     [isVietnamese, selectedGender]
   );
 
   // Loading state
-
 
   const currentSegment = storySegments[currentPage];
   const setWords = useAudioTimeStore((state) => state.setWords);
@@ -305,18 +313,28 @@ export default function ReadStoryScreen() {
         .eq("segment_id", currentSegment?.id)
         .maybeSingle();
       if (error) {
-        console.log("error nene", error, currentSegment?.id, isVietnamese, selectedGender);
+        console.log(
+          "error nene",
+          error,
+          currentSegment?.id,
+          isVietnamese,
+          selectedGender
+        );
         return [];
       }
       const transcript = (data?.transcript as string) || "[]";
       setSegmentId(currentSegment?.id);
-      console.log(currentSegment.vi_text, currentSegment.vi_text?.split(" ").length, "words");
+      console.log(
+        currentSegment.vi_text,
+        currentSegment.vi_text?.split(" ").length,
+        "words"
+      );
       setWords(JSON.parse(transcript));
     }
     getTranscript();
     return () => {
-      setSegmentId(""); 
-    };  
+      setSegmentId("");
+    };
   }, [selectedGender, isVietnamese, currentSegment, setWords, setSegmentId]);
   if (isLoading || isImageLoading) {
     return <LoadingScreen isLoaded={!isLoading && !isImageLoading} />;
@@ -413,7 +431,7 @@ export default function ReadStoryScreen() {
         handleToggleAutoPlay={handleToggleAutoPlay}
         isAutoPlay={isAutoPlay}
         handleRestart={handleRestart}
-        onPressMic={startRecognize}
+        onPressMic={onStartRecognize}
         isRecording={isRecording}
         stopRecording={stopRecognize}
       />

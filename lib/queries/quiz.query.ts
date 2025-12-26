@@ -14,6 +14,7 @@ export const  getQuizByStoryIdQueryOptions = (id: string): UseQueryOptions<
     const { data, error } = await supabase
       .from("questions")
       .select("*, answers(*)")
+      .order("index", { ascending: true })
       .eq("story_id", id)
     console.log(data,error, ":quizzz")
     return data as Quiz[] | undefined

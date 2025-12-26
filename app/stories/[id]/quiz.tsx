@@ -115,7 +115,7 @@ const ControlButton = ({
   );
 };
 
-// 3D Answer Button matching app design system
+// 3D Answer Button with Text Only
 const Answer3DButton = ({
   option,
   index,
@@ -288,29 +288,6 @@ const Answer3DButton = ({
                 </Text>
               </View>
 
-              {/* Option Image (if available) */}
-              {/* {option.image_url && (
-                <View
-                  style={{
-                    borderRadius: 12,
-                    overflow: "hidden",
-                    borderWidth: 2,
-                    borderColor: "#E5E7EB",
-                  }}
-                >
-                  <ExpoImage
-                    source={{ uri: option.image_url }}
-                    style={{
-                      width: 60,
-                      height: 60,
-                    }}
-                    alt={`Option ${index + 1}`}
-                    contentFit="cover"
-                    cachePolicy="memory-disk"
-                  />
-                </View>
-              )} */}
-
               {/* Option Text */}
               <Text
                 style={{
@@ -327,6 +304,207 @@ const Answer3DButton = ({
               {/* Result Icon */}
               {getIcon()}
             </HStack>
+          </View>
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+};
+
+// 3D Answer Button with Image (Grid Layout) - Image Only
+const Answer3DButtonWithImage = ({
+  option,
+  index,
+  isSelected,
+  isAnswered,
+  onPress,
+}: {
+  option: Answer;
+  index: number;
+  isSelected: boolean;
+  isAnswered: boolean;
+  onPress: () => void;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 500,
+        delay: index * 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        delay: index * 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  const handlePressIn = () => {
+    if (!isAnswered) {
+      Animated.spring(scaleAnim, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const handlePressOut = () => {
+    if (!isAnswered) {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const getBackgroundColor = () => {
+    if (!isAnswered) {
+      return isSelected ? theme.palette.primary[200] : "white";
+    }
+    if (option.is_correct) {
+      return "#E8F5E8";
+    }
+    if (isSelected && !option.is_correct) {
+      return "#FCDCE0";
+    }
+    return "white";
+  };
+
+  const getBorderColor = () => {
+    if (!isAnswered) {
+      return isSelected ? theme.palette.primary[400] : "#E5E7EB";
+    }
+    if (option.is_correct) {
+      return theme.palette.primary[400];
+    }
+    if (isSelected && !option.is_correct) {
+      return theme.palette.error[400];
+    }
+    return "#E5E7EB";
+  };
+
+  const getIcon = () => {
+    if (!isAnswered) return null;
+    if (option.is_correct) {
+      return (
+        <View
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 4,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 4,
+          }}
+        >
+          <Feather name="check-circle" size={24} color={theme.palette.primary[500]} />
+        </View>
+      );
+    }
+    if (isSelected && !option.is_correct) {
+      return (
+        <View
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 4,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 4,
+          }}
+        >
+          <Feather name="x-circle" size={24} color={theme.palette.error[500]} />
+        </View>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <Animated.View
+      style={{
+        opacity: opacityAnim,
+        transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
+        width: (screenWidth - 48) / 2 - 6,
+        marginBottom: 12,
+      }}
+    >
+      <Pressable
+        onPress={isAnswered ? undefined : onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={isAnswered}
+      >
+        <View style={{ position: "relative" }}>
+          {/* Shadow/Bottom layer */}
+          <View
+            style={{
+              backgroundColor: getBorderColor(),
+              borderRadius: 16,
+              position: "absolute",
+              top: 4,
+              left: 0,
+              right: 0,
+              height: "100%",
+            }}
+          />
+          {/* Top layer */}
+          <View
+            style={{
+              backgroundColor: getBackgroundColor(),
+              borderRadius: 16,
+              borderWidth: 3,
+              borderColor: getBorderColor(),
+              padding: 8,
+              shadowColor: getBorderColor(),
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 4,
+              position: "relative",
+            }}
+          >
+            {/* Image Only */}
+            <View
+              style={{
+                borderRadius: 12,
+                overflow: "hidden",
+                backgroundColor: "#F3F4F6",
+              }}
+            >
+              <ExpoImage
+                source={{ uri: option.image_url! }}
+                style={{
+                  width: "100%",
+                  height: 140,
+                }}
+                alt={`Option ${index + 1}`}
+                contentFit="contain"
+                cachePolicy="memory-disk"
+              />
+            </View>
+
+            {/* Result Icon (only shown when answered) */}
+            {getIcon()}
           </View>
         </View>
       </Pressable>
@@ -576,9 +754,11 @@ const QuestionCard = ({
                 width: screenWidth - 80,
                 height: 220,
                 borderRadius: 16,
+                
               }}
               alt={`Question ${questionNumber}`}
-              contentFit="cover"
+              
+              contentFit="contain"
               cachePolicy="memory-disk"
             />
           </Center>
@@ -1295,18 +1475,51 @@ export default function Quiz() {
               />
 
               {/* Options */}
-              <VStack space="sm" className="mb-6">
-                {currentQuiz?.answers?.map((option, index) => (
-                  <Answer3DButton
-                    key={index}
-                    option={option}
-                    index={index}
-                    isSelected={selectedOption === index}
-                    isAnswered={isAnswered}
-                    onPress={() => handleOptionPress(index)}
-                  />
-                ))}
-              </VStack>
+              {(() => {
+                // Check if all answers have images
+                const allHaveImages = currentQuiz?.answers?.every(answer => answer.image_url);
+                
+                if (allHaveImages) {
+                  // Render in 2-column grid with images
+                  return (
+                    <View 
+                      style={{ 
+                        flexDirection: "row", 
+                        flexWrap: "wrap", 
+                        justifyContent: "space-between",
+                        marginBottom: 24,
+                      }}
+                    >
+                      {currentQuiz?.answers?.map((option, index) => (
+                        <Answer3DButtonWithImage
+                          key={index}
+                          option={option}
+                          index={index}
+                          isSelected={selectedOption === index}
+                          isAnswered={isAnswered}
+                          onPress={() => handleOptionPress(index)}
+                        />
+                      ))}
+                    </View>
+                  );
+                } else {
+                  // Render in list without images
+                  return (
+                    <VStack space="sm" className="mb-6">
+                      {currentQuiz?.answers?.map((option, index) => (
+                        <Answer3DButton
+                          key={index}
+                          option={option}
+                          index={index}
+                          isSelected={selectedOption === index}
+                          isAnswered={isAnswered}
+                          onPress={() => handleOptionPress(index)}
+                        />
+                      ))}
+                    </VStack>
+                  );
+                }
+              })()}
 
               {/* 3D Action Button */}
               <Center className="mb-8">
