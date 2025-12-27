@@ -39,6 +39,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   // Refs
   const pageFlipperRef = useRef<any>(null);
   const isAutoPlayRef = useRef(state.context.isAutoPlay);
+  const previousLanguageRef = useRef(state.context.isVietnamese);
 
   // Animations
   const [menuAnimation] = useState(new Animated.Value(0));
@@ -144,8 +145,8 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   }, [menuAnimation, send]);
 
   const handlePlayAudio = useCallback(
-    (options?: { forceLanguage?: boolean; ignoreMute?: boolean }) => {
-      const { forceLanguage, ignoreMute } = options || {};
+    (options?: { ignoreMute?: boolean }) => {
+      const { ignoreMute } = options || {};
 
       if (isMuted && !ignoreMute) return;
 
@@ -166,16 +167,13 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
       const audioUrl = audioUrls[currentPage];
 
-      const targetIsVietnamese =
-        forceLanguage !== undefined ? forceLanguage : isVietnamese;
-
       if (audioUrl) {
         playAudio(audioUrl, handleFinish);
       } else {
-        const text = targetIsVietnamese
+        const text = isVietnamese
           ? currentSegment.vi_text
           : currentSegment.en_text;
-        const language = targetIsVietnamese ? "vi" : "en";
+        const language = isVietnamese ? "vi" : "en";
         playTTSOnline(text || "", gender, language, handleFinish, currentSegment.id);
       }
     },
@@ -222,11 +220,9 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
   const handleToggleLanguage = useCallback(() => {
     stopAll();
-    const newIsVietnamese = !isVietnamese;
     send({ type: "TOGGLE_LANGUAGE" });
-    // Replay audio with new language immediately
-    setTimeout(() => handlePlayAudio({ forceLanguage: newIsVietnamese }), 100);
-  }, [isVietnamese, send, stopAll, handlePlayAudio]);
+    // Audio sẽ được replay trong useEffect bên dưới sau khi state đã update
+  }, [send, stopAll]);
 
   const handleToggleAutoPlay = useCallback(() => {
     send({ type: "TOGGLE_AUTOPLAY" });
@@ -250,6 +246,21 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
       };
     }
   }, [isPlayingAudio, currentPage, handlePlayAudio]);
+
+  // Effect để replay audio khi ngôn ngữ thay đổi
+  useEffect(() => {
+    // Chỉ replay khi ngôn ngữ thực sự thay đổi (không phải lần đầu mount)
+    if (previousLanguageRef.current !== isVietnamese) {
+      previousLanguageRef.current = isVietnamese;
+      
+      // Replay audio với ngôn ngữ và audioUrls mới (đã được update bởi machine)
+      if (!isMuted) {
+        setTimeout(() => {
+          handlePlayAudio({ ignoreMute: true });
+        }, 100);
+      }
+    }
+  }, [isVietnamese, audioUrls, isMuted, handlePlayAudio]);
 
 
   const handleMute = useCallback(() => {

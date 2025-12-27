@@ -939,7 +939,9 @@ export default function StoryDetailsScreen() {
         })
      
     }
+    
     queryClient.invalidateQueries({ queryKey: ["favoriteStories"] });
+    queryClient.refetchQueries({ queryKey: ["favoriteStories"] });
     checkFavorite();
     recalculateVector({ userId: userId! });
   };

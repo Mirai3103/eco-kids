@@ -66,7 +66,7 @@ export default function useTTSQueue() {
   );
 
   const playFastTTS = useCallback(
-    async (text: string) => {
+    async (text: string, lang?: "vi" | "en") => {
       console.log("add to queue", text, "time:", new Date().toISOString());
 
       const encodedText = encodeURIComponent(text);
@@ -155,6 +155,6 @@ export default function useTTSQueue() {
   return {
     playFastTTS,
     forceStop,
-    queueTTSOffline,
+    queueTTSOffline:playFastTTS
   };
 }

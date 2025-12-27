@@ -18,11 +18,13 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import useSession from "@/hooks/useSession";
+import { recalculateVector } from "@/lib/egde";
 import { getAllStoriesQueryByTopicIdOptions } from "@/lib/queries/story.query";
 import { getTopicByIdQueryOptions } from "@/lib/queries/topic.query";
+import { supabase } from "@/lib/supabase";
 import theme from "@/lib/theme";
 import { Story } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 
 // Sample topic data - this would come from route params or API
@@ -120,11 +122,13 @@ const StoryCard = ({
   index,
   onPress,
   cardWidth,
+  handleFavoriteToggle,
 }: {
   story: Story & { isFavorite: boolean }
   index: number;
   onPress: () => void;
   cardWidth: number;
+  handleFavoriteToggle: (story: Story) => void;
 }) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
@@ -162,6 +166,7 @@ const StoryCard = ({
 
   const handleLikePress = () => {
     setLiked(!liked);
+    handleFavoriteToggle(story);
     // Bounce animation for heart
     Animated.sequence([
       Animated.spring(pressAnim, {
@@ -302,11 +307,13 @@ const MasonryGrid = ({
   onStoryPress,
   numColumns = 2,
   cardWidth,
+  handleFavoriteToggle,
 }: {
   data: Story[];
   onStoryPress: (story: Story) => void;
   numColumns?: number;
   cardWidth: number;
+  handleFavoriteToggle: (story: Story) => void;
 }) => {
   const [columns, setColumns] = useState<Story[][]>([]);
 
@@ -336,6 +343,7 @@ const MasonryGrid = ({
               index={colIndex + index * numColumns}
               onPress={() => onStoryPress(story)}
               cardWidth={cardWidth}
+              handleFavoriteToggle={handleFavoriteToggle}
             />
           ))}
         </VStack>
@@ -345,6 +353,7 @@ const MasonryGrid = ({
 };
 export default function TopicStoryScreen() {
   const { width: screenWidth } = useWindowDimensions();
+  const queryClient = useQueryClient();
   
   const handleBack = () => {
     router.back();
@@ -367,8 +376,8 @@ export default function TopicStoryScreen() {
   const { session } = useSession();
   const userId = session?.user.id;
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: topic,isLoading:isLoadingTopic } = useQuery(getTopicByIdQueryOptions(id));
-  const { data: stories,isLoading:isLoadingStories } = useQuery(getAllStoriesQueryByTopicIdOptions(id,userId));
+  const { data: topic,isLoading:isLoadingTopic} = useQuery(getTopicByIdQueryOptions(id));
+  const { data: stories,isLoading:isLoadingStories , refetch:refetchStories } = useQuery(getAllStoriesQueryByTopicIdOptions(id,userId));
   const decorationEmojis = topic?.meta_data.decorationEmojis || [];
   const randomDecorationEmoji = useCallback(() => {
     return decorationEmojis[
@@ -376,7 +385,21 @@ export default function TopicStoryScreen() {
     ];
   }, [decorationEmojis]);
   if(isLoadingTopic || isLoadingStories) return <LoadingScreen isLoaded={!isLoadingTopic && !isLoadingStories}/>
-
+  const handleFavoriteToggle =async (story: Story) => {
+    const {data,error} = await supabase.from("favorite_stories").select("*").eq("story_id", story.id).eq("user_id", userId!).maybeSingle();
+    if(!data) {
+      await supabase.from("favorite_stories").insert({
+        story_id: story.id,
+        user_id: userId!,
+      });
+    } else {
+      await supabase.from("favorite_stories").delete().eq("story_id", story.id).eq("user_id", userId!);
+    }
+    queryClient.invalidateQueries({ queryKey: ["favoriteStories"] });
+    queryClient.refetchQueries({ queryKey: ["favoriteStories"] });
+    refetchStories();
+    recalculateVector({ userId: userId! });
+  }
   return (
     <View className="flex-1">
       <StatusBar
@@ -556,6 +579,7 @@ export default function TopicStoryScreen() {
               onStoryPress={handleStoryPress}
               numColumns={numColumns}
               cardWidth={cardWidth}
+              handleFavoriteToggle={handleFavoriteToggle}
             />
           </VStack>
         </ScrollView>
