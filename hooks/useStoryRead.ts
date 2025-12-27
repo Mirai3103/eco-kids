@@ -217,7 +217,8 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     stopAll();
     send({ type: "BACK" });
     router.back();
-  }, [stopAll, send]);
+    router.replace(`/stories/${storyId}`);
+  }, [stopAll, send, storyId]);
 
   const handleToggleLanguage = useCallback(() => {
     stopAll();

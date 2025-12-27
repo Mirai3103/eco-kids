@@ -3,9 +3,11 @@ import useTTSQueue from "@/hooks/useTTSQueue";
 import * as Crypto from "expo-crypto";
 import { useCallback, useRef, useState } from "react";
 import { generate } from "./flow";
+import { SUPPORT_PROMPT } from "./prompt";
 export default function useSupporter() {
   const [id] = useState(() => Crypto.randomUUID());
-  const { playFastTTS } = useTTSQueue();
+  const { playFastTTS, queueTTSOffline } = useTTSQueue();
+  const contextRef = useRef("");
 
   const abortController = useRef<AbortController>(new AbortController());
   const [status, setStatus] = useState<
@@ -18,6 +20,7 @@ export default function useSupporter() {
 
   const handleSendMessage = useCallback(
     async (message: string, context?: string) => {
+      context =context || contextRef.current;
       abortController.current.abort();
       abortController.current = new AbortController();
 
@@ -47,7 +50,7 @@ export default function useSupporter() {
             lastPlayedSentence.current = completeSentence;
 
             // Phát audio cho câu này
-            playFastTTS(completeSentence).catch((err) => {
+            queueTTSOffline(completeSentence, "vi-VN").catch((err) => {
               console.error("TTS error:", err);
             });
 
@@ -69,6 +72,8 @@ export default function useSupporter() {
           abortSignal: abortController.current.signal,
           onChunk,
           context,
+          prompt:SUPPORT_PROMPT,
+          withTool:false
         });
 
         // Sau khi stream xong, phát phần còn lại (nếu có)
@@ -76,7 +81,7 @@ export default function useSupporter() {
           streamBuffer.current.trim() &&
           streamBuffer.current.trim() !== lastPlayedSentence.current
         ) {
-          await playFastTTS(streamBuffer.current.trim());
+          await queueTTSOffline(streamBuffer.current.trim(), "vi-VN");
         }
       } catch (error) {
         console.log(error);
@@ -102,9 +107,13 @@ export default function useSupporter() {
       handleSendMessage(recognizedText);
     },
   });
+  const setContext = useCallback((context: string) => {
+    contextRef.current = context;
+  }, []);
   return {
     isRecording,
     startRecognize,
     stopRecognize,
+    setContext,
   };
 }

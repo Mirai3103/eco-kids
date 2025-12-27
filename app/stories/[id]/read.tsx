@@ -264,7 +264,7 @@ export default function ReadStoryScreen() {
 
     closeCompletionModal,
   } = useStoryRead(storyId, selectedGender);
-  const { isRecording, startRecognize, stopRecognize } = useSupporter();
+  const { isRecording, startRecognize, stopRecognize,setContext } = useSupporter();
   const onStartRecognize = useCallback(() => {
     handleMute();
     startRecognize("vi-VN");
@@ -298,6 +298,11 @@ export default function ReadStoryScreen() {
   // Loading state
 
   const currentSegment = storySegments[currentPage];
+  React.useEffect(() => {
+    let story = storySegments.map((segment) => "Page " + segment.segment_index + ": " + segment.vi_text).join("\n");
+    story += "\n\n" + "Bé đang đọc trang " + currentPage + " của truyện " + storyId;
+    setContext(story);
+  }, [currentSegment, storySegments, storyId, currentPage]);
   const setWords = useAudioTimeStore((state) => state.setWords);
   const setSegmentId = useAudioTimeStore((state) => state.setSegmentId);
   React.useEffect(() => {

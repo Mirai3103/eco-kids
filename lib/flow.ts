@@ -39,12 +39,13 @@ interface IGenerateOptions {
   onChunk?: (chunk: string) => void;
   prompt?: string;
   context?: string;
+  withTool?: boolean;
 }
 export async function generate(
 
   options: IGenerateOptions
 ) {
-  const { input, chatId, abortSignal, onChunk, prompt=SYSTEM_PROMPT, context } = options;
+  const { input, chatId, abortSignal, onChunk, prompt=SYSTEM_PROMPT, context, withTool=true } = options;
   const timeStart = Date.now();
   const history = await db.query.messages.findMany({
     where: eq(messages.conversationId, chatId),
@@ -67,10 +68,10 @@ export async function generate(
   const { textStream, response } = streamText({
     model,
     // abortSignal,
-    tools: {
+    tools: withTool ? {
       similarity_search_tool,
       navigate_to_story_tool,
-    },
+    } : undefined,
     system: prompt,
     messages: [...payload, { role: "user", content: inputWithContext }],
     stopWhen: stepCountIs(10),
