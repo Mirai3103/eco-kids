@@ -27,6 +27,7 @@ import {
   ScrollView,
   StatusBar,
   TextInput,
+  ToastAndroid,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -226,12 +227,12 @@ export default function ChatScreen() {
 
       try {
         setStatus("streaming");
-        await generate(
-          message,
+        await generate({
+          input: message,
           chatId,
-          abortController.current.signal,
-          onChunk
-        );
+          abortSignal: abortController.current.signal,
+          onChunk,
+        });
 
         // Sau khi stream xong, phát phần còn lại (nếu có)
         if (
@@ -257,20 +258,40 @@ export default function ChatScreen() {
   const { isRecording, startRecognize, stopRecognize } = useSpeechRecognize({
     onSpeechStart() {},
     onSpeechResults(e) {
+      console.log(e.value, "speechResults");
+      if (e.value.length === 0) {
+        return;
+      }
       if (!isImproveASR) {
         const recognizedText = e.value[0];
         handleSendMessage(recognizedText);
         return;
       }
+      const startTime = Date.now();
+      console.log("start fixing spelling");
       fixSpelling(
         e.value,
         messagesData
           ?.filter((msg) => msg.textContent)
           .map((msg) => `${msg.role}: ${msg.textContent}`)
           .join("\n")
-      ).then((fixedText) => {
-        handleSendMessage(fixedText);
-      });
+      )
+        .then((fixedText) => {
+          const endTime = Date.now();
+          const duration = endTime - startTime;
+          ToastAndroid.show(
+            `Fix spelling duration: ${duration}ms`,
+            ToastAndroid.SHORT
+          );
+          handleSendMessage(fixedText);
+        })
+        .catch((err) => {
+          console.error("Fix spelling error:", err);
+          ToastAndroid.show(
+            `Fix spelling error: ${err.message}`,
+            ToastAndroid.SHORT
+          );
+        });
     },
   });
   const [inputText, setInputText] = useState("");

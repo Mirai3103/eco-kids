@@ -2,13 +2,24 @@ import { useAudioPlayer } from "expo-audio";
 import Constants from "expo-constants";
 import * as FileSystem from "expo-file-system";
 import PQueue from "p-queue";
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import { nativeTTS } from "./useTTS";
 
 export default function useTTSQueue() {
   const [queue] = useState<PQueue>(() => new PQueue({ concurrency: 1 }));
   const player = useAudioPlayer({ uri: "" });
   const listenerRef = useRef<((status: any) => void) | null>(null);
-
+  
+  const playTTSOffline = React.useCallback(
+    async (
+      text: string,
+      language: "vi-VN" | "en-US",
+      onFinish?: () => void
+    ) => {
+      return nativeTTS(text, language, onFinish);
+    },
+    [nativeTTS]
+  );
   const playAudio = useCallback(
     (audioUrl: string): Promise<void> => {
       return new Promise((resolve, reject) => {
@@ -97,6 +108,18 @@ export default function useTTSQueue() {
     },
     [playAudio, queue]
   );
+  const queueTTSOffline = useCallback(
+    async (text: string, language: "vi-VN" | "en-US") => {
+      return queue.add(async () => {
+        return new Promise((resolve, reject) => {
+          playTTSOffline(text, language, () => {
+            resolve(void 0);
+          });
+        });
+      });
+    },
+    [playTTSOffline, queue]
+  );
 
   const forceStop = useCallback(() => {
     // Clear queue
@@ -132,5 +155,6 @@ export default function useTTSQueue() {
   return {
     playFastTTS,
     forceStop,
+    queueTTSOffline,
   };
 }

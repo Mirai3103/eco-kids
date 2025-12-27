@@ -19,14 +19,12 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const { setLastReadStoryId } = useReadStore();
   const { isDefaultAutoPlay, defaultLanguage, defaultGender } =
     useSettingStore();
-    console.log({ isDefaultAutoPlay, defaultLanguage, defaultGender } )
 
   // Session
   const session = useSession();
 
   // Use selectedGender from query param if available, otherwise use defaultGender
   const initialGender = selectedGender || defaultGender;
-  console.log("initialGender", initialGender);
   // Initialize state machine
   const [state, send] = useMachine(storyReadMachine, {
     input: {
@@ -40,6 +38,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
   // Refs
   const pageFlipperRef = useRef<any>(null);
+  const isAutoPlayRef = useRef(state.context.isAutoPlay);
 
   // Animations
   const [menuAnimation] = useState(new Animated.Value(0));
@@ -47,6 +46,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
 
   // Hooks
   const { playAudio, stopAll, playTTSOnline } = useTTS();
+
 
   // Extract state values
   const {
@@ -56,6 +56,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     isAutoPlay,
     isMuted,
     isMenuVisible,
+    isCompletionModalVisible,
     storySegments,
     imageUrls,
     audioUrls,
@@ -64,15 +65,10 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   const isLoading = state.matches("loading");
   const isInPreloadState = state.matches({ loading: "preloadingImages" });
 
-  // Debug logging
+  // Update ref when isAutoPlay changes
   useEffect(() => {
-    console.log("🔍 State Machine:", state.value);
-    console.log("📊 Context:", {
-      segmentsCount: storySegments.length,
-      imagesCount: imageUrls.length,
-      audioCount: audioUrls.length,
-    });
-  }, [state.value, storySegments.length, imageUrls.length, audioUrls.length]);
+    isAutoPlayRef.current = isAutoPlay;
+  }, [isAutoPlay]);
 
   // Image preloading - only starts after segments are loaded
   const shouldStartPreload = isInPreloadState && imageUrls.length > 0;
@@ -115,7 +111,6 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   // Handlers
   const handleFlippedEnd = useCallback(
     (pageIndex: number) => {
-      console.log("📄 Page flipped to:", pageIndex);
       // Stop current audio when flipping page
       stopAll();
       send({ type: "PAGE_FLIPPED", pageIndex });
@@ -160,14 +155,12 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
       stopAll();
       const handleFinish = () => {
         send({ type: "AUDIO_FINISHED" });
-        // Auto-flip page nếu isAutoPlay = true
-        if (isAutoPlay && currentPage < storySegments.length - 1) {
-          console.log("📖 Auto-flipping to next page...");
+        // Auto-flip page nếu isAutoPlay = true (sử dụng ref để tránh re-create callback)
+        if (isAutoPlayRef.current && currentPage < storySegments.length - 1) {
           if (pageFlipperRef.current) {
             pageFlipperRef.current.nextPage();
           }
         } else {
-          console.log("📄 Audio finished, staying on current page");
         }
       };
 
@@ -196,7 +189,6 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
       playTTSOnline,
       stopAll,
       gender,
-      isAutoPlay,
       send,
     ]
   );
@@ -225,7 +217,8 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     stopAll();
     send({ type: "BACK" });
     router.back();
-  }, [stopAll, send]);
+    router.replace(`/stories/${storyId}`);
+  }, [stopAll, send, storyId]);
 
   const handleToggleLanguage = useCallback(() => {
     stopAll();
@@ -239,23 +232,31 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     send({ type: "TOGGLE_AUTOPLAY" });
   }, [send]);
 
+  const closeCompletionModal = useCallback(() => {
+    send({ type: "CLOSE_COMPLETION_MODAL" });
+  }, [send]);
+
   // Auto-play effect - trigger audio when in playingAudio state
   const isPlayingAudio = state.matches({ ready: "playingAudio" });
   
   useEffect(() => {
-    console.log("🔍 Is Playing Audio State:", isPlayingAudio, "Page:", currentPage);
     if (isPlayingAudio) {
-      console.log("🎵 Scheduling audio playback...");
       const timer = setTimeout(() => {
         handlePlayAudio();
       }, AUTO_PLAY_DELAY);
 
       return () => {
-        console.log("🧹 Cleaning up audio timer");
         clearTimeout(timer);
       };
     }
   }, [isPlayingAudio, currentPage, handlePlayAudio]);
+
+
+  const handleMute = useCallback(() => {
+    if (isMuted) {
+      send({ type: "TOGGLE_MUTE" });
+    }
+  }, [isMuted, send]);
 
   return {
     // State
@@ -265,6 +266,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     isAutoPlay,
     isMuted,
     isMenuVisible,
+    isCompletionModalVisible,
     isLoading: isLoading || isImageLoading,
     isImageLoading,
     storySegments,
@@ -285,8 +287,12 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
+    closeCompletionModal,
+    handleMute,
 
     // Machine state (for debugging)
     machineState: state.value,
+
+    // Speech Recognition
   };
 };

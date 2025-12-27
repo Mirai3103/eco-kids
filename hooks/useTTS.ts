@@ -20,7 +20,7 @@ const getOfflineAudioUri = async (audioUrl: string) => {
   }
   console.log("Audio file not found in storage", fileUri);
 
-  const { uri } = await FileSystem.downloadAsync(audioUrl, fileUri,{
+  const { uri } = await FileSystem.downloadAsync(audioUrl, fileUri, {
     headers: {
       "api-key": Constants.expoConfig?.extra?.supabaseAnonKey,
       Authorization: `Bearer ${Constants.expoConfig?.extra?.supabaseAnonKey}`,
@@ -56,7 +56,21 @@ export async function nativeTTS(
 export default function useTTS() {
   const player = useAudioPlayer({
     uri: "",
-  });
+  },500);
+
+
+
+  // useEffect(() => {
+ 
+  //   const handler = (position: { currentTime: number }) => {
+  //     useAudioTimeStore.getState().updateTime(position.currentTime);
+  //   };
+
+  //   player.addListener("playbackStatusUpdate", handler);
+  //   return () => {
+  //     player.removeListener?.("playbackStatusUpdate", handler);
+  //   };
+  // }, [player]);
 
   const playAudio = React.useCallback(
     (audioUrl: string, onFinish?: () => void) => {
@@ -116,13 +130,14 @@ export default function useTTS() {
 
       playAudio(uri, onFinish);
     },
-    [player]
+    [playAudio]
   );
   const playFastTTS = React.useCallback(
     async (text: string, onFinish?: () => void) => {
-       const audioUrl = `${Constants.expoConfig?.extra?.supabaseUrl}/functions/v1/tts-fast?text=${text}&voiceId=5t6jb0zrz2vdJqomDzJI`;
-       playAudio(audioUrl, onFinish);
-    }, [playAudio]
+      const audioUrl = `${Constants.expoConfig?.extra?.supabaseUrl}/functions/v1/tts-fast?text=${text}&voiceId=5t6jb0zrz2vdJqomDzJI`;
+      playAudio(audioUrl, onFinish);
+    },
+    [playAudio]
   );
 
   const playTTSOffline = React.useCallback(

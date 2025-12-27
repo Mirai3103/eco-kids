@@ -32,12 +32,20 @@ const createConversationIfNotExist = async (id: string) => {
   }
   return cv;
 };
+interface IGenerateOptions {
+  input: string;
+  chatId: string;
+  abortSignal: AbortSignal;
+  onChunk?: (chunk: string) => void;
+  prompt?: string;
+  context?: string;
+  withTool?: boolean;
+}
 export async function generate(
-  input: string,
-  chatId: string,
-  abortSignal: AbortSignal,
-  onChunk?: (chunk: string) => void
+
+  options: IGenerateOptions
 ) {
+  const { input, chatId, abortSignal, onChunk, prompt=SYSTEM_PROMPT, context, withTool=true } = options;
   const timeStart = Date.now();
   const history = await db.query.messages.findMany({
     where: eq(messages.conversationId, chatId),
@@ -55,16 +63,17 @@ export async function generate(
     role: "user",
     textContent: input,
   });
+  const inputWithContext = `Context: ${context}\nUser input: ${input}`;
 
   const { textStream, response } = streamText({
     model,
     // abortSignal,
-    tools: {
+    tools: withTool ? {
       similarity_search_tool,
       navigate_to_story_tool,
-    },
-    system: SYSTEM_PROMPT,
-    messages: [...payload, { role: "user", content: input }],
+    } : undefined,
+    system: prompt,
+    messages: [...payload, { role: "user", content: inputWithContext }],
     stopWhen: stepCountIs(10),
     onFinish: async ({ response }) => {
       let time = new Date().getTime();

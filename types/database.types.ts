@@ -78,6 +78,7 @@ export type Database = {
           id: string
           language: string | null
           segment_id: string | null
+          transcript: Json | null
         }
         Insert: {
           audio_url?: string | null
@@ -86,6 +87,7 @@ export type Database = {
           id: string
           language?: string | null
           segment_id?: string | null
+          transcript?: Json | null
         }
         Update: {
           audio_url?: string | null
@@ -94,6 +96,7 @@ export type Database = {
           id?: string
           language?: string | null
           segment_id?: string | null
+          transcript?: Json | null
         }
         Relationships: [
           {
@@ -192,6 +195,47 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fix_spelling_logs: {
+        Row: {
+          confidence_score: number | null
+          context: string | null
+          corrected_text: string
+          created_at: string | null
+          id: string
+          raw_candidate_top: string
+          raw_unaccent: string | null
+          story_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          context?: string | null
+          corrected_text: string
+          created_at?: string | null
+          id: string
+          raw_candidate_top: string
+          raw_unaccent?: string | null
+          story_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          context?: string | null
+          corrected_text?: string
+          created_at?: string | null
+          id?: string
+          raw_candidate_top?: string
+          raw_unaccent?: string | null
+          story_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_story"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
             referencedColumns: ["id"]
           },
         ]
@@ -657,6 +701,9 @@ export type Database = {
         Args: { p_point: number; p_question_id: string; p_user_id: string }
         Returns: boolean
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      unaccent: { Args: { "": string }; Returns: string }
       update_user_recommend_vector: {
         Args: { p_user_id: string }
         Returns: undefined

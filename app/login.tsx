@@ -17,6 +17,7 @@ import { Heading } from "@/components/ui/heading";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { SafeModal } from "@/components/SafeModal";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores/user.store";
 import {
@@ -345,6 +346,7 @@ export default function LoginScreen() {
     { emoji: "🌸", position: { x: 40, y: 650 }, duration: 4800 },
   ];
   const [isLoading, setIsLoading] = useState(false);
+  const [showSafeModal, setShowSafeModal] = useState(false);
   const { setUser, setSession } = useUserStore();
   const router = useRouter();
   
@@ -356,8 +358,15 @@ export default function LoginScreen() {
       scopes: ["profile", "email"],
     });
   }, []);
+  
+  const handleGoogleButtonPress = () => {
+    // Show parent verification modal first
+    setShowSafeModal(true);
+  };
+  
   const signInWithGoogle = async () => {
     try {
+      setShowSafeModal(false);
       setIsLoading(true);
 
       // Check if device supports Google Play Services
@@ -445,9 +454,18 @@ export default function LoginScreen() {
 
       <SafeAreaView className="flex-1">
         <Center className="flex-1">
-          <LoginContent onLoginWithGoogle={signInWithGoogle} />
+          <LoginContent onLoginWithGoogle={handleGoogleButtonPress} />
         </Center>
       </SafeAreaView>
+      
+      {/* Parent Verification Modal */}
+      <SafeModal
+        visible={showSafeModal}
+        onClose={() => setShowSafeModal(false)}
+        onVerified={signInWithGoogle}
+        title="Cần sự giúp đỡ của phụ huynh"
+        message="Hãy nhờ bố mẹ giúp bé giải câu đố này để đăng nhập nhé!"
+      />
     </View>
   );
 }

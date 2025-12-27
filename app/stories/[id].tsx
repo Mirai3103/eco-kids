@@ -4,6 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Modal,
   Pressable,
@@ -607,7 +608,8 @@ const StoryContent = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
-  const [readProgress, setReadProgress] = useState(65); // Example progress
+  const [readProgress, setReadProgress] = useState(0);
+  const [isStoryCompleted, setIsStoryCompleted] = useState(false);
   const [showGenderModal, setShowGenderModal] = useState(false);
   const params = useLocalSearchParams();
   const storyId = params.id as string;
@@ -615,8 +617,35 @@ const StoryContent = () => {
     getStoryByIdQueryOptions(storyId)
   );
   const networkState = Network.useNetworkState();
+  const { session } = useSession();
+  const userId = session?.user?.id;
 
   const { status, startDownload } = useOfflineStory(storyId);
+  
+  // Fetch reading progress from database
+  useEffect(() => {
+    const fetchReadingProgress = async () => {
+      if (!userId || !storyId) return;
+      
+      const { data, error } = await supabase
+        .from("reading_history")
+        .select("progress")
+        .eq("user_id", userId)
+        .eq("story_id", storyId)
+        .order("read_at", { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (data && !error) {
+        const progress = data.progress ?? 0;
+        const progressPercentage = progress * 100;
+        setReadProgress(progressPercentage);
+        setIsStoryCompleted(progress >= 1);
+      }
+    };
+    
+    fetchReadingProgress();
+  }, [userId, storyId]);
   useEffect(() => {
     Animated.stagger(200, [
       Animated.parallel([
@@ -653,6 +682,14 @@ const StoryContent = () => {
 
   const handleQuizPress = () => {
     if (!networkState.isConnected) {
+      return;
+    }
+    if (!isStoryCompleted) {
+      Alert.alert(
+        "Chưa thể làm Quiz",
+        "Bé cần đọc hết truyện trước khi làm Quiz nhé! 📚",
+        [{ text: "Đã hiểu", style: "default" }]
+      );
       return;
     }
     router.push(`/stories/${storyId}/quiz`);
@@ -811,7 +848,7 @@ const StoryContent = () => {
             onPress={handleQuizPress}
             color={theme.palette.secondary[500]}
             darkerColor={theme.palette.secondary[700]}
-            disabled={!networkState.isConnected}
+            disabled={!networkState.isConnected || !isStoryCompleted}
             delay={600}
           />
         </HStack>

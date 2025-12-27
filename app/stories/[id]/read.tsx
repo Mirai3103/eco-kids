@@ -1,9 +1,12 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import PageFlipper from "@laffy1309/react-native-page-flipper";
-import { useLocalSearchParams } from "expo-router";
-import React, { useCallback } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import LottieView from "lottie-react-native";
+import React, { useCallback, useRef } from "react";
 import {
   Animated,
+  Modal,
   Pressable,
   StatusBar,
   View,
@@ -18,14 +21,223 @@ import { StoryPage } from "@/components/read-story/StoryPage";
 import { Text } from "@/components/ui/text";
 
 // Hooks
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
 import { useStoryRead } from "@/hooks/useStoryRead";
+import { supabase } from "@/lib/supabase";
+import useSupporter from "@/lib/useSupporter";
+import { useAudioTimeStore } from "@/stores/audio-time.store";
+import { Ionicons } from "@expo/vector-icons";
+
+// Completion Modal Component
+const CompletionModal = ({
+  visible,
+  onQuiz,
+  onStay,
+}: {
+  visible: boolean;
+  onQuiz: () => void;
+  onStay: () => void;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      scaleAnim.setValue(0);
+    }
+  }, [visible]);
+
+  const Action3DButton = ({
+    icon,
+    label,
+    onPress,
+    color,
+    darkerColor,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+    onPress: () => void;
+    color: string;
+    darkerColor: string;
+  }) => {
+    const buttonScale = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => {
+      Animated.spring(buttonScale, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const handlePressOut = () => {
+      Animated.spring(buttonScale, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const buttonSize = 100;
+    const borderRadius = buttonSize / 2;
+
+    return (
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+          <VStack space="sm" className="items-center">
+            {/* Button Container with 3D effect */}
+            <View style={{ position: "relative" }}>
+              {/* Shadow/Bottom layer */}
+              <View
+                style={{
+                  backgroundColor: darkerColor,
+                  width: buttonSize,
+                  height: buttonSize,
+                  borderRadius,
+                  position: "absolute",
+                  top: 5,
+                  left: 0,
+                }}
+              />
+              {/* Top layer */}
+              <View
+                style={{
+                  backgroundColor: color,
+                  width: buttonSize,
+                  height: buttonSize,
+                  borderRadius,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {icon}
+              </View>
+            </View>
+
+            {/* Label */}
+            <Text
+              style={{
+                color: "#1B4B07",
+                fontSize: 18,
+                fontFamily: "Baloo2_700Bold",
+                textAlign: "center",
+              }}
+            >
+              {label}
+            </Text>
+          </VStack>
+        </Animated.View>
+      </Pressable>
+    );
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <View
+            style={{
+              width: 340,
+              borderRadius: 30,
+              overflow: "hidden",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 15,
+            }}
+          >
+            {/* Background gradient */}
+            <LinearGradient
+              colors={["#FFFFFF", "#F0F9FF"]}
+              style={{ padding: 32 }}
+            >
+              <VStack space="2xl" className="items-center">
+                {/* Celebration Animation */}
+                <View
+                  style={{
+                    width: 150,
+                    height: 150,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <LottieView
+                    source={require("@/assets/congrats.json")}
+                    autoPlay
+                    loop
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                </View>
+
+                {/* Title */}
+                <Text
+                  style={{
+                    fontSize: 28,
+                    fontWeight: "bold",
+                    color: "#1B4B07",
+                    textAlign: "center",
+                    fontFamily: "Baloo2_700Bold",
+                    lineHeight: 36,
+                  }}
+                >
+                  Đã đọc xong!
+                </Text>
+
+                {/* Action Buttons */}
+                <HStack space="xl" className="justify-center mt-4">
+                  <Action3DButton
+                    icon={<FontAwesome6 name="brain" size={40} color="white" />}
+                    label="Quiz"
+                    onPress={onQuiz}
+                    color="#F59E0B"
+                    darkerColor="#D97706"
+                  />
+
+                  <Action3DButton
+                    icon={<Ionicons name="refresh" size={40} color="white" />}
+                    label="Đọc lại"
+                    onPress={onStay}
+                    color="#22C55E"
+                    darkerColor="#16A34A"
+                  />
+                </HStack>
+              </VStack>
+            </LinearGradient>
+          </View>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
+};
 
 export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const selectedGender = params.gender as "male" | "female" | undefined;
-  console.log("selectedGender", selectedGender);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const router = useRouter();
 
   const {
     currentPage,
@@ -33,6 +245,7 @@ export default function ReadStoryScreen() {
     isAutoPlay,
     isMuted,
     isMenuVisible,
+    isCompletionModalVisible,
     isLoading,
     isImageLoading,
     storySegments,
@@ -47,17 +260,87 @@ export default function ReadStoryScreen() {
     handleMenuBack,
     handleToggleLanguage,
     handleToggleAutoPlay,
+    handleMute,
+
+    closeCompletionModal,
   } = useStoryRead(storyId, selectedGender);
+  const { isRecording, startRecognize, stopRecognize,setContext } = useSupporter();
+  const onStartRecognize = useCallback(() => {
+    handleMute();
+    startRecognize("vi-VN");
+  }, [startRecognize, handleMute]);
+  console.log("Render ReadStoryScreen");
+
+  const handleQuiz = () => {
+    closeCompletionModal();
+    router.push(`/stories/${storyId}/quiz`);
+  };
+
+  const handleStay = () => {
+    closeCompletionModal();
+    handleRestart();
+  };
 
   const renderStoryPage = useCallback(
     (segmentData: string) => {
       const segment = JSON.parse(segmentData);
-      return <StoryPage segment={segment} isVietnamese={isVietnamese} />;
+      return (
+        <StoryPage
+          segment={segment}
+          isVietnamese={isVietnamese}
+          gender={selectedGender!}
+        />
+      );
     },
-    [isVietnamese]
+    [isVietnamese, selectedGender]
   );
 
   // Loading state
+
+  const currentSegment = storySegments[currentPage];
+  React.useEffect(() => {
+    let story = storySegments.map((segment) => "Page " + segment.segment_index + ": " + segment.vi_text).join("\n");
+    story += "\n\n" + "Bé đang đọc trang " + currentPage + " của truyện " + storyId;
+    setContext(story);
+  }, [currentSegment, storySegments, storyId, currentPage]);
+  const setWords = useAudioTimeStore((state) => state.setWords);
+  const setSegmentId = useAudioTimeStore((state) => state.setSegmentId);
+  React.useEffect(() => {
+    if (!selectedGender || !isVietnamese || !currentSegment) {
+      return;
+    }
+    async function getTranscript() {
+      const { data, error } = await supabase
+        .from("audio_segments")
+        .select("transcript")
+        .eq("gender", selectedGender!)
+        .eq("language", isVietnamese ? "vi" : "en")
+        .eq("segment_id", currentSegment?.id)
+        .maybeSingle();
+      if (error) {
+        console.log(
+          "error nene",
+          error,
+          currentSegment?.id,
+          isVietnamese,
+          selectedGender
+        );
+        return [];
+      }
+      const transcript = (data?.transcript as string) || "[]";
+      setSegmentId(currentSegment?.id);
+      console.log(
+        currentSegment.vi_text,
+        currentSegment.vi_text?.split(" ").length,
+        "words"
+      );
+      setWords(JSON.parse(transcript));
+    }
+    getTranscript();
+    return () => {
+      setSegmentId("");
+    };
+  }, [selectedGender, isVietnamese, currentSegment, setWords, setSegmentId]);
   if (isLoading || isImageLoading) {
     return <LoadingScreen isLoaded={!isLoading && !isImageLoading} />;
   }
@@ -70,8 +353,6 @@ export default function ReadStoryScreen() {
       </View>
     );
   }
-
-  const currentSegment = storySegments[currentPage];
   if (!currentSegment) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -155,6 +436,16 @@ export default function ReadStoryScreen() {
         handleToggleAutoPlay={handleToggleAutoPlay}
         isAutoPlay={isAutoPlay}
         handleRestart={handleRestart}
+        onPressMic={onStartRecognize}
+        isRecording={isRecording}
+        stopRecording={stopRecognize}
+      />
+
+      {/* Completion Modal */}
+      <CompletionModal
+        visible={isCompletionModalVisible}
+        onQuiz={handleQuiz}
+        onStay={handleStay}
       />
     </View>
   );

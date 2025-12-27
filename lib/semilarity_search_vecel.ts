@@ -51,6 +51,7 @@ export const navigate_to_story_tool = tool({
     story_id: z.string().describe("The id of the story to navigate to"),
   }),
   execute: async ({ story_id }) => {
+    console.log("navigate_to_story_tool", story_id);
     router.push(`/stories/${story_id}`);
     return {
       success: true,

@@ -1,5 +1,6 @@
 import Voice from "@laffy1309/react-native-voice-input";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ToastAndroid } from "react-native";
 
 interface UseSpeechRecognizeReturn {
   isRecording: boolean;
@@ -21,17 +22,22 @@ export const useSpeechRecognize = (
   const [isRecording, setIsRecording] = useState(false);
   const [speechResults, setSpeechResults] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const startTimeRef = useRef<number>(0);
 
   useEffect(() => {
     // Đăng ký các event listeners
     Voice.onSpeechStart = () => {
       setIsRecording(true);
       setError(null);
+      startTimeRef.current = Date.now();
       options.onSpeechStart?.();
     };
 
     Voice.onSpeechEnd = (e) => {
       setIsRecording(false);
+      const endTime = Date.now();
+      const duration = endTime - startTimeRef.current;
+      ToastAndroid.show(`ASR duration: ${duration}ms`, ToastAndroid.SHORT);
     };
 
     Voice.onSpeechResults = (e) => {
@@ -63,11 +69,10 @@ export const useSpeechRecognize = (
         EXTRA_MAX_RESULTS: 8,
 
         // Cho bé ngập ngừng chút không bị kết thúc sớm
-        EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 12000,
-        EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
-        EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
-        "android.speech.extra.DICTATION_MODE": true,
-        "android.speech.extra.LANGUAGE_MODEL": "free_form",
+        // EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 6000,
+        // EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
+        // EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
+        // "android.speech.extra.LANGUAGE_MODEL": "free_form",
       });
     } catch (err) {
       setError(
