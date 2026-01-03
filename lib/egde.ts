@@ -11,7 +11,10 @@ export async function recalculateVector({ userId }: { userId: string }) {
 
   if (error) throw error;
   console.log(data);
+  queryClient.invalidateQueries({
+    queryKey: ["recommended_stories"],
+  });
   queryClient.refetchQueries({
-    queryKey: ["recommended_stories", userId, 4],
+    queryKey: ["recommended_stories"],
   });
 }

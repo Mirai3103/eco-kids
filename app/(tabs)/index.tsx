@@ -312,6 +312,7 @@ export default function EcoKidsHomeScreen() {
       5
     )
   );
+  
   React.useEffect(() => {
     Sentry.captureException(storiesError);
   }, [error]);

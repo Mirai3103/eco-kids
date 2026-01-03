@@ -88,6 +88,7 @@ export const getAllRecommendedStoriesQueryOptions = (
   queryKey: ["recommended_stories", user_id, last_read_story_id, limit],
   queryFn: async () => {
     const timeStart = performance.now();
+    console.log("getAllRecommendedStoriesQueryOptions", user_id, last_read_story_id, limit);
     if (!user_id) {
       throw new Error("user_id is required");
     }
