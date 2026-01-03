@@ -29,7 +29,8 @@
         "buildType": "app-bundle"
       },
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "development",
+        "EXPO_PUBLIC_APP_ENV": "production"
       }
     }
   },

@@ -74,7 +74,7 @@ export const useStoryRead = (storyId: string, selectedGender?: "male" | "female"
   // Image preloading - only starts after segments are loaded
   const shouldStartPreload = isInPreloadState && imageUrls.length > 0;
   const { isLoading: isImageLoading } = useImageLoader(
-    imageUrls,
+    imageUrls.slice(0, currentPage + 3),
     shouldStartPreload
   );
 

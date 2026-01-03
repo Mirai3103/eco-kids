@@ -87,6 +87,10 @@ export const getAllRecommendedStoriesQueryOptions = (
   ["recommended_stories", string | undefined, string | undefined, number]> => ({
   queryKey: ["recommended_stories", user_id, last_read_story_id, limit],
   queryFn: async () => {
+    if(await isOffline()) {
+      console.log("offline mode - no recommendations");
+      return getAllOfflineStories() as Promise<Story[] | undefined>;
+    }
     const timeStart = performance.now();
     console.log("getAllRecommendedStoriesQueryOptions", user_id, last_read_story_id, limit);
     if (!user_id) {
