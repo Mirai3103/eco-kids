@@ -5,6 +5,7 @@ import { CircularRevealProvider } from "@/contexts/CircularRevealContext";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import useSession from "@/hooks/useSession";
+import { useSyncOfflineData } from "@/hooks/useSyncOfflineData";
 import ReactQueryProvider from "@/lib/react-query";
 import { supabase } from "@/lib/supabase";
 import { useSoundStore } from "@/stores/useSoundStore";
@@ -50,7 +51,6 @@ if (isProduction) {
     sendDefaultPii: true,
 
     // Enable Logs
-    enableLogs: true,
 
     // Configure Session Replay
     replaysSessionSampleRate: 0.1,
@@ -95,6 +95,15 @@ const bgm = require("@/assets/audio/bgm.mp3");
   const register = useSoundStore((s) => s.register);
   const play = useSoundStore((s) => s.play);
   console.log(session?.user?.id, isLoading, isOfflineMode);
+  
+  // Sync offline data khi user đăng nhập
+  const { isSyncing, syncError } = useSyncOfflineData(session?.user?.id, isOfflineMode);
+  
+  useEffect(() => {
+    if (syncError) {
+      console.error("Sync error:", syncError);
+    }
+  }, [syncError]);
 
 
  

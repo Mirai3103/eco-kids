@@ -15,6 +15,20 @@
       "when": 1765804805182,
       "tag": "0001_dusty_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1767446274342,
+      "tag": "0002_long_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1767447376101,
+      "tag": "0003_smooth_omega_sentinel",
+      "breakpoints": true
     }
   ]
 }

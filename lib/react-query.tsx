@@ -1,7 +1,7 @@
 import { Topic } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient, onlineManager } from "@tanstack/react-query";
+import { QueryClient, onlineManager ,QueryClientProvider} from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { Image } from "expo-image";
 import * as Network from "expo-network";
@@ -25,9 +25,6 @@ export const queryClient = new QueryClient({
     // },
   },
 });
-const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
-});
 
 export default function ReactQueryProvider({
   children,
@@ -35,40 +32,10 @@ export default function ReactQueryProvider({
   children: React.ReactNode;
 }) {
   return (
-    <PersistQueryClientProvider
+    <QueryClientProvider
       client={queryClient}
-      persistOptions={{
-        persister: asyncStoragePersister,
-        maxAge: Infinity,
-        buster: "v1",
-      }}
-      onSuccess={() => {
-        async function prepare() {
-          const topics = (await queryClient.ensureQueryData(
-            getAllTopicsQueryOptions()
-          )) as Topic[];
-          await Image.prefetch(
-            topics.map((topic) => topic.meta_data.icon || ""),
-            "memory-disk"
-          );
-          await Promise.all(
-            topics.map((topic) => {
-              queryClient.prefetchQuery({
-                ...getTopicByIdQueryOptions(topic.id),
-                queryFn: async () => topic,
-              });
-            })
-          );
-        }
-        prepare().catch((err) => {
-          console.log(err);
-        });
-      }}
-      onError={() => {
-        console.log("onError");
-      }}
     >
       {children}
-    </PersistQueryClientProvider>
+    </QueryClientProvider>
   );
 }

@@ -6,8 +6,11 @@ import {
   isOffline,
 } from "../offline";
 import { supabase } from "../supabase";
+import { db } from "@/stores/db";
+import { stories } from "@/stores/sqlite.schema";
+import { eq } from "drizzle-orm";
 
-export type StoryWithFavorite = Story & { isFavorite: boolean }
+export type StoryWithFavorite = Story & { isFavorite: boolean };
 
 export const getAllStoriesQueryByTopicIdOptions = (
   topicId: string,
@@ -15,39 +18,60 @@ export const getAllStoriesQueryByTopicIdOptions = (
 ) => ({
   queryKey: ["stories", topicId, userId],
   queryFn: async () => {
+    console.log(
+      "getAllStoriesQueryByTopicIdOptions",
+    );
+    if (await isOffline()) {
+      return (await db
+        .select()
+        .from(stories)
+        .where(eq(stories.topicId, topicId))
+        .then((res) => {
+          return res.map((story) => ({
+            ...story,
+            cover_image_url: story.coverImageUrl,
+            topic_id: story.topicId,
+            tags: story.tags ? JSON.parse(story.tags) : [],
+          }));
+        })) as StoryWithFavorite[];
+    }
     const q = supabase
       .from("stories")
-      .select(`
+      .select(
+        `
         *,
         favorite_stories!left(story_id)
-      `)
-      .eq("topic_id", topicId)
+      `
+      )
+      .eq("topic_id", topicId);
 
     // chỉ filter theo user nếu có userId
     const { data, error } = userId
       ? await q.eq("favorite_stories.user_id", userId)
-      : await q
+      : await q;
 
-    if (error) throw error
+    if (error) throw error;
     return (data ?? []).map((s: any) => ({
       ...s,
-      isFavorite: Array.isArray(s.favorite_stories) && s.favorite_stories.length > 0,
-    })) as StoryWithFavorite[]
+      isFavorite:
+        Array.isArray(s.favorite_stories) && s.favorite_stories.length > 0,
+    })) as StoryWithFavorite[];
   },
   select: (data: StoryWithFavorite[]) => data,
   enabled: !!userId,
-})
+});
 
 export const getStoryByIdQueryOptions = (
   id: string
 ): UseQueryOptions<unknown, Error, Story | undefined, ["story", string]> => ({
   queryKey: ["story", id],
   queryFn: async () => {
+    console.log("getStoryByIdQueryOptions", await getStoryOfflineById(id));
     const story = await getStoryOfflineById(id);
     if (story) {
-      console.log("get cached story success");
-      return story as StoryWithSegments | undefined;
+      return story as StoryWithSegments;
     }
+
     const { data } = await supabase
       .from("stories")
       .select("*, story_segments(*)")
@@ -63,6 +87,7 @@ export const getAllStoriesQueryOptions = (
 ): UseQueryOptions<unknown, Error, Story[] | undefined, ["stories"]> => ({
   queryKey: ["stories"],
   queryFn: async () => {
+    console.log("getAllStoriesQueryOptions", await getAllOfflineStories());
     if (await isOffline()) {
       const storyList = await getAllOfflineStories();
       return storyList as Story[] | undefined;
@@ -83,16 +108,22 @@ export const getAllRecommendedStoriesQueryOptions = (
 ): UseQueryOptions<
   unknown,
   Error,
-  Story[] | undefined, 
-  ["recommended_stories", string | undefined, string | undefined, number]> => ({
+  Story[] | undefined,
+  ["recommended_stories", string | undefined, string | undefined, number]
+> => ({
   queryKey: ["recommended_stories", user_id, last_read_story_id, limit],
   queryFn: async () => {
-    if(await isOffline()) {
+    if (await isOffline()) {
       console.log("offline mode - no recommendations");
-      return getAllOfflineStories() as Promise<Story[] | undefined>;
+      return (await getAllOfflineStories()) as Story[] | undefined;
     }
     const timeStart = performance.now();
-    console.log("getAllRecommendedStoriesQueryOptions", user_id, last_read_story_id, limit);
+    console.log(
+      "getAllRecommendedStoriesQueryOptions",
+      user_id,
+      last_read_story_id,
+      limit
+    );
     if (!user_id) {
       throw new Error("user_id is required");
     }
@@ -104,7 +135,7 @@ export const getAllRecommendedStoriesQueryOptions = (
         .select("recommend_vector")
         .eq("id", user_id)
         .single(),
-      
+
       last_read_story_id
         ? supabase
             .from("stories")
@@ -112,21 +143,19 @@ export const getAllRecommendedStoriesQueryOptions = (
             .eq("id", last_read_story_id)
             .single()
         : Promise.resolve({ data: null }),
-      
+
       // Lấy danh sách truyện đã đọc để loại bỏ
       supabase
         .from("reading_history")
         .select("story_id")
         .eq("user_id", user_id)
         .order("read_at", { ascending: false })
-        .limit(3)
+        .limit(3),
     ]);
-
-   
 
     const userVector = userRes.data?.recommend_vector;
     const storyEmbedding = lastStoryRes.data?.embedding;
-    const readStoryIds = readHistoryRes.data?.map(h => h.story_id) || [];
+    const readStoryIds = readHistoryRes.data?.map((h) => h.story_id) || [];
 
     // Nếu user chưa có vector và chưa có truyện vừa đọc → fallback về popular
     if (!userVector && !storyEmbedding) {
@@ -140,7 +169,7 @@ export const getAllRecommendedStoriesQueryOptions = (
       console.log("data", data);
       return data || [];
     }
-    
+
     // Truy vấn song song 2 nhánh
     const contentBasedPromise = storyEmbedding
       ? supabase.rpc("match_stories", {
@@ -161,7 +190,7 @@ export const getAllRecommendedStoriesQueryOptions = (
       contentBasedPromise,
       userBasedPromise,
     ]);
- 
+
     const contentBased = contentRes.data || [];
     const userBased = userRes1.data || [];
 
@@ -200,8 +229,8 @@ export const getAllRecommendedStoriesQueryOptions = (
       .select("id,title,cover_image_url,tags,views_count")
       .in("id", ids)
       .then((res) => res.data);
-      const timeEnd = performance.now();
-      console.log("time taken", timeEnd - timeStart);
+    const timeEnd = performance.now();
+    console.log("time taken", timeEnd - timeStart);
     return finalData as Story[] | undefined;
   },
   enabled: !!user_id,
@@ -238,7 +267,7 @@ export const searchStoriesInfinite = async ({
   };
 };
 
-export type ReadingHistoryStatus = 'completed' | 'reading' | 'not_quiz';
+export type ReadingHistoryStatus = "completed" | "reading" | "not_quiz";
 
 export interface ReadingHistoryItem {
   id: string;
@@ -267,7 +296,8 @@ export const getReadingHistoryInfinite = async ({
   // Lấy lịch sử đọc với thông tin truyện và kết quả quiz
   const { data: historyData, error } = await supabase
     .from("reading_history")
-    .select(`
+    .select(
+      `
       *,
       stories (
         id,
@@ -276,7 +306,8 @@ export const getReadingHistoryInfinite = async ({
         tags,
         topic_id
       )
-    `)
+    `
+    )
     .eq("user_id", userId)
     .order("read_at", { ascending: false })
     .range(pageParam * limit, (pageParam + 1) * limit - 1);
@@ -284,77 +315,77 @@ export const getReadingHistoryInfinite = async ({
   if (error) throw error;
 
   // Lấy thông tin story_segments và quiz_results để tính status
-  const storyIds = [...new Set(historyData?.map(h => h.story_id) || [])];
-  
+  const storyIds = [...new Set(historyData?.map((h) => h.story_id) || [])];
+
   const [segmentsRes, quizResultsRes, questionsRes] = await Promise.all([
-    supabase
-      .from("story_segments")
-      .select("story_id")
-      .in("story_id", storyIds),
+    supabase.from("story_segments").select("story_id").in("story_id", storyIds),
     supabase
       .from("quiz_results")
       .select("story_id, correct_count, total_questions")
       .eq("user_id", userId)
       .in("story_id", storyIds),
-    supabase
-      .from("questions")
-      .select("story_id")
-      .in("story_id", storyIds)
+    supabase.from("questions").select("story_id").in("story_id", storyIds),
   ]);
 
   // Tạo map để tra cứu nhanh
   const segmentCountMap = new Map<string, number>();
-  segmentsRes.data?.forEach(seg => {
+  segmentsRes.data?.forEach((seg) => {
     if (seg.story_id) {
-      segmentCountMap.set(seg.story_id, (segmentCountMap.get(seg.story_id) || 0) + 1);
+      segmentCountMap.set(
+        seg.story_id,
+        (segmentCountMap.get(seg.story_id) || 0) + 1
+      );
     }
   });
 
   const quizResultsMap = new Map<string, any>();
-  quizResultsRes.data?.forEach(qr => {
+  quizResultsRes.data?.forEach((qr) => {
     if (qr.story_id) {
       quizResultsMap.set(qr.story_id, qr);
     }
   });
 
   const hasQuizMap = new Map<string, boolean>();
-  questionsRes.data?.forEach(q => {
+  questionsRes.data?.forEach((q) => {
     if (q.story_id) {
       hasQuizMap.set(q.story_id, true);
     }
   });
 
   // Xử lý và gắn status cho mỗi history item
-  const processedData: ReadingHistoryItem[] = (historyData || []).map((history: any) => {
-    const progress = history.progress || 0;
-    const hasQuiz = hasQuizMap.get(history.story_id) || false;
-    const quizResult = quizResultsMap.get(history.story_id);
-    const quizCompleted = !!quizResult;
-    
-    let status: ReadingHistoryStatus;
-    if (progress < 1) {
-      status = 'reading';
-    } else if (hasQuiz && !quizCompleted) {
-      status = 'not_quiz';
-    } else {
-      status = 'completed';
-    }
+  const processedData: ReadingHistoryItem[] = (historyData || []).map(
+    (history: any) => {
+      const progress = history.progress || 0;
+      const hasQuiz = hasQuizMap.get(history.story_id) || false;
+      const quizResult = quizResultsMap.get(history.story_id);
+      const quizCompleted = !!quizResult;
 
-    return {
-      ...history,
-      status,
-      hasQuiz,
-      quizCompleted,
-    };
-  });
+      let status: ReadingHistoryStatus;
+      if (progress < 1) {
+        status = "reading";
+      } else if (hasQuiz && !quizCompleted) {
+        status = "not_quiz";
+      } else {
+        status = "completed";
+      }
+
+      return {
+        ...history,
+        status,
+        hasQuiz,
+        quizCompleted,
+      };
+    }
+  );
 
   // Filter theo status nếu có
   const filteredData = filterStatus
-    ? processedData.filter(item => item.status === filterStatus)
+    ? processedData.filter((item) => item.status === filterStatus)
     : processedData;
 
   return {
     data: filteredData,
-    nextPage: historyData && historyData.length === limit ? pageParam + 1 : undefined,
+    nextPage:
+      historyData && historyData.length === limit ? pageParam + 1 : undefined,
   };
 };

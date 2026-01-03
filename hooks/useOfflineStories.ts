@@ -17,7 +17,7 @@ export const useOfflineStories = () => {
     try {
       setIsLoading(true);
       const offlineStories = await getAllOfflineStories();
-      setStories(offlineStories || []);
+      setStories(offlineStories as any || []);
       
       const size = await getOfflineStorageSize();
       setStorageSize(size);

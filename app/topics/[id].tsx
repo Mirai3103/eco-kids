@@ -378,7 +378,7 @@ export default function TopicStoryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: topic,isLoading:isLoadingTopic} = useQuery(getTopicByIdQueryOptions(id));
   const { data: stories,isLoading:isLoadingStories , refetch:refetchStories } = useQuery(getAllStoriesQueryByTopicIdOptions(id,userId));
-  const decorationEmojis = topic?.meta_data.decorationEmojis || [];
+  const decorationEmojis = topic?.meta_data?.decorationEmojis || [];
   const randomDecorationEmoji = useCallback(() => {
     return decorationEmojis[
       Math.floor(Math.random() * decorationEmojis.length)
@@ -411,8 +411,8 @@ export default function TopicStoryScreen() {
       {/* Background Gradient */}
       <LinearGradient
         colors={[
-          topic?.meta_data.bgColor || "#EEF0FE",
-          topic?.meta_data.color || "#CAFEC3",
+          topic?.meta_data?.bgColor || "#EEF0FE",
+          topic?.meta_data?.color || "#CAFEC3",
         ]}
         style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         start={{ x: 0, y: 0 }}
@@ -575,7 +575,7 @@ export default function TopicStoryScreen() {
         >
           <VStack>
             <MasonryGrid 
-              data={stories || []} 
+              data={stories as Story[] || []} 
               onStoryPress={handleStoryPress}
               numColumns={numColumns}
               cardWidth={cardWidth}

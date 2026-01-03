@@ -706,7 +706,13 @@ const StoryContent = () => {
         isLoaded={!isLoading}
       />
     );
-
+  if (!story)
+    return (
+      <LoadingScreen
+        message="Không tìm thấy truyện"
+        isLoaded={!isLoading}
+      />
+    );
   // Image Block Component
   const ImageBlock = (
     <Animated.View
