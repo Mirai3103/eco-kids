@@ -15,7 +15,7 @@ import { useSettingStore } from "@/stores/setting.store";
 
 const AUTO_PLAY_DELAY = 1000;
 
-export const useStoryRead = (storyId: string, selectedGender?: "male" | "female") => {
+export const useStoryRead = (storyId: string, selectedGender?: "male" | "female", isOffline?: boolean) => {
   const { setLastReadStoryId } = useReadStore();
   const { isDefaultAutoPlay, defaultLanguage, defaultGender } =
     useSettingStore();

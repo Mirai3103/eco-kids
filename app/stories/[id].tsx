@@ -671,6 +671,10 @@ const StoryContent = () => {
 
   const handleReadPress = () => {
     if (!networkState.isConnected && status !== "completed") {
+     return
+    }
+    if(!networkState.isConnected && status === "completed") {
+      router.push(`/stories/${storyId}/read?gender=female&offline=true`);
       return;
     }
     setShowGenderModal(true);

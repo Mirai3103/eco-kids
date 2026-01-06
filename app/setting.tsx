@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
-
 import {
   Animated,
   Dimensions,
@@ -290,7 +290,10 @@ export default function SettingsScreen() {
       
       await supabase.auth.signOut();
       // Clear user store
+      await GoogleSignin.signOut();
 
+    // (Optional) revoke token nếu muốn chắc chắn hơn
+      await GoogleSignin.revokeAccess();
       logout();
       router.replace("/login");
 

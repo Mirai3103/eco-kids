@@ -1,4 +1,4 @@
-import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import PageFlipper from "@laffy1309/react-native-page-flipper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -27,7 +27,6 @@ import { useStoryRead } from "@/hooks/useStoryRead";
 import { supabase } from "@/lib/supabase";
 import useSupporter from "@/lib/useSupporter";
 import { useAudioTimeStore } from "@/stores/audio-time.store";
-import { Ionicons } from "@expo/vector-icons";
 
 // Completion Modal Component
 const CompletionModal = ({
@@ -236,6 +235,7 @@ export default function ReadStoryScreen() {
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const selectedGender = params.gender as "male" | "female" | undefined;
+  const isOffline = Boolean(params.offline);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const router = useRouter();
 
@@ -263,7 +263,7 @@ export default function ReadStoryScreen() {
     handleMute,
 
     closeCompletionModal,
-  } = useStoryRead(storyId, selectedGender);
+  } = useStoryRead(storyId, selectedGender, isOffline);
   const { isRecording, startRecognize, stopRecognize,setContext } = useSupporter();
   const onStartRecognize = useCallback(() => {
     handleMute();
