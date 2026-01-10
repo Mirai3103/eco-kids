@@ -701,6 +701,20 @@ export type Database = {
         Args: { p_point: number; p_question_id: string; p_user_id: string }
         Returns: boolean
       }
+      rpc_fewshot_lookup_fix_spelling: {
+        Args: {
+          p_input_text: string
+          p_limit?: number
+          p_story_id?: string
+          p_threshold?: number
+        }
+        Returns: {
+          confidence_score: number
+          corrected_text: string
+          raw_candidate_top: string
+          raw_unaccent: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       unaccent: { Args: { "": string }; Returns: string }

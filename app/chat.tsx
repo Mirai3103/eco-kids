@@ -6,7 +6,7 @@ import { VStack } from "@/components/ui/vstack";
 import { useCircularReveal } from "@/contexts/CircularRevealContext";
 import { useSpeechRecognize } from "@/hooks/useSpeechRecognize";
 import useTTSQueue from "@/hooks/useTTSQueue";
-import { fixSpelling } from "@/lib/fix_speeling";
+import { fixSpelling,fixSpellingWithConfidence } from "@/lib/fix_speeling";
 import { generate } from "@/lib/flow";
 import { db } from "@/stores/db";
 import { useIdStore } from "@/stores/id.store";
@@ -269,7 +269,7 @@ export default function ChatScreen() {
       }
       const startTime = Date.now();
       console.log("start fixing spelling");
-      fixSpelling(
+      fixSpellingWithConfidence(
         e.value,
         messagesData
           ?.filter((msg) => msg.textContent)

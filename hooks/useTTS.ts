@@ -4,7 +4,7 @@ import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 import * as Speech from "expo-speech";
 import React from "react";
-const getOfflineAudioUri = async (audioUrl: string) => {
+export const getOfflineAudioUri = async (audioUrl: string) => {
   // Hash URL → tên file sạch
   const hash = await Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.MD5,
@@ -15,10 +15,10 @@ const getOfflineAudioUri = async (audioUrl: string) => {
 
   const info = await FileSystem.getInfoAsync(fileUri);
   if (info.exists) {
-    console.log("Audio file found in storage", fileUri);
+    console.log("Audio file found in storage", hash,audioUrl);
     return fileUri;
   }
-  console.log("Audio file not found in storage", fileUri);
+  console.log("Audio file not found in storage", hash,audioUrl);
 
   const { uri } = await FileSystem.downloadAsync(audioUrl, fileUri, {
     headers: {
@@ -73,16 +73,20 @@ export default function useTTS() {
   // }, [player]);
 
   const playAudio = React.useCallback(
-    (audioUrl: string, onFinish?: () => void) => {
+    async (audioUrl: string, onFinish?: () => void) => {
+      
       if (audioUrl.startsWith("file://")) {
+        console.log("playAudio offline", audioUrl);
         player.replace({
           uri: audioUrl,
         });
         player.seekTo(0);
         player.play();
       } else {
+        console.log("playAudio online", audioUrl);
+        const offlineUri = await getOfflineAudioUri(audioUrl);
         player.replace({
-          uri: audioUrl,
+          uri: offlineUri,
           headers: {
             "api-key": Constants.expoConfig?.extra?.supabaseAnonKey,
             Authorization: `Bearer ${Constants.expoConfig?.extra?.supabaseAnonKey}`,

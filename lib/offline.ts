@@ -1,16 +1,18 @@
-import useTTS from "@/hooks/useTTS";
-import { useSettingStore } from "@/stores/setting.store";
-import { StoryWithSegments } from "@/types";
+import useTTS, { getOfflineAudioUri } from "@/hooks/useTTS";
 import { db } from "@/stores/db";
-import { stories, storySegments, audioSegments } from "@/stores/sqlite.schema";
+import { useSettingStore } from "@/stores/setting.store";
+import { audioSegments, stories, storySegments } from "@/stores/sqlite.schema";
+import { StoryWithSegments } from "@/types";
 import { eq } from "drizzle-orm";
+import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 import { Image as ExpoImage } from "expo-image";
 import * as Network from "expo-network";
 import React, { useState } from "react";
 import { supabase } from "./supabase";
-import * as Crypto from "expo-crypto";
-export async function createOfflineImageCache(imageUrl: string) : Promise<string> {
+export async function createOfflineImageCache(
+  imageUrl: string
+): Promise<string> {
   const hash = await Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.MD5,
     imageUrl
@@ -41,6 +43,7 @@ const useOfflineStory = (storyId: string) => {
   const [status, setStatus] = useState<
     "idle" | "downloading" | "completed" | "error"
   >("idle");
+  const [progress, setProgress] = useState<number>(0);
 
   React.useEffect(() => {
     async function checkDownloaded() {
@@ -51,6 +54,7 @@ const useOfflineStory = (storyId: string) => {
         });
         if (story) {
           setStatus("completed");
+          setProgress(100);
         }
       } catch (error) {
         console.error("Error checking download status:", error);
@@ -64,9 +68,10 @@ const useOfflineStory = (storyId: string) => {
       return;
     }
     setStatus("downloading");
+    setProgress(0);
 
     try {
-      // Fetch story data from Supabase
+      // Step 1: Fetch story data (0% -> 5%)
       const { data: storyData } = await supabase
         .from("stories")
         .select("*, story_segments(*)")
@@ -76,30 +81,41 @@ const useOfflineStory = (storyId: string) => {
       if (!storyData) {
         throw new Error("Story not found");
       }
+      setProgress(5);
 
-      // Cache cover image
+      // Step 2: Cache cover image (5% -> 10%)
       let cachedCoverUrl = storyData?.cover_image_url || "";
       if (storyData?.cover_image_url) {
         try {
-          cachedCoverUrl = await createOfflineImageCache(storyData.cover_image_url);
+          cachedCoverUrl = await createOfflineImageCache(
+            storyData.cover_image_url
+          );
           console.log("📥 Cached story cover");
         } catch (error) {
           console.error("❌ Failed to cache cover:", error);
         }
       }
+      setProgress(10);
 
-      // Fetch story segments with audio
+      // Step 3: Fetch story segments with audio (10% -> 15%)
       const { data: segmentsData } = await supabase
         .from("story_segments")
         .select("*, audio_segments(*)")
         .eq("story_id", storyId);
 
-      // Cache segment images and prefetch audio
+      setProgress(15);
+
+      const totalSegments = segmentsData?.length || 0;
+      if (totalSegments === 0) {
+        throw new Error("No segments found");
+      }
+
+      // Step 4: Cache segment images song song (15% -> 60%)
+      let completedImages = 0;
       const segmentsWithCachedImages = await Promise.all(
-        (segmentsData || []).map(async (segment) => {
+        segmentsData!.map(async (segment) => {
           let cachedImageUrl = segment.image_url || "";
-          
-          // Cache segment image nếu có
+
           if (segment.image_url) {
             try {
               cachedImageUrl = await createOfflineImageCache(segment.image_url);
@@ -109,39 +125,27 @@ const useOfflineStory = (storyId: string) => {
             }
           }
 
-          // Prefetch audio
-          prefetchAudio(
-            defaultLanguage === "vi"
-              ? segment.vi_text || ""
-              : segment.en_text || "",
-            defaultGender || "female",
-            defaultLanguage || "vi",
-            segment.id!
-          )
-            .then((audioUrl) => {
-              console.log("audioUrl", audioUrl);
-            })
-            .catch((error) => {
-              console.log("prefetchAudio error", error);
-            });
+          completedImages++;
+          const imageProgress = 15 + (completedImages / totalSegments) * 45;
+          setProgress(Math.round(imageProgress));
 
           return {
             ...segment,
-            image_url: cachedImageUrl, // Thay thế bằng URI cache
+            image_url: cachedImageUrl,
           };
         })
       );
 
       const syncedAt = Date.now();
 
-      // Save story to SQLite and mark as downloaded
+      // Step 5: Save story to SQLite (60% -> 65%)
       await db
         .insert(stories)
         .values({
           id: storyData.id,
           title: storyData.title || "",
           description: storyData.description || "",
-          coverImageUrl: cachedCoverUrl, // Lưu URI cache
+          coverImageUrl: cachedCoverUrl,
           topicId: storyData.topic_id || "",
           tags: JSON.stringify(storyData.tags || []),
           isActive: storyData.is_active || false,
@@ -155,72 +159,105 @@ const useOfflineStory = (storyId: string) => {
         .onConflictDoUpdate({
           target: stories.id,
           set: {
-            coverImageUrl: cachedCoverUrl, // Update cover cache
+            coverImageUrl: cachedCoverUrl,
             isDownloaded: true,
             syncedAt,
           },
         });
+      setProgress(65);
 
-      // Save segments to SQLite với cached images
-      if (segmentsWithCachedImages && segmentsWithCachedImages.length > 0) {
-        for (const segment of segmentsWithCachedImages) {
-          await db
-            .insert(storySegments)
-            .values({
-              id: segment.id,
-              storyId: segment.story_id || "",
-              segmentIndex: segment.segment_index || 0,
-              viText: segment.vi_text || "",
-              enText: segment.en_text || "",
-              imageUrl: segment.image_url || "", // Đã là URI cache
-              syncedAt,
-            })
-            .onConflictDoUpdate({
-              target: storySegments.id,
-              set: {
+      // Step 6: Save segments and audio song song (65% -> 100%)
+      if (segmentsWithCachedImages.length > 0) {
+        let completedItems = 0;
+        const totalItems = segmentsWithCachedImages.reduce(
+          (sum, seg) => sum + 1 + (seg.audio_segments?.length || 0),
+          0
+        );
+
+        // Save tất cả segments song song
+        await Promise.all(
+          segmentsWithCachedImages.map(async (segment) => {
+            // Save segment
+            await db
+              .insert(storySegments)
+              .values({
+                id: segment.id,
+                storyId: segment.story_id || "",
+                segmentIndex: segment.segment_index || 0,
                 viText: segment.vi_text || "",
                 enText: segment.en_text || "",
-                imageUrl: segment.image_url || "", // Update với URI cache
+                imageUrl: segment.image_url || "",
                 syncedAt,
-              },
-            });
-
-          // Save audio segments if any
-          const audioSegs = segment.audio_segments as any[];
-          if (audioSegs && audioSegs.length > 0) {
-            for (const audio of audioSegs) {
-              await db
-                .insert(audioSegments)
-                .values({
-                  id: audio.id,
-                  segmentId: audio.segment_id || "",
-                  audioUrl: audio.audio_url || "",
-                  gender: audio.gender || "",
-                  language: audio.language || "",
-                  transcript: JSON.stringify(audio.transcript || {}),
-                  createdAt: audio.created_at || "",
+              })
+              .onConflictDoUpdate({
+                target: storySegments.id,
+                set: {
+                  viText: segment.vi_text || "",
+                  enText: segment.en_text || "",
+                  imageUrl: segment.image_url || "",
                   syncedAt,
+                },
+              });
+
+            completedItems++;
+            const saveProgress = 65 + (completedItems / totalItems) * 35;
+            setProgress(Math.round(saveProgress));
+
+            // Save audio segments song song
+            const audioSegs = segment.audio_segments;
+            if (audioSegs && audioSegs.length > 0) {
+              await Promise.all(
+                audioSegs.map(async (audio) => {
+                  if (!audio.audio_url) {
+                    completedItems++;
+                    return;
+                  }
+
+                  try {
+                    const localUri = await getOfflineAudioUri(audio.audio_url || "");
+                    await db
+                      .insert(audioSegments)
+                      .values({
+                        id: audio.id,
+                        segmentId: audio.segment_id || "",
+                        audioUrl: localUri,
+                        gender: audio.gender || "",
+                        language: audio.language || "",
+                        transcript: JSON.stringify(audio.transcript || {}),
+                        createdAt: audio.created_at || "",
+                        syncedAt,
+                      })
+                      .onConflictDoUpdate({
+                        target: audioSegments.id,
+                        set: {
+                          audioUrl: localUri,
+                          syncedAt,
+                        },
+                      });
+                  } catch (error) {
+                    console.error("❌ Failed to save audio:", error);
+                  }
+
+                  completedItems++;
+                  const saveProgress = 65 + (completedItems / totalItems) * 35;
+                  setProgress(Math.round(saveProgress));
                 })
-                .onConflictDoUpdate({
-                  target: audioSegments.id,
-                  set: {
-                    audioUrl: audio.audio_url || "",
-                    syncedAt,
-                  },
-                });
+              );
             }
-          }
-        }
+          })
+        );
       }
 
+      setProgress(100);
       setStatus("completed");
+      console.log("✅ Download completed successfully");
     } catch (error) {
-      console.error("Error downloading story:", error);
+      console.error("❌ Error downloading story:", error);
       setStatus("error");
+      setProgress(0);
     }
   };
-
-  return { status, startDownload };
+  return { status, progress, startDownload };
 };
 
 // Lấy story offline theo ID (tương thích với code cũ)
@@ -271,14 +308,21 @@ export const getStorySegmentsOfflineById = async (storyId: string) => {
       where: (storySegments, { eq }) => eq(storySegments.storyId, storyId),
     });
 
-    return segments.map((seg) => ({
-      id: seg.id,
-      story_id: seg.storyId,
-      segment_index: seg.segmentIndex,
-      vi_text: seg.viText,
-      en_text: seg.enText,
-      image_url: seg.imageUrl,
+    const segmentsWithAudio = await Promise.all(segments.map(async (seg) =>{
+      const audioSegments = await db.query.audioSegments.findMany({
+        where: (audioSegments, { eq }) => eq(audioSegments.segmentId, seg.id),
+      });
+      return  ({
+        id: seg.id,
+        story_id: seg.storyId,
+        segment_index: seg.segmentIndex,
+        audio_segments: audioSegments,
+        vi_text: seg.viText,
+        en_text: seg.enText,
+        image_url: seg.imageUrl,
+      })
     }));
+    return segmentsWithAudio;
   } catch (error) {
     console.error("Error getting offline segments:", error);
     return null;
@@ -358,8 +402,10 @@ export const clearAllOfflineStories = async () => {
     if (cacheDir) {
       const files = await FileSystem.readDirectoryAsync(cacheDir);
       for (const file of files) {
-        if (file.endsWith('.jpg')) {
-          await FileSystem.deleteAsync(`${cacheDir}${file}`, { idempotent: true });
+        if (file.endsWith(".jpg")) {
+          await FileSystem.deleteAsync(`${cacheDir}${file}`, {
+            idempotent: true,
+          });
         }
       }
     }

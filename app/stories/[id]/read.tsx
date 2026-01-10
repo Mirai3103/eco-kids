@@ -232,6 +232,7 @@ const CompletionModal = ({
 };
 
 export default function ReadStoryScreen() {
+  console.log("Render ReadStoryScreen");
   const params = useLocalSearchParams();
   const storyId = params.id as string;
   const selectedGender = params.gender as "male" | "female" | undefined;

@@ -620,7 +620,7 @@ const StoryContent = () => {
   const { session } = useSession();
   const userId = session?.user?.id;
 
-  const { status, startDownload } = useOfflineStory(storyId);
+  const { status, progress, startDownload } = useOfflineStory(storyId);
   
   // Fetch reading progress from database
   useEffect(() => {
@@ -819,12 +819,14 @@ const StoryContent = () => {
           {status === "downloading" && (
             <Action3DButton
               icon={<SpinningLoader />}
-              label="Đang tải..."
+              label={`Đang tải ${Math.round(progress)}%`}
               onPress={() => { }}
               color="#9CA3AF"
               darkerColor="#6B7280"
               disabled={true}
               delay={300}
+              progress={progress}
+              showProgress={true}
             />
           )}
 

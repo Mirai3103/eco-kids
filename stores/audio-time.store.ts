@@ -33,7 +33,6 @@ export const useAudioTimeStore = create<AudioTimeStore>((set, get) => ({
 	segmentId: "",
 	setSegmentId: (segmentId: string) => set({ segmentId }),
 	setWords: (words: WordTranscript[]) => {
-        console.log("Setting words", words);
 		const sorted = [...words].sort((a, b) => a.start - b.start);
 
 		set({ words: sorted });

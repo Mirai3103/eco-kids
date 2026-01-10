@@ -1,4 +1,5 @@
 import { recalculateVector } from "@/lib/egde";
+import { getStorySegmentsOfflineById, isOffline } from "@/lib/offline";
 import { supabase } from "@/lib/supabase";
 import type { StorySegment } from "@/types";
 import { assign, fromPromise, setup } from "xstate";
@@ -42,6 +43,10 @@ export const storyReadMachine = setup({
   actors: {
     loadStorySegments: fromPromise(
       async ({ input }: { input: { storyId: string } }) => {
+        if(await isOffline()) {
+          const segments = await getStorySegmentsOfflineById(input.storyId);
+          return segments;
+        }
         const { data, error } = await supabase
           .from("story_segments")
           .select("*, audio_segments(*)")
@@ -66,6 +71,9 @@ export const storyReadMachine = setup({
           userId: string;
         };
       }) => {
+        if(await isOffline()) {
+          return;
+        }
         const { error } = await supabase.rpc("log_reading_progress", {
           p_story_id: input.storyId,
           p_segment_id: input.segmentId,
@@ -74,7 +82,6 @@ export const storyReadMachine = setup({
 
         if (error) {
           console.error("❌ Error logging progress:", error);
-          throw error;
         }
 
         // Recalculate vector in background
@@ -83,6 +90,9 @@ export const storyReadMachine = setup({
     ),
     incrementViewCount: fromPromise(
       async ({ input }: { input: { storyId: string } }) => {
+        if(await isOffline()) {
+          return;
+        }
         const { error } = await supabase.rpc("increment_story_view", {
           story_id: input.storyId,
         });
